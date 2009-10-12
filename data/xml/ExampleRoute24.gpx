@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx
+  version="1.0"
+  creator="RunKeeper - http://www.runkeeper.com"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.topografix.com/GPX/1/0"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+<trk>
+  <name>Cycling 9/22/09 9:20 pm9/22/09 9:20 pm</name>
+  <time>2009-09-22T21:20:34Z</time>
+<trkseg>
+<trkpt lat="49.280682000" lon="-123.104587000">
+ <ele>10.000000</ele>
+ <time>2009-09-22T21:20:34Z</time>
+</trkpt>
+<trkpt lat="49.280386000" lon="-123.104300000">
+ <ele>6.000000</ele>
+ <time>2009-09-22T21:21:41Z</time>
+</trkpt>
+<trkpt lat="49.279768000" lon="-123.104234000">
+ <ele>6.000000</ele>
+ <time>2009-09-22T21:21:56Z</time>
+</trkpt>
+<trkpt lat="49.279211000" lon="-123.104378000">
+ <ele>7.000000</ele>
+ <time>2009-09-22T21:22:25Z</time>
+</trkpt>
+<trkpt lat="49.278692000" lon="-123.104674000">
+ <ele>7.000000</ele>
+ <time>2009-09-22T21:22:41Z</time>
+</trkpt>
+<trkpt lat="49.278350000" lon="-123.105661000">
+ <ele>4.000000</ele>
+ <time>2009-09-22T21:22:56Z</time>
+</trkpt>
+<trkpt lat="49.277962000" lon="-123.106319000">
+ <ele>8.000000</ele>
+ <time>2009-09-22T21:23:53Z</time>
+</trkpt>
+<trkpt lat="49.277518000" lon="-123.106675000">
+ <ele>8.000000</ele>
+ <time>2009-09-22T21:24:15Z</time>
+</trkpt>
+<trkpt lat="49.276404000" lon="-123.106226000">
+ <ele>2.000000</ele>
+ <time>2009-09-22T21:24:49Z</time>
+</trkpt>
+<trkpt lat="49.275804000" lon="-123.106526000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:25:04Z</time>
+</trkpt>
+<trkpt lat="49.275564000" lon="-123.107207000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:25:20Z</time>
+</trkpt>
+<trkpt lat="49.275643000" lon="-123.107944000">
+ <ele>9.000000</ele>
+ <time>2009-09-22T21:25:31Z</time>
+</trkpt>
+<trkpt lat="49.275790000" lon="-123.108594000">
+ <ele>9.000000</ele>
+ <time>2009-09-22T21:25:39Z</time>
+</trkpt>
+<trkpt lat="49.275456000" lon="-123.109086000">
+ <ele>6.000000</ele>
+ <time>2009-09-22T21:25:50Z</time>
+</trkpt>
+<trkpt lat="49.275032000" lon="-123.109391000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:25:58Z</time>
+</trkpt>
+<trkpt lat="49.274710000" lon="-123.109844000">
+ <ele>6.000000</ele>
+ <time>2009-09-22T21:26:09Z</time>
+</trkpt>
+<trkpt lat="49.274443000" lon="-123.110413000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:26:20Z</time>
+</trkpt>
+<trkpt lat="49.274189000" lon="-123.111086000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:26:35Z</time>
+</trkpt>
+<trkpt lat="49.273884000" lon="-123.111555000">
+ <ele>8.000000</ele>
+ <time>2009-09-22T21:26:43Z</time>
+</trkpt>
+<trkpt lat="49.273547000" lon="-123.112157000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:26:52Z</time>
+</trkpt>
+<trkpt lat="49.273269000" lon="-123.112793000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:27:00Z</time>
+</trkpt>
+<trkpt lat="49.273019000" lon="-123.113391000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:27:09Z</time>
+</trkpt>
+<trkpt lat="49.272968000" lon="-123.114059000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:27:17Z</time>
+</trkpt>
+<trkpt lat="49.272939000" lon="-123.114840000">
+ <ele>.000000</ele>
+ <time>2009-09-22T21:27:28Z</time>
+</trkpt>
+<trkpt lat="49.273307000" lon="-123.115336000">
+ <ele>1.000000</ele>
+ <time>2009-09-22T21:27:49Z</time>
+</trkpt>
+<trkpt lat="49.273837000" lon="-123.115457000">
+ <ele>4.000000</ele>
+ <time>2009-09-22T21:27:57Z</time>
+</trkpt>
+<trkpt lat="49.274372000" lon="-123.115367000">
+ <ele>7.000000</ele>
+ <time>2009-09-22T21:28:12Z</time>
+</trkpt>
+<trkpt lat="49.274801000" lon="-123.115647000">
+ <ele>8.000000</ele>
+ <time>2009-09-22T21:28:20Z</time>
+</trkpt>
+<trkpt lat="49.275274000" lon="-123.116452000">
+ <ele>6.000000</ele>
+ <time>2009-09-22T21:28:45Z</time>
+</trkpt>
+<trkpt lat="49.274791000" lon="-123.116417000">
+ <ele>6.000000</ele>
+ <time>2009-09-22T21:29:00Z</time>
+</trkpt>
+</trkseg>
+</trk>
+</gpx>
+
