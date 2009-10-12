@@ -1,0 +1,11 @@
+Elevation
+Copyright (c) 2009, Dave Shea
+All rights reserved.
+
+http://exnihilo.mezzoblue.com/elevation/
+http://github.com/mezzoblue/Elevation
+
+
+Elevation is a route visualizer that renders GPS data in 3D space.
+
+To use your own data instead of the examples provided, open the xml folder under /data, delete the .gpx files, and drop in your own .gpx or .kml files. Restart Elevation, and if all goes according to plan, you should see your own data being rendered in crunchy 3D goodness.
