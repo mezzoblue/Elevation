@@ -1,8 +1,5 @@
-/*
-
-  
-
-*/
+// the main track object holds a collection of points
+// and 
 class Tracks {
   
   int pointCount;
@@ -54,22 +51,12 @@ class Tracks {
         // elevation points:
         // red for the high elevations, blue for the low
         case 2:
-        
-          // I tried some proportional math for this, but good old manual colour looks better.
-          // should be formulaic; didn't figure it out. Whatever.
           float heightLimit = findDifference(scene.maxY, scene.minY) / 11;
-          if (Y[i] > (0 * heightLimit)) {stroke(0, 0, 255, 255);}
-          if (Y[i] > (0.9 * heightLimit)) {stroke(25, 0, 230, 255);}
-          if (Y[i] > (1.8 * heightLimit)) {stroke(50, 0, 205, 255);}
-          if (Y[i] > (2.7 * heightLimit)) {stroke(75, 0, 180, 255);}
-          if (Y[i] > (3.6 * heightLimit)) {stroke(100, 0, 155, 255);}
-          if (Y[i] > (4.5 * heightLimit)) {stroke(125, 0, 130, 255);}
-          if (Y[i] > (5.4 * heightLimit)) {stroke(150, 0, 105, 255);}
-          if (Y[i] > (6.3 * heightLimit)) {stroke(175, 0, 80, 255);}
-          if (Y[i] > (7.2 * heightLimit)) {stroke(200, 0, 55, 255);}
-          if (Y[i] > (8.1 * heightLimit)) {stroke(225, 0, 30, 255);}
-          if (Y[i] > (9 * heightLimit)) {stroke(255, 0, 0, 255);}
-
+          for (int j = 0; j < 10; j++) {
+            if (Y[i] > (j * 0.9 * heightLimit)) {
+              stroke(j * 25, 0, 255 - j * 25, 255);
+            } 
+          }
           noFill();
           point(
             X[i], Y[i], Z[i]
@@ -78,15 +65,21 @@ class Tracks {
 
 
         // speed points:
-        // red for the high speeds, blue for the low
+        // a manual spectrum from dark blue to red
+        // lots of conditionals on the low end, because that's where speed data seems to be weakest
         case 3:
           float speedLimit = findDifference(scene.maxSpeed, scene.minSpeed) / 5;
-
-          if (speed[i] > (0 * speedLimit)) {stroke(0, 64, 255, 255);}
-          if (speed[i] > (0.8 * speedLimit)) {stroke(0, 255, 0, 255);}
-          if (speed[i] > (1.6 * speedLimit)) {stroke(255, 255, 0, 255);}
-          if (speed[i] > (2.4 * speedLimit)) {stroke(255, 255, 0, 255);}
-          if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);}
+          // there's a lot
+          if (speed[i] > (0 * speedLimit)) {stroke(0, 0, 255, 64);} // even more faded blue
+          if (speed[i] > (0.1 * speedLimit)) {stroke(0, 0, 255, 128);} // faded blue
+          if (speed[i] > (0.2 * speedLimit)) {stroke(0, 0, 255, 192);} // faded blue
+          if (speed[i] > (0.4 * speedLimit)) {stroke(0, 0, 255, 255);} // full blue
+          if (speed[i] > (0.8 * speedLimit)) {stroke(0, 255, 0, 255);} // green
+          if (speed[i] > (1.6 * speedLimit)) {stroke(255, 255, 0, 255);}  // yellow
+          if (speed[i] > (2.0 * speedLimit)) {stroke(255, 192, 0, 255);} // yellow orange
+          if (speed[i] > (2.4 * speedLimit)) {stroke(255, 128, 0, 255);} // orange
+          if (speed[i] > (2.8 * speedLimit)) {stroke(255, 64, 0, 255);} // orange red
+          if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);} // red
           noFill();
 
           line(

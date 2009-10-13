@@ -118,8 +118,8 @@ class uiButton extends uiElement {
           if (buttonAction.equals("offsetY++")) {scene.offsetY += scene.increment;}
           if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= scene.increment;}
           if (buttonAction.equals("offsetZ++")) {scene.offsetZ += scene.increment;}
-          if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= 0.1; checkBoundaries();}
-          if (buttonAction.equals("drawingScale++")) {scene.drawingScale += 0.1;}
+          if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= scene.increment * 0.1; checkBoundaries();}
+          if (buttonAction.equals("drawingScale++")) {scene.drawingScale += scene.increment * 0.1;}
         } else {
           state = 1;
         }
