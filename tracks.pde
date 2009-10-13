@@ -29,7 +29,8 @@ class Tracks {
     for (int i = 1; i < pointCount; i++) {
       switch(scene.renderMode) {
 
-        // line
+        
+        // line between points
         case 0:
           stroke(scene.palette[1], 50);
           noFill();
@@ -39,6 +40,7 @@ class Tracks {
           );
           break;
 
+
         // raw points
         case 1:
           stroke(scene.palette[1], 80);
@@ -47,6 +49,7 @@ class Tracks {
             X[i], Y[i], Z[i]
           );
           break;
+
 
         // elevation points:
         // red for the high elevations, blue for the low
@@ -64,9 +67,8 @@ class Tracks {
           break;
 
 
-        // speed points:
-        // a manual spectrum from dark blue to red
-        // lots of conditionals on the low end, because that's where speed data seems to be weakest
+        // speed lines: a manual spectrum from dark blue to red
+        // lots of stops on the low end, because that's where speed data seems to be weakest
         case 3:
           float speedLimit = findDifference(scene.maxSpeed, scene.minSpeed) / 5;
           // there's a lot
@@ -83,7 +85,17 @@ class Tracks {
           noFill();
 
           line(
-            X[i - 1], Y[i - 1], Z[i - 1], 
+            X[i - 1], Y[i - 1], Z[i - 1],
+            X[i], Y[i], Z[i]
+          );
+          break;
+
+        // elevation spikes
+        case 4:
+          noFill();
+          stroke(scene.palette[1], 32);
+          line(
+            X[i], scene.minY, Z[i],
             X[i], Y[i], Z[i]
           );
           break;
