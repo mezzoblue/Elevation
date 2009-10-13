@@ -4,6 +4,9 @@
    Path to coordinates in a GPX file from RunKeeper:
    gpx > trk > trkseg > trkpt (multiple)
 
+   Path to coordinates in a GPX file from GPSBabel:
+   gpx > trk > trkseg > trkpt (multiple)
+
    Path to coordinates in a KML file from RunKeeper:
    kml > Document > Placemark > MultiGeometry > LineString > coordinates
 
@@ -156,8 +159,7 @@ long getTimeDifference(String date1, String date2) {
 // get the root element of the document
 XMLElement getRoot(String file) {
   XMLElement geoData = new XMLElement(this, file);
-  XMLElement root = geoData.getChild(0);
-  return(root);
+  return(geoData);
 }
 // get the file extension of the document
 String getExtension(String file) {
@@ -182,14 +184,14 @@ String[][] getCoordinates(XMLElement root, String fileType) {
     // a little trickier than I'd have liked.
     try {
       // Nokia Sports Tracker uses this path
-      coordinateList = root.getChild("Placemark/LineString/coordinates").getContent();
+      coordinateList = root.getChild("Document/Placemark/LineString/coordinates").getContent();
     }
     catch(NullPointerException n) {
       println(n);
     }
     try {
       // RunKeeper Pro uses this one
-      coordinateList = root.getChild("Placemark/MultiGeometry/LineString/coordinates").getContent();
+      coordinateList = root.getChild("Document/Placemark/MultiGeometry/LineString/coordinates").getContent();
     }
     catch(NullPointerException n) {
       println(n);
@@ -218,27 +220,38 @@ String[][] getCoordinates(XMLElement root, String fileType) {
     
   } else if (fileType.equals("gpx")) {
 
+    XMLElement node = null;
+    
     // figure out how many elements there are
-    XMLElement node = root.getChild("trkseg");
+    try {
+      // RunKeeper Pro and GPSBabel use this path
+      node = root.getChild("trk/trkseg");
+    }
+    catch(NullPointerException n) {
+      println(n);
+    }
+    
     
     // re-initialize coordinates with the proper number of points
-    coordinates = new String[node.getChildCount()][4];
+    if ((node != null) && (node.getChildCount() > 0)) {
+      coordinates = new String[node.getChildCount()][4];
+      
+      for (int i = 0; i < node.getChildCount(); i++) {
+        // parse out the relevant child elements
+        XMLElement child = node.getChild(i);
     
-    for (int i = 0; i < node.getChildCount(); i++) {
-      // parse out the relevant child elements
-      XMLElement child = node.getChild(i);
+        // get the lat and long coordinates from attributes on this particular child
+        coordinates[i][0] = trim(child.getStringAttribute("lat"));
+        coordinates[i][1] = trim(child.getStringAttribute("lon"));
+        
+        // get the elevation from the first child
+        coordinates[i][2] = trim(child.getChild(0).getContent());
   
-      // get the lat and long coordinates from attributes on this particular child
-      coordinates[i][0] = trim(child.getStringAttribute("lat"));
-      coordinates[i][1] = trim(child.getStringAttribute("lon"));
-      
-      // get the elevation from the first child
-      coordinates[i][2] = trim(child.getChild(0).getContent());
-
-      // get the time from the second child
-      coordinates[i][3] = child.getChild(1).getContent();
-      
-    };
+        // get the time from the second child
+        coordinates[i][3] = child.getChild(1).getContent();
+        
+      };
+    }
   }
 
   return(coordinates);

@@ -3,6 +3,8 @@
  Elevation
  3D Maps based on XML data
 
+ http://exnihilo.mezzoblue.com/elevation/
+ http://github.com/mezzoblue/Elevation/
  dave@mezzoblue.com
  October 2009 
 
@@ -29,6 +31,7 @@ uiButton[] buttons;
 uiCheckbox[] checkboxes;
 uiSwitch[] switches;
 uiCompass compass;
+
 
 
 
@@ -115,14 +118,14 @@ void setup() {
   compass = new uiCompass(
     scene.canvasWidth / 2, scene.canvasHeight - 50, 31, 31);
 
+  // create the crosshairs object
+  crosshair = new Crosshairs();
+
 
 
   // get the map data XML files
   filenames = listFileNames(dataPath("") + "/xml/");
   numTracks = filenames.size();
-
-  // create the crosshairs object
-  crosshair = new Crosshairs();
 
   // turn the XML into something a little more usable
   tracklist = new Tracks[numTracks];
@@ -158,18 +161,24 @@ void draw() {
   // move the sketch to the center of the canvas, accounting for height of the UI panel
   translate(scene.canvasWidth / 2, scene.canvasHeight / 2 - 50);
 
-  // rotate the canvas based on mouse x, y position
-  cursor(ARROW);
+  // if the canvas is being dragged, set the cursor and adjust rotation
   if(mousePressed) {
       if (!(
       (mouseX > UI.x && mouseX < (UI.x + UI.wide)) &&
       (mouseY > UI.y && mouseY < (UI.y + UI.high))
       )) {
+        // mainly for the benefit of Windows, since the OS X MOVE cursor is a white arrow. whee.
         cursor(MOVE);
+        // use a cursor image instead. But it flashes for some reason. 
+        // cursor(scene.cursorHand, scene.cursorHand.width / 2, scene.cursorHand.height / 2);
         scene.rotationY += ((float) (mouseX - pmouseX) / 180);
         scene.rotationX += ((float) (mouseY - pmouseY) / 180);
       }
+  } else {
+    cursor(ARROW);
   };
+
+  // rotate the canvas
   rotateX(scene.rotationX);
   rotateY(scene.rotationY);
   rotateZ(scene.rotationZ);
