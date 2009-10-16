@@ -98,6 +98,16 @@ class Tracks {
             X[i], scene.minY, Z[i],
             X[i], Y[i], Z[i]
           );
+
+// nice variation, but sloooooow. 
+// Would look better logarithmic rather than linear, too, which couldn't possibly speed things up.
+//          for (int j = 0; j < 10; j++) {
+//            stroke(scene.palette[1], 3);
+//            line(
+//              X[i], scene.minY + findDifference(Y[i], scene.minY) / j, Z[i],
+//              X[i], Y[i], Z[i]
+//            );
+//          }
           break;
 
 
