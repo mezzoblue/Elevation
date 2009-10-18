@@ -303,21 +303,19 @@ void keyPressed() {
   if (int(key) == 45) {scene.drawingScale -= 0.1;};
     if (int(key) == 95) {scene.drawingScale -= 1;};
 
-  // use lhs keyboard arrows (asdw) to move around
+  // use arrow keys to move around
   // use shift modifier to move more
-  if (int(key) == 119) {scene.offsetX++;};
-    if (int(key) == 87) {scene.offsetX += 10;};
-    if (int(key) == 8222) {scene.offsetX += 200;};
-  if (int(key) == 115) {scene.offsetX--;};
-    if (int(key) == 83) {scene.offsetX -= 10;};
-    if (int(key) == 205) {scene.offsetX -= 1200;};
-  if (int(key) == 97) {scene.offsetZ++;};
-    if (int(key) == 65) {scene.offsetZ += 10;};
-    if (int(key) == 197) {scene.offsetZ += 1200;};
-  if (int(key) == 100) {scene.offsetZ--;};
-    if (int(key) == 68) {scene.offsetZ -= 10;};
-    if (int(key) == 206) {scene.offsetZ -= 200;};
-
+  if (key == CODED) {
+      if (keyCode == UP) {
+        scene.offsetX += determineOffset();
+      } else if (keyCode == DOWN) {
+        scene.offsetX -= determineOffset();
+      } else if (keyCode == LEFT) {
+        scene.offsetZ += determineOffset();
+      } else if (keyCode == RIGHT) {
+        scene.offsetZ -= determineOffset();
+      }
+  }
 
   // if 'c' pressed, toggle crosshairs
    if (int(key) == 99) {
@@ -346,6 +344,15 @@ void keyPressed() {
 
 };
 
+int determineOffset() {
+    if (keyEvent.isControlDown()) {
+      return(100);
+    } else if (keyEvent.isShiftDown()) {
+      return(10);
+    } else {
+      return(1);
+    }
+}
 
 void keyReleased() {
   // clean up once shift is released

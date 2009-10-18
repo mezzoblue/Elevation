@@ -16,7 +16,7 @@ about any another format, you can probably use GPSBabel
 [http://gpsbabel.org/] to convert them to GPX files and get them working 
 with Elevation.)
 
-Open ./data/xml/. There you'll see some example data called 
+Open ./data/xml/ -- there you'll see some example data called 
 ExampleRoute05.gpx and so on that comes with the application; you can 
 safely delete these example files and replace them with your own.
 
