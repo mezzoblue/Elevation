@@ -12,6 +12,14 @@
 
    Path to coordinates in a KML file from SportsTracker:
    kml > Document > Placemark > LineString > coordinates
+   
+   Path to coordinates in a TCX file from Garmin:
+   TrainingCenterDatabase > Activities > Activity > Lap > Track
+     Trackpoint
+       Time
+       Position > LatitudeDegrees, LongitudeDegrees
+       AltitudeMeters
+       DistanceMeters
 
 */
 
@@ -38,16 +46,23 @@ Tracks parseXML(String file) {
       // there are around 5 orders of magnitude difference between the
       // useful part of the lat/long data and the elevation value.
       // lets multiply the former by a thousand (and drop any negative values while we're at it)
-      obj.X[i] = abs(Float.parseFloat(coordinates[i][0]) * 1000);
-      obj.Z[i] = abs(Float.parseFloat(coordinates[i][1]) * 1000);
+
+      if (coordinates[i][0] != null) {
+        obj.X[i] = abs(Float.parseFloat(coordinates[i][0]) * 1000);
+      }
+      if (coordinates[i][1] != null) {
+        obj.Z[i] = abs(Float.parseFloat(coordinates[i][1]) * 1000);
+      }
   
-      // average out each point's elevation with the two preceding it to minimize spikes
-      if (i > 1) {
-        obj.Y[i] = ((Float.parseFloat(coordinates[i][2]) * 0.1) + obj.Y[i - 1] + obj.Y[i - 2]) / 3;
-      } else {
-        obj.Y[i] = Float.parseFloat(coordinates[i][2]) * 0.1;
-      };
-  
+      if (coordinates[i][2] != null) {
+        // average out each point's elevation with the two preceding it to minimize spikes
+        if (i > 1) {
+          obj.Y[i] = ((Float.parseFloat(coordinates[i][2]) * 0.1) + obj.Y[i - 1] + obj.Y[i - 2]) / 3;
+        } else {
+          obj.Y[i] = Float.parseFloat(coordinates[i][2]) * 0.1;
+        };
+      }
+
       // get the time and speed if they exist
       if (coordinates[i][3] != null) {
         obj.time[i] = coordinates[i][3];
@@ -77,7 +92,9 @@ Tracks parseXML(String file) {
             obj.speed[i] = 0; 
           };
         };
-      };
+      }; // end if
+
+
     }; // end for loop
   }; // end if numPoints > 1
 
@@ -102,7 +119,11 @@ ArrayList listFileNames(String dir) {
     // run through and remove files that don't match the extension
     for (int i = 0; i < names.length; i++) {
       String fileExt = getExtension(names[i]);
-      if ((fileExt.toLowerCase().equals("kml")) || (fileExt.toLowerCase().equals("gpx"))) {
+      if (
+        (fileExt.toLowerCase().equals("gpx")) ||
+        (fileExt.toLowerCase().equals("kml")) || 
+        (fileExt.toLowerCase().equals("tcx")) 
+      ) {
         names2.add(names[i]);
       };
 
@@ -158,8 +179,8 @@ long getTimeDifference(String date1, String date2) {
 
 // get the root element of the document
 XMLElement getRoot(String file) {
-  XMLElement geoData = new XMLElement(this, file);
-  return(geoData);
+  XMLElement data = new XMLElement(this, file);
+  return(data);
 }
 // get the file extension of the document
 String getExtension(String file) {
@@ -175,13 +196,13 @@ String[][] getCoordinates(XMLElement root, String fileType) {
 
   // create the return array, initialize it with a dummy value
   String[][] coordinates = {{" "}};
-  
+
+
+  // Google .kml files, probably fairly generic
   if (fileType.equals("kml")) {
     String coordinateList = "";
-
-    // try a couple ways of navigating to the big list of coordinates in the KML file.
-    // Crummy way of doing it, but navigating differing XML DOMs proved 
-    // a little trickier than I'd have liked.
+    // try a couple ways of navigating to the big list of coordinates in the KML file,
+    // catch the exceptions if it doesn't work. Seems a bit of a crummy way of doing it.
     try {
       // Nokia Sports Tracker uses this path
       coordinateList = root.getChild("Document/Placemark/LineString/coordinates").getContent();
@@ -196,18 +217,13 @@ String[][] getCoordinates(XMLElement root, String fileType) {
     catch(NullPointerException n) {
       println(n);
     }
-    
     // throw each line of coordinates into a temporary array
     String[] coordinateLines = reverse(trim(splitTokens(coordinateList)));
-
     // re-initialize coordinates with the proper number of points
     coordinates = new String[coordinateLines.length][4];
-   
     String[] parsedLine;
-
     for (int i = 0; i < coordinateLines.length; i++) {
       parsedLine = trim(split(coordinateLines[i], ","));
-
       // latitude is the second value
       coordinates[i][0] = parsedLine[1];
       // longitude is the first value
@@ -218,19 +234,54 @@ String[][] getCoordinates(XMLElement root, String fileType) {
       coordinates[i][3] = null;
     }
     
-  } else if (fileType.equals("gpx")) {
-
-    XMLElement node = null;
     
+    
+  // GPS Exchange Format .gpx files
+  // used by RunKeeper Pro and GPSBabel
+  } else if (fileType.equals("gpx")) {
+    XMLElement node = null;
     // figure out how many elements there are
     try {
-      // RunKeeper Pro and GPSBabel use this path
       node = root.getChild("trk/trkseg");
     }
     catch(NullPointerException n) {
       println(n);
     }
+    // re-initialize coordinates with the proper number of points
+    if ((node != null) && (node.getChildCount() > 0)) {
+      coordinates = new String[node.getChildCount()][4];
+      for (int i = 0; i < node.getChildCount(); i++) {
+          // parse out the relevant child elements
+          XMLElement child = node.getChild(i);
+          if (node.getChildCount() > 3) {
+            // get the lat and long coordinates from attributes on this particular child
+            coordinates[i][0] = trim(child.getStringAttribute("lat"));
+            coordinates[i][1] = trim(child.getStringAttribute("lon"));
+            // get the elevation from the first child
+            coordinates[i][2] = trim(child.getChild(0).getContent());
+            // get the time from the second child
+            coordinates[i][3] = child.getChild(1).getContent();
+          } else {
+            coordinates[i][0] = null; coordinates[i][1] = null;
+            coordinates[i][2] = null; coordinates[i][3] = null;
+          }
+      };
+    }
+
+
+
+  // Garmin Training Center .tcx files
+  } else if (fileType.equals("tcx")) {
+    XMLElement node = null;
+    // figure out how many elements there are
+    try {
+      node = root.getChild("Activities/Activity/Lap/Track");
+    }
+    catch(NullPointerException n) {
+      println(n);
+    }
     
+    println(root.getChildCount());
     
     // re-initialize coordinates with the proper number of points
     if ((node != null) && (node.getChildCount() > 0)) {
@@ -239,16 +290,32 @@ String[][] getCoordinates(XMLElement root, String fileType) {
       for (int i = 0; i < node.getChildCount(); i++) {
         // parse out the relevant child elements
         XMLElement child = node.getChild(i);
-    
-        // get the lat and long coordinates from attributes on this particular child
-        coordinates[i][0] = trim(child.getStringAttribute("lat"));
-        coordinates[i][1] = trim(child.getStringAttribute("lon"));
-        
-        // get the elevation from the first child
-        coordinates[i][2] = trim(child.getChild(0).getContent());
-  
-        // get the time from the second child
-        coordinates[i][3] = child.getChild(1).getContent();
+
+        if (child.getChildCount() > 3) {
+          // can't rely on any of these being present in Garmin files, it seems
+          try {
+            coordinates[i][0] = trim(child.getChild("Position/LatitudeDegrees").getContent());
+            coordinates[i][1] = trim(child.getChild("Position/LongitudeDegrees").getContent());
+          }
+          catch(NullPointerException n) {
+            println(n);
+          }
+          try {
+            coordinates[i][2] = trim(child.getChild("AltitudeMeters").getContent());
+          }
+          catch(NullPointerException n) {
+            println(n);
+          }
+          try {
+            coordinates[i][3] = child.getChild("Time").getContent();
+          }
+          catch(NullPointerException n) {
+            println(n);
+          }
+        } else {
+          coordinates[i][0] = null; coordinates[i][1] = null;
+          coordinates[i][2] = null; coordinates[i][3] = null;
+        }
         
       };
     }

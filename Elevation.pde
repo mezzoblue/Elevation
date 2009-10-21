@@ -1,7 +1,7 @@
 /*
 
  Elevation
- 3D Maps based on XML data
+ A route visualizer that renders GPS data in 3D space
 
  http://exnihilo.mezzoblue.com/elevation/
  http://github.com/mezzoblue/Elevation/

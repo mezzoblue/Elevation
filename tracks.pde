@@ -27,78 +27,88 @@ class Tracks {
   void render() {
     strokeWeight(2);
     for (int i = 1; i < pointCount; i++) {
-      switch(scene.renderMode) {
 
-        
-        // line between points
-        case 0:
-          stroke(scene.palette[1], 50);
-          noFill();
-          line(
-            X[i - 1], Y[i - 1], Z[i - 1], 
-            X[i], Y[i], Z[i]
-          );
-          break;
+      // make sure this wasn't a skipped point in the data
+      if (X[i] != 0) {
 
-
-        // raw points
-        case 1:
-          stroke(scene.palette[1], 80);
-          noFill();
-          point(
-            X[i], Y[i], Z[i]
-          );
-          break;
-
-
-        // elevation points:
-        // red for the high elevations, blue for the low
-        case 2:
-          float heightLimit = findDifference(scene.maxY, scene.minY) / 11;
-          for (int j = 0; j < 10; j++) {
-            if (Y[i] > (j * 0.9 * heightLimit)) {
-              stroke(j * 25, 0, 255 - j * 25, 255);
-            } 
-          }
-          noFill();
-          point(
-            X[i], Y[i], Z[i]
-          );
-          break;
-
-
-        // speed lines: a manual spectrum from dark blue to red
-        // lots of stops on the low end, because that's where speed data seems to be weakest
-        case 3:
-          float speedLimit = findDifference(scene.maxSpeed, scene.minSpeed) / 5;
-          // there's a lot
-          if (speed[i] > (0 * speedLimit)) {stroke(0, 0, 255, 64);} // even more faded blue
-          if (speed[i] > (0.1 * speedLimit)) {stroke(0, 0, 255, 128);} // faded blue
-          if (speed[i] > (0.2 * speedLimit)) {stroke(0, 0, 255, 192);} // faded blue
-          if (speed[i] > (0.4 * speedLimit)) {stroke(0, 0, 255, 255);} // full blue
-          if (speed[i] > (0.8 * speedLimit)) {stroke(0, 255, 0, 255);} // green
-          if (speed[i] > (1.6 * speedLimit)) {stroke(255, 255, 0, 255);}  // yellow
-          if (speed[i] > (2.0 * speedLimit)) {stroke(255, 192, 0, 255);} // yellow orange
-          if (speed[i] > (2.4 * speedLimit)) {stroke(255, 128, 0, 255);} // orange
-          if (speed[i] > (2.8 * speedLimit)) {stroke(255, 64, 0, 255);} // orange red
-          if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);} // red
-          noFill();
-
-          line(
-            X[i - 1], Y[i - 1], Z[i - 1],
-            X[i], Y[i], Z[i]
-          );
-          break;
-
-        // elevation spikes
-        case 4:
-          noFill();
-          stroke(scene.palette[1], 32);
-          line(
-            X[i], scene.minY, Z[i],
-            X[i], Y[i], Z[i]
-          );
-
+        switch(scene.renderMode) {
+  
+          // line between points
+          case 0:
+            stroke(scene.palette[1], 50);
+            noFill();
+            // hacky way to make sure that X has a value
+            // (has the unfortunate side effect of breaking routes taking place at 0,0, but 
+            // considering that's a few hundred km off the coast of Gabon, I'm okay with that)
+            if (X[i - 1] != 0) {
+              line(
+                X[i - 1], Y[i - 1], Z[i - 1],
+                X[i], Y[i], Z[i]
+              );
+            }
+            break;
+  
+  
+          // raw points
+          case 1:
+            stroke(scene.palette[1], 80);
+            noFill();
+            point(
+              X[i], Y[i], Z[i]
+            );
+            break;
+  
+  
+          // elevation points:
+          // red for the high elevations, blue for the low
+          case 2:
+            float heightLimit = findDifference(scene.maxY, scene.minY) / 11;
+            for (int j = 0; j < 10; j++) {
+              if (Y[i] > (j * 0.9 * heightLimit)) {
+                stroke(j * 25, 0, 255 - j * 25, 255);
+              } 
+            }
+            noFill();
+            point(
+              X[i], Y[i], Z[i]
+            );
+            break;
+  
+  
+          // speed lines: a manual spectrum from dark blue to red
+          // lots of stops on the low end, because that's where speed data seems to be weakest
+          case 3:
+            float speedLimit = findDifference(scene.maxSpeed, scene.minSpeed) / 5;
+            // there's a lot
+            if (speed[i] > (0 * speedLimit)) {stroke(0, 0, 255, 64);} // even more faded blue
+            if (speed[i] > (0.1 * speedLimit)) {stroke(0, 0, 255, 128);} // faded blue
+            if (speed[i] > (0.2 * speedLimit)) {stroke(0, 0, 255, 192);} // faded blue
+            if (speed[i] > (0.4 * speedLimit)) {stroke(0, 0, 255, 255);} // full blue
+            if (speed[i] > (0.8 * speedLimit)) {stroke(0, 255, 0, 255);} // green
+            if (speed[i] > (1.6 * speedLimit)) {stroke(255, 255, 0, 255);}  // yellow
+            if (speed[i] > (2.0 * speedLimit)) {stroke(255, 192, 0, 255);} // yellow orange
+            if (speed[i] > (2.4 * speedLimit)) {stroke(255, 128, 0, 255);} // orange
+            if (speed[i] > (2.8 * speedLimit)) {stroke(255, 64, 0, 255);} // orange red
+            if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);} // red
+            noFill();
+  
+            if (X[i - 1] != 0) {
+              line(
+                X[i - 1], Y[i - 1], Z[i - 1],
+                X[i], Y[i], Z[i]
+              );
+            };
+            break;
+  
+          // elevation spikes
+          case 4:
+            noFill();
+            stroke(scene.palette[1], 32);
+            line(
+              X[i], scene.minY, Z[i],
+              X[i], Y[i], Z[i]
+            );
+  
 // nice variation, but sloooooow. 
 // Would look better logarithmic rather than linear, too, which couldn't possibly speed things up.
 //          for (int j = 0; j < 10; j++) {
@@ -108,12 +118,13 @@ class Tracks {
 //              X[i], Y[i], Z[i]
 //            );
 //          }
-          break;
-
-
-      };
-    };
-  };
+            break;
+  
+  
+        }; // end switch
+      }; //end if
+    }; // end for
+  }; // end render()
 
 
   void createLimits() {
