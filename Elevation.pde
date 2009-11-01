@@ -170,7 +170,9 @@ void draw() {
         // use a cursor image while rotating the scene
         cursor(scene.cursorHand, scene.cursorHand.width / 2, scene.cursorHand.height / 2);
         scene.rotationY += ((float) (mouseX - pmouseX) / 180);
-        scene.rotationX += ((float) (mouseY - pmouseY) / 180);
+        if (scene.renderContext == "3D") {
+          scene.rotationX += ((float) (mouseY - pmouseY) / 180);
+        }
       }
   } else {
     cursor(ARROW);

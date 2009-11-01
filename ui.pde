@@ -18,6 +18,7 @@ class Scene {
   float minSpeed = 0, maxSpeed = 0;
 
   // control the way tracks are rendered
+  String renderContext = "3D";
   int renderMode = 0;
 
   // ui adjustment increment value
@@ -114,8 +115,11 @@ class uiButton extends uiElement {
           // Soooo... string it is.
           if (buttonAction.equals("offsetX--")) {scene.offsetX -= scene.increment;}
           if (buttonAction.equals("offsetX++")) {scene.offsetX += scene.increment;}
-          if (buttonAction.equals("offsetY--")) {scene.offsetY -= scene.increment;}
-          if (buttonAction.equals("offsetY++")) {scene.offsetY += scene.increment;}
+          // only modify the Y axis if we're in 3D mode
+          if (scene.renderContext == "3D") {
+            if (buttonAction.equals("offsetY--")) {scene.offsetY -= scene.increment;}
+            if (buttonAction.equals("offsetY++")) {scene.offsetY += scene.increment;}
+          }
           if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= scene.increment;}
           if (buttonAction.equals("offsetZ++")) {scene.offsetZ += scene.increment;}
           if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= scene.increment * 0.1; checkBoundaries();}
@@ -294,6 +298,14 @@ void mouseReleased() {
 
 // keyboard event handler
 void keyPressed() {
+  
+  // toggle 2D / 3D modes
+  if (int(key) == 50) {
+    scene.renderContext = "2D";
+    scene.rotationX = radians(-90);
+    scene.rotationY = radians(-90);
+  };
+  if (int(key) == 51) {scene.renderContext = "3D";};
   
   // if '+ / =' is pressed, zoom in
   // if '-' is pressed, zoom out

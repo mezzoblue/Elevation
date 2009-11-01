@@ -41,10 +41,18 @@ class Tracks {
             // (has the unfortunate side effect of breaking routes taking place at 0,0, but 
             // considering that's a few hundred km off the coast of Gabon, I'm okay with that)
             if (X[i - 1] != 0) {
-              line(
-                X[i - 1], Y[i - 1], Z[i - 1],
-                X[i], Y[i], Z[i]
-              );
+              // only render the Y axis if we're in 3D mode
+              if (scene.renderContext == "3D") {
+                line(
+                  X[i - 1], Y[i - 1], Z[i - 1],
+                  X[i], Y[i], Z[i]
+                );
+              } else {
+                line(
+                  X[i - 1], 0, Z[i - 1],
+                  X[i], 0, Z[i]
+                );
+              };
             }
             break;
   
@@ -53,9 +61,16 @@ class Tracks {
           case 1:
             stroke(scene.palette[1], 80);
             noFill();
-            point(
-              X[i], Y[i], Z[i]
-            );
+            // only render the Y axis if we're in 3D mode
+            if (scene.renderContext == "3D") {
+              point(
+                X[i], Y[i], Z[i]
+              );
+            } else {
+              point(
+                X[i], 0, Z[i]
+              );
+            };
             break;
   
   
@@ -69,9 +84,16 @@ class Tracks {
               } 
             }
             noFill();
-            point(
-              X[i], Y[i], Z[i]
-            );
+            // only render the Y axis if we're in 3D mode
+            if (scene.renderContext == "3D") {
+              point(
+                X[i], Y[i], Z[i]
+              );
+            } else {
+              point(
+                X[i], 0, Z[i]
+              );
+            };
             break;
   
   
@@ -94,10 +116,18 @@ class Tracks {
   
             // see the note above re:Gabon for the reason why this check is necessary
             if (X[i - 1] != 0) {
-              line(
-                X[i - 1], Y[i - 1], Z[i - 1],
-                X[i], Y[i], Z[i]
-              );
+              // only render the Y axis if we're in 3D mode
+              if (scene.renderContext == "3D") {
+                line(
+                  X[i - 1], Y[i - 1], Z[i - 1],
+                  X[i], Y[i], Z[i]
+                );
+              } else {
+                line(
+                  X[i - 1], 0, Z[i - 1],
+                  X[i], 0, Z[i]
+                );
+              };
             };
             break;
   
@@ -105,10 +135,18 @@ class Tracks {
           case 4:
             noFill();
             stroke(scene.palette[1], 32);
-            line(
-              X[i], scene.minY, Z[i],
-              X[i], Y[i], Z[i]
-            );
+            // only render the Y axis if we're in 3D mode
+            if (scene.renderContext == "3D") {
+              line(
+                X[i], scene.minY, Z[i],
+                X[i], Y[i], Z[i]
+              );
+            } else {
+              line(
+                X[i], scene.minY, Z[i],
+                X[i], 0, Z[i]
+              );
+            };
   
 // nice variation, but sloooooow. 
 // Would look better logarithmic rather than linear, too, which couldn't possibly speed things up.
