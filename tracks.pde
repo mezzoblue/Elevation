@@ -64,13 +64,9 @@ class Tracks {
             noFill();
             // only render the Y axis if we're in 3D mode
             if (scene.renderContext == "3D") {
-              point(
-                X[i], Y[i], Z[i]
-              );
+              point(X[i], Y[i], Z[i]);
             } else {
-              point(
-                X[i], 0, Z[i]
-              );
+              point(X[i], 0, Z[i]);
             };
             break;
   
@@ -87,13 +83,9 @@ class Tracks {
             noFill();
             // only render the Y axis if we're in 3D mode
             if (scene.renderContext == "3D") {
-              point(
-                X[i], Y[i], Z[i]
-              );
+              point(X[i], Y[i], Z[i]);
             } else {
-              point(
-                X[i], 0, Z[i]
-              );
+              point(X[i], 0, Z[i]);
             };
             break;
   
@@ -152,20 +144,21 @@ class Tracks {
 
           // animated tracers
           case 5:
-            stroke(scene.palette[1], 40);
+            stroke(scene.palette[1], 10);
             noFill();
-            
-            if (pointTracer == i) {stroke(#FF0000, 160);};
+
+            // create the fadeout trails
+            for (int j = 0; j < 16; j++) {
+              if (i == pointTracer - j) {stroke(#0000FF, 128 - 8 * j);};
+            }
+            // more strongly define the current point
+            if (i == pointTracer) {stroke(#0000FF, 255);};
             
             // only render the Y axis if we're in 3D mode
             if (scene.renderContext == "3D") {
-              point(
-                X[i], Y[i], Z[i]
-              );
+              point(X[i], Y[i], Z[i]);
             } else {
-              point(
-                X[i], 0, Z[i]
-              );
+              point(X[i], 0, Z[i]);
             };
             break;
 
