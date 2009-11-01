@@ -18,8 +18,8 @@ class Scene {
   float minSpeed = 0, maxSpeed = 0;
 
   // control the way tracks are rendered
-  String renderContext = "3D";
-  int renderMode = 0;
+  String viewDimension = "3D";
+  int viewMode = 0;
 
   // ui adjustment increment value
   int increment = 1;
@@ -116,7 +116,7 @@ class uiButton extends uiElement {
           if (buttonAction.equals("offsetX--")) {scene.offsetX -= scene.increment;}
           if (buttonAction.equals("offsetX++")) {scene.offsetX += scene.increment;}
           // only modify the Y axis if we're in 3D mode
-          if (scene.renderContext == "3D") {
+          if (scene.viewDimension == "3D") {
             if (buttonAction.equals("offsetY--")) {scene.offsetY -= scene.increment;}
             if (buttonAction.equals("offsetY++")) {scene.offsetY += scene.increment;}
           }
@@ -217,7 +217,7 @@ class uiSwitch extends uiElement {
     for (int i = 0; i < switches.length; i++) {
       if (switches[i] == me) {
         switches[i].state = 3;
-        scene.renderMode = i;
+        scene.viewMode = i;
       } else {
         switches[i].state = 0; 
       }
@@ -301,11 +301,11 @@ void keyPressed() {
   
   // toggle 2D / 3D modes
   if (int(key) == 50) {
-    scene.renderContext = "2D";
+    scene.viewDimension = "2D";
     scene.rotationX = radians(-90);
     scene.rotationY = radians(-90);
   };
-  if (int(key) == 51) {scene.renderContext = "3D";};
+  if (int(key) == 51) {scene.viewDimension = "3D";};
   
   // if '+ / =' is pressed, zoom in
   // if '-' is pressed, zoom out
@@ -341,9 +341,9 @@ void keyPressed() {
 
   // if 't' pressed, toggle render mode
    if (int(key) == 116) {
-     scene.renderMode++;
-     if (scene.renderMode > 5) {
-       scene.renderMode = 0;
+     scene.viewMode++;
+     if (scene.viewMode > 5) {
+       scene.viewMode = 0;
      }
    };
 

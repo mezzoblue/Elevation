@@ -32,7 +32,7 @@ class Tracks {
       // make sure this wasn't a skipped point in the data
       if (X[i] != 0) {
 
-        switch(scene.renderMode) {
+        switch(scene.viewMode) {
   
           // line between points
           case 0:
@@ -43,7 +43,7 @@ class Tracks {
             // considering that's a few hundred km off the coast of Gabon, I'm okay with that)
             if (X[i - 1] != 0) {
               // only render the Y axis if we're in 3D mode
-              if (scene.renderContext == "3D") {
+              if (scene.viewDimension == "3D") {
                 line(
                   X[i - 1], Y[i - 1], Z[i - 1],
                   X[i], Y[i], Z[i]
@@ -63,7 +63,7 @@ class Tracks {
             stroke(scene.palette[1], 80);
             noFill();
             // only render the Y axis if we're in 3D mode
-            if (scene.renderContext == "3D") {
+            if (scene.viewDimension == "3D") {
               point(X[i], Y[i], Z[i]);
             } else {
               point(X[i], 0, Z[i]);
@@ -82,7 +82,7 @@ class Tracks {
             }
             noFill();
             // only render the Y axis if we're in 3D mode
-            if (scene.renderContext == "3D") {
+            if (scene.viewDimension == "3D") {
               point(X[i], Y[i], Z[i]);
             } else {
               point(X[i], 0, Z[i]);
@@ -110,7 +110,7 @@ class Tracks {
             // see the note above re:Gabon for the reason why this check is necessary
             if (X[i - 1] != 0) {
               // only render the Y axis if we're in 3D mode
-              if (scene.renderContext == "3D") {
+              if (scene.viewDimension == "3D") {
                 line(
                   X[i - 1], Y[i - 1], Z[i - 1],
                   X[i], Y[i], Z[i]
@@ -129,7 +129,7 @@ class Tracks {
             noFill();
             stroke(scene.palette[1], 32);
             // only render the Y axis if we're in 3D mode
-            if (scene.renderContext == "3D") {
+            if (scene.viewDimension == "3D") {
               line(
                 X[i], scene.minY, Z[i],
                 X[i], Y[i], Z[i]
@@ -155,7 +155,7 @@ class Tracks {
             if (i == pointTracer) {stroke(#0000FF, 255);};
             
             // only render the Y axis if we're in 3D mode
-            if (scene.renderContext == "3D") {
+            if (scene.viewDimension == "3D") {
               point(X[i], Y[i], Z[i]);
             } else {
               point(X[i], 0, Z[i]);
