@@ -167,10 +167,8 @@ void draw() {
       (mouseX > UI.x && mouseX < (UI.x + UI.wide)) &&
       (mouseY > UI.y && mouseY < (UI.y + UI.high))
       )) {
-        // mainly for the benefit of Windows, since the OS X MOVE cursor is a white arrow. whee.
-        cursor(MOVE);
-        // use a cursor image instead. But it flashes for some reason. 
-        // cursor(scene.cursorHand, scene.cursorHand.width / 2, scene.cursorHand.height / 2);
+        // use a cursor image while rotating the scene
+        cursor(scene.cursorHand, scene.cursorHand.width / 2, scene.cursorHand.height / 2);
         scene.rotationY += ((float) (mouseX - pmouseX) / 180);
         scene.rotationX += ((float) (mouseY - pmouseY) / 180);
       }

@@ -153,7 +153,7 @@ float findDifference(float n1, float n2) {
 
 // find the time difference between two strings formatted in iso8601 format (yyyy-MM-ddTHH:mm:ssZ)
 long getTimeDifference(String date1, String date2) {
-  // stuff I found useful about Java's date functions:
+  // code I found useful for Java's date functions:
   // http://www.coderanch.com/t/378541/Java-General/java/Convert-date-difference-format 
 
   // create a pair of Java Date objects
@@ -161,6 +161,7 @@ long getTimeDifference(String date1, String date2) {
   java.util.Date prevTimeStamp = new Date();
   // create a filter for the ISO 8601 format we're (hopefully) going to find in the XML file
   SimpleDateFormat iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  SimpleDateFormat iso8601milli = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
   long timeDifference = 0;
   try {
@@ -169,9 +170,25 @@ long getTimeDifference(String date1, String date2) {
     prevTimeStamp = iso8601.parse(date2);
     // if it worked, return the difference
     timeDifference = currentTimeStamp.getTime() - prevTimeStamp.getTime();
-  } catch (ParseException e) {
-    // likely suspects: no date in the XML, or unexpected date format
-    println("Date parsing broke."); 
+  }
+  catch (ParseException e) {
+    // likely suspects: unexpected date format
+  }
+  catch (NullPointerException e) {
+    // likely suspects: points without a date stamp
+  }
+  try {
+    // see if it works with milliseconds (TCX files have 'em)
+    currentTimeStamp = iso8601milli.parse(date1);
+    prevTimeStamp = iso8601milli.parse(date2);
+    // if it worked, return the difference
+    timeDifference = currentTimeStamp.getTime() - prevTimeStamp.getTime();
+  }
+  catch (ParseException e) {
+    // likely suspects: unexpected date format
+  }
+  catch (NullPointerException e) {
+    // likely suspects: points without a date stamp
   }
   return timeDifference;
 }
@@ -208,14 +225,14 @@ String[][] getCoordinates(XMLElement root, String fileType) {
       coordinateList = root.getChild("Document/Placemark/LineString/coordinates").getContent();
     }
     catch(NullPointerException n) {
-      println(n);
+      // likely suspect: point without any useful data. No need to do anything, just ignore it.
     }
     try {
       // RunKeeper Pro uses this one
       coordinateList = root.getChild("Document/Placemark/MultiGeometry/LineString/coordinates").getContent();
     }
     catch(NullPointerException n) {
-      println(n);
+      // likely suspect: point without any useful data. No need to do anything, just ignore it.
     }
     // throw each line of coordinates into a temporary array
     String[] coordinateLines = reverse(trim(splitTokens(coordinateList)));
@@ -245,7 +262,7 @@ String[][] getCoordinates(XMLElement root, String fileType) {
       node = root.getChild("trk/trkseg");
     }
     catch(NullPointerException n) {
-      println(n);
+      // likely suspect: point without any useful data. No need to do anything, just ignore it.
     }
     // re-initialize coordinates with the proper number of points
     if ((node != null) && (node.getChildCount() > 0)) {
@@ -278,10 +295,9 @@ String[][] getCoordinates(XMLElement root, String fileType) {
       node = root.getChild("Activities/Activity/Lap/Track");
     }
     catch(NullPointerException n) {
-      println(n);
+      // likely suspect: point without any useful data. No need to do anything, just ignore it.
+      // Garmin likes these. I can't understand why.
     }
-    
-    println(root.getChildCount());
     
     // re-initialize coordinates with the proper number of points
     if ((node != null) && (node.getChildCount() > 0)) {
@@ -298,19 +314,19 @@ String[][] getCoordinates(XMLElement root, String fileType) {
             coordinates[i][1] = trim(child.getChild("Position/LongitudeDegrees").getContent());
           }
           catch(NullPointerException n) {
-            println(n);
+            // likely suspect: point without any useful data. No need to do anything, just ignore it.
           }
           try {
             coordinates[i][2] = trim(child.getChild("AltitudeMeters").getContent());
           }
           catch(NullPointerException n) {
-            println(n);
+            // likely suspect: point without any useful data. No need to do anything, just ignore it.
           }
           try {
             coordinates[i][3] = child.getChild("Time").getContent();
           }
           catch(NullPointerException n) {
-            println(n);
+            // likely suspect: point without any useful data. No need to do anything, just ignore it.
           }
         } else {
           coordinates[i][0] = null; coordinates[i][1] = null;

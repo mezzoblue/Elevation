@@ -92,6 +92,7 @@ class Tracks {
             if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);} // red
             noFill();
   
+            // see the note above re:Gabon for the reason why this check is necessary
             if (X[i - 1] != 0) {
               line(
                 X[i - 1], Y[i - 1], Z[i - 1],
@@ -157,8 +158,11 @@ class Tracks {
     } else {
       // if we're looking for a minimum, see if the current value is lower than the current minimum
       if (dir == "min") {
-        if (iteration < val) {
-          val = iteration;
+        // see the note above re:Gabon for the reason why this check is necessary
+        if (iteration != 0) {
+          if (iteration < val) {
+            val = iteration;
+          };
         };
       // otherwise see if the current value is higher than the current maximum
       } else {

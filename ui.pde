@@ -6,7 +6,7 @@ class Scene {
   float rotationX = radians(-90), rotationY = radians(-90), rotationZ = radians(180);
 
   // define the movement cursor
-  PImage cursorHand = loadImage(dataPath("") + "/interface/Cursor-Hand.png");
+  PImage cursorHand = loadImage(dataPath("") + "interface/Cursor-Hand.png");
 
   // adjustable offset values
   float offsetX = 0, offsetY = 0, offsetZ = 0;
@@ -83,7 +83,7 @@ class uiPanel extends uiElement {
     y = newY;
     wide = newWide;
     high = newHigh;
-    img = loadImage(dataPath("") + "/interface/" + filename + ".png");
+    img = loadImage(dataPath("") + "interface/" + filename + ".png");
   };
 };
 
@@ -99,9 +99,9 @@ class uiButton extends uiElement {
     wide = newWide;
     high = newHigh;
     buttonAction = action;
-    img = loadImage(dataPath("") + "/interface/" + filename + ".png");
-    imgHover = loadImage(dataPath("") + "/interface/" + filename + "-hover.png");
-    imgPressed = loadImage(dataPath("") + "/interface/" + filename + "-pressed.png");
+    img = loadImage(dataPath("") + "interface/" + filename + ".png");
+    imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
+    imgPressed = loadImage(dataPath("") + "interface/" + filename + "-pressed.png");
   };
   
   void check() {
@@ -141,8 +141,8 @@ class uiCheckbox extends uiElement {
     wide = newWide;
     high = newHigh;
     checkboxAction = action;
-    img = loadImage(dataPath("") + "/interface/" + filename + ".png");
-    imgSelected = loadImage(dataPath("") + "/interface/" + filename + "-selected.png");
+    img = loadImage(dataPath("") + "interface/" + filename + ".png");
+    imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
     if (defaultState.equals("checked")) {
       state = 3; // check the checkbox by default
     } else {
@@ -179,9 +179,9 @@ class uiSwitch extends uiElement {
     wide = newWide;
     high = newHigh;
     switchAction = action;
-    img = loadImage(dataPath("") + "/interface/" + filename + ".png");
-    imgHover = loadImage(dataPath("") + "/interface/" + filename + "-hover.png");
-    imgSelected = loadImage(dataPath("") + "/interface/" + filename + "-selected.png");
+    img = loadImage(dataPath("") + "interface/" + filename + ".png");
+    imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
+    imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
     if (defaultState.equals("selected")) {
       state = 3; // select this switch by default
     } else {
