@@ -57,9 +57,9 @@ Tracks parseXML(String file) {
       if (coordinates[i][2] != null) {
         // average out each point's elevation with the two preceding it to minimize spikes
         if (i > 1) {
-          obj.Y[i] = ((Float.parseFloat(coordinates[i][2]) * 0.1) + obj.Y[i - 1] + obj.Y[i - 2]) / 3;
+          obj.Y[i] = ((Float.parseFloat(coordinates[i][2]) * 0.05) + obj.Y[i - 1] + obj.Y[i - 2]) / 3;
         } else {
-          obj.Y[i] = Float.parseFloat(coordinates[i][2]) * 0.1;
+          obj.Y[i] = Float.parseFloat(coordinates[i][2]) * 0.05;
         };
       }
 

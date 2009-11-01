@@ -342,7 +342,7 @@ void keyPressed() {
   // if 't' pressed, toggle render mode
    if (int(key) == 116) {
      scene.renderMode++;
-     if (scene.renderMode > 4) {
+     if (scene.renderMode > 5) {
        scene.renderMode = 0;
      }
    };

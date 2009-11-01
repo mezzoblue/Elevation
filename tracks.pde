@@ -1,5 +1,5 @@
+
 // the main track object holds a collection of points
-// and 
 class Tracks {
   
   int pointCount;
@@ -12,6 +12,7 @@ class Tracks {
   String[] time;
   int direction[];
 
+  int pointTracer = 0;
 
   // constructor
   Tracks(int num) {
@@ -147,22 +148,36 @@ class Tracks {
                 X[i], 0, Z[i]
               );
             };
-  
-// nice variation, but sloooooow. 
-// Would look better logarithmic rather than linear, too, which couldn't possibly speed things up.
-//          for (int j = 0; j < 10; j++) {
-//            stroke(scene.palette[1], 3);
-//            line(
-//              X[i], scene.minY + findDifference(Y[i], scene.minY) / j, Z[i],
-//              X[i], Y[i], Z[i]
-//            );
-//          }
+            break;  
+
+          // animated tracers
+          case 5:
+            stroke(scene.palette[1], 40);
+            noFill();
+            
+            if (pointTracer == i) {stroke(#FF0000, 160);};
+            
+            // only render the Y axis if we're in 3D mode
+            if (scene.renderContext == "3D") {
+              point(
+                X[i], Y[i], Z[i]
+              );
+            } else {
+              point(
+                X[i], 0, Z[i]
+              );
+            };
             break;
-  
-  
+
         }; // end switch
       }; //end if
     }; // end for
+    
+    pointTracer++;
+    if (pointTracer > pointCount) {
+      pointTracer = 0; 
+    }
+    
   }; // end render()
 
 
