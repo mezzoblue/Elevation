@@ -6,7 +6,7 @@ class Scene {
   float rotationX = radians(-90), rotationY = radians(-90), rotationZ = radians(180);
 
   // define the movement cursor
-  PImage cursorHand = loadImage(dataPath("") + "interface/Cursor-Hand.png");
+  // PImage cursorHand = loadImage(dataPath("") + "interface/Cursor-Hand.png");
 
   // adjustable offset values
   float offsetX = 0, offsetY = 0, offsetZ = 0;
