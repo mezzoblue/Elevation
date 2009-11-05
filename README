@@ -11,23 +11,21 @@ Elevation is a route visualizer that renders GPS data in 3D space.
 You'll need to have a GPS-equipped phone or device capable of tracking your 
 activity as you run, hike, cycle, skate, ski, snowboard, or whatever other 
 physical activity you choose to map. You'll also need the ability to export 
-that data as XML, in either GPX or KML format. (If you have files in just 
-about any another format, you can probably use GPSBabel 
+that data as XML, in either GPX, TCX or KML format. (If you have files in 
+just about any another format, you can probably use GPSBabel 
 [http://gpsbabel.org/] to convert them to GPX files and get them working 
 with Elevation.)
 
 Open ./data/xml/ -- there you'll see some example data called 
-ExampleRoute05.gpx and so on that comes with the application; you can 
-safely delete these example files and replace them with your own.
+ExampleRoute05.gpx etc. that comes with the application; you can safely 
+delete these example files and replace them with your own.
 
 Once you've added your files, restart Elevation. To move the map around, 
 use the controls underneath it. To rotate the view, click and drag within 
 the viewport. To move faster, hold down the shift key as you press the 
 buttons.
 
-Elevation knows how to work with XML files in the GPX and KML formats. Due 
-to inconsistent file structures, it may not work with every GPX or KML 
-file.
-
-If you have files in just about any another format, you can probably use 
-GPSBabel to convert them to GPX files and get them working with Elevation.
+Elevation knows how to work with XML files in the GPX, TCX and KML 
+formats. Due to inconsistent file structures, and thanks to Processing's
+limited DOM traversal, it may not work with every such file. If not, get 
+in touch; I can probably make yours work.
