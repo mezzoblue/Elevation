@@ -179,6 +179,18 @@ void draw() {
   }
 
 
+  // check the UI components; iz render needed nao?
+  for (int i = 0; i < buttons.length; i++) {
+    buttons[i].check();
+  }
+  for (int i = 0; i < checkboxes.length; i++) {
+    checkboxes[i].render();
+  }
+  for (int i = 0; i < switches.length; i++) {
+    switches[i].check();
+  }
+
+
   // if we're going to redraw, let's go for it
   if (scene.refresh == true) {
   
@@ -224,14 +236,12 @@ void draw() {
     // draw the various UI components
     UI.render();
     for (int i = 0; i < buttons.length; i++) {
-      buttons[i].check();
       buttons[i].render();
     }
     for (int i = 0; i < checkboxes.length; i++) {
       checkboxes[i].render();
     }
     for (int i = 0; i < switches.length; i++) {
-      switches[i].check();
       switches[i].render();
     }
     

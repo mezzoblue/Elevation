@@ -108,29 +108,42 @@ class uiButton extends uiElement {
   };
   
   void check() {
+    // is the mouse over this control?
     if (
-      mouseX >= x && mouseX <= (x + wide) &&
-      mouseY >= y && mouseY <= (y + high)) {
-        if(mousePressed) {
-          state = 2;
-          // Couldn't figure out a more elegant way of passing these instructions.
-          // Soooo... string it is.
-          if (buttonAction.equals("offsetX--")) {scene.offsetX -= scene.increment;}
-          if (buttonAction.equals("offsetX++")) {scene.offsetX += scene.increment;}
-          // only modify the Y axis if we're in 3D mode
-          if (scene.viewDimension == "3D") {
-            if (buttonAction.equals("offsetY--")) {scene.offsetY -= scene.increment;}
-            if (buttonAction.equals("offsetY++")) {scene.offsetY += scene.increment;}
-          }
-          if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= scene.increment;}
-          if (buttonAction.equals("offsetZ++")) {scene.offsetZ += scene.increment;}
-          if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= scene.increment * 0.1; checkBoundaries();}
-          if (buttonAction.equals("drawingScale++")) {scene.drawingScale += scene.increment * 0.1;}
-        } else {
-          state = 1;
+    mouseX >= x && mouseX <= (x + wide) &&
+    mouseY >= y && mouseY <= (y + high)) {
+
+      
+      if(mousePressed) {
+        // fair to toggle the screen refresh back on at this point
+        scene.refresh = true;
+        state = 2;
+        // Couldn't figure out a more elegant way of passing these instructions.
+        // Soooo... string it is.
+        if (buttonAction.equals("offsetX--")) {scene.offsetX -= scene.increment;}
+        if (buttonAction.equals("offsetX++")) {scene.offsetX += scene.increment;}
+        // only modify the Y axis if we're in 3D mode
+        if (scene.viewDimension == "3D") {
+          if (buttonAction.equals("offsetY--")) {scene.offsetY -= scene.increment;}
+          if (buttonAction.equals("offsetY++")) {scene.offsetY += scene.increment;}
         }
+        if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= scene.increment;}
+        if (buttonAction.equals("offsetZ++")) {scene.offsetZ += scene.increment;}
+        if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= scene.increment * 0.1; checkBoundaries();}
+        if (buttonAction.equals("drawingScale++")) {scene.drawingScale += scene.increment * 0.1;}
+      } else {
+        // no need to redraw every loop, just the initial hover event
+        if (state != 1) {
+          scene.refresh = true;
+        }
+        state = 1;
+      }
      } else {
-       state = 0;
+      // if we still have a lingering state, lets redraw and clear the hover / selected image
+      if (state > 0) {
+        scene.refresh = true;
+      };
+      state = 0;
     }
   };
   
