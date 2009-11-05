@@ -52,7 +52,6 @@ void setup() {
   Image img = getToolkit().getImage("elevation-16px.gif");
   frame.setIconImage(img);
 
-
   // create the User Interface
   UI = new uiPanel(
     0, scene.canvasHeight - 100, scene.canvasWidth, 100,
@@ -90,7 +89,6 @@ void setup() {
     381, scene.canvasHeight - 82, 52, 30,
     "UI-Button-minus", "drawingScale--");
 
-
   // checkboxes
   checkboxes = new uiCheckbox[2];
   checkboxes[0] = new uiCheckbox(
@@ -121,8 +119,6 @@ void setup() {
   // create the crosshairs object
   crosshair = new Crosshairs();
 
-
-
   // get the map data XML files
   filenames = listFileNames(dataPath("") + "/xml/");
   numTracks = filenames.size();
@@ -147,6 +143,8 @@ void setup() {
   println("minSpeed: " + scene.minSpeed);
   println("maxSpeed: " + scene.maxSpeed);
 
+  // set the refresh flag coming out of setup so that we get the initial draw
+  scene.refresh = true;
 };
 
 
@@ -154,15 +152,18 @@ void setup() {
 
 
 void draw() {
-  background(scene.palette[0]);
-  stroke(scene.palette[1]);
-  noFill();
-
-  // move the sketch to the center of the canvas, accounting for height of the UI panel
-  translate(scene.canvasWidth / 2, scene.canvasHeight / 2 - 50);
+  
+  // if we're using an animated view, we'll need to re-draw each loop
+  if (scene.viewMode == 5) {
+    scene.refresh = true;
+  }
 
   // if the canvas is being dragged, set the cursor and adjust rotation
   if(mousePressed) {
+
+    // any mouse action should probably toggle a re-draw
+      scene.refresh = true;
+
       if (!(
       (mouseX > UI.x && mouseX < (UI.x + UI.wide)) &&
       (mouseY > UI.y && mouseY < (UI.y + UI.high))
@@ -175,58 +176,70 @@ void draw() {
           scene.rotationX += ((float) (mouseY - pmouseY) / 180);
         }
       }
-  } else {
-    cursor(ARROW);
+  }
+
+
+  // if we're going to redraw, let's go for it
+  if (scene.refresh == true) {
+  
+    background(scene.palette[0]);
+    stroke(scene.palette[1]);
+    noFill();
+  
+    // move the sketch to the center of the canvas, accounting for height of the UI panel
+    translate(scene.canvasWidth / 2, scene.canvasHeight / 2 - 50);
+  
+    // rotate the canvas
+    rotateX(scene.rotationX);
+    rotateY(scene.rotationY);
+    rotateZ(scene.rotationZ);
+  
+    // draw the crosshairs
+    crosshair.render(scene.palette[1]);
+  
+    // adjust the scale based on user input
+    scale(scene.drawingScale);
+  
+    // move the tracks around based on user input
+    translate(scene.offsetX, scene.offsetY, scene.offsetZ);
+  
+    // translate the tracks to the center of the canvas
+    translate(
+      0 - (findDifference(scene.minX, scene.maxX) / 2),
+      0 - (findDifference(scene.minY, scene.maxY) / 2),
+      0 - (findDifference(scene.minZ, scene.maxZ) / 2)
+    );
+  
+    // draw each track
+    for (int i = 0; i < numTracks; i++) {
+      tracklist[i].render();
+    }
+    
+    
+    // disable deth ordering for the sake of drawing 2D controls over top of the 3D scene
+    hint(DISABLE_DEPTH_TEST);
+    // reset the camera view for 2D drawing
+    camera();
+  
+    // draw the various UI components
+    UI.render();
+    for (int i = 0; i < buttons.length; i++) {
+      buttons[i].check();
+      buttons[i].render();
+    }
+    for (int i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].render();
+    }
+    for (int i = 0; i < switches.length; i++) {
+      switches[i].check();
+      switches[i].render();
+    }
+    
+    // draw mini-compass
+    compass.translateThenRender();
   };
 
-  // rotate the canvas
-  rotateX(scene.rotationX);
-  rotateY(scene.rotationY);
-  rotateZ(scene.rotationZ);
-
-  // draw the crosshairs
-  crosshair.render(scene.palette[1]);
-
-  // adjust the scale based on user input
-  scale(scene.drawingScale);
-
-  // move the tracks around based on user input
-  translate(scene.offsetX, scene.offsetY, scene.offsetZ);
-
-  // translate the tracks to the center of the canvas
-  translate(
-    0 - (findDifference(scene.minX, scene.maxX) / 2),
-    0 - (findDifference(scene.minY, scene.maxY) / 2),
-    0 - (findDifference(scene.minZ, scene.maxZ) / 2)
-  );
-
-  // draw each track
-  for (int i = 0; i < numTracks; i++) {
-    tracklist[i].render();
-  }
-  
-  
-  // disable deth ordering for the sake of drawing 2D controls over top of the 3D scene
-  hint(DISABLE_DEPTH_TEST);
-  // reset the camera view for 2D drawing
-  camera();
-
-  // draw the various UI components
-  UI.render();
-  for (int i = 0; i < buttons.length; i++) {
-    buttons[i].check();
-    buttons[i].render();
-  }
-  for (int i = 0; i < checkboxes.length; i++) {
-    checkboxes[i].render();
-  }
-  for (int i = 0; i < switches.length; i++) {
-    switches[i].check();
-    switches[i].render();
-  }
-  
-  // draw mini-compass
-  compass.translateThenRender();
-
+  // reset the refresh switch for each loop so we don't peg the CPU
+  scene.refresh = false;
 };
 

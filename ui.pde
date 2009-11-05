@@ -1,6 +1,8 @@
 // a container object to hold the various scene properties
 class Scene {
-
+  // redraw flag
+  Boolean refresh;
+  
   // basic environment variables
   int canvasWidth, canvasHeight;
   float rotationX = radians(-90), rotationY = radians(-90), rotationZ = radians(180);
@@ -298,6 +300,9 @@ void mouseReleased() {
 
 // keyboard event handler
 void keyPressed() {
+
+  // we'll likely need to redraw the scene
+  scene.refresh = true;
   
   // toggle 2D / 3D modes
   if (int(key) == 50) {
