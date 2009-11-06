@@ -115,8 +115,9 @@ class uiButton extends uiElement {
 
       
       if(mousePressed) {
-        // fair to toggle the screen refresh back on at this point
+        // fair point to toggle the screen refresh back on
         scene.refresh = true;
+
         state = 2;
         // Couldn't figure out a more elegant way of passing these instructions.
         // Soooo... string it is.
@@ -180,8 +181,8 @@ class uiCheckbox extends uiElement {
         };
         // Couldn't figure out a more elegant way of passing these instructions.
         // Soooo... string it is.
-        if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle();}
-        if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette();}
+        if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle(); scene.refresh = true;}
+        if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette(); scene.refresh = true;}
      }
   };
 };
@@ -215,14 +216,25 @@ class uiSwitch extends uiElement {
         // if it was clicked, toggle it
         if(mousePressed) {
           toggle(this);
+
+          // fair point to toggle the screen refresh back on
+          scene.refresh = true;
         }
         // if this one isn't selected, apply a hover state        
         if (state != 3) {
+          // no need to redraw every loop, just the initial hover event
+          if (state != 1) {
+            scene.refresh = true;
+          }
           state = 1;
         }
      } else {
       // if this one isn't selected, remove the hover state        
       if (state != 3) {
+        // if we still have a lingering state, lets redraw and clear the hover / selected image
+        if (state > 0) {
+          scene.refresh = true;
+        };
         state = 0;
       }
      };
