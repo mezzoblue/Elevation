@@ -36,11 +36,7 @@ class Tracks {
   
           // plain white
           case 0:
-            if (scene.viewConnectors) {
-              stroke(scene.palette[1], 50);
-            } else {
-              stroke(scene.palette[1], 80);
-            }
+            stroke(scene.palette[1], 60);
             noFill();
             // hacky way to make sure that X has a value
             // (has the unfortunate side effect of breaking routes taking place at 0,0, but 
@@ -116,12 +112,13 @@ class Tracks {
 
           // animated tracers
           case 4:
-            stroke(scene.palette[1], 10);
+            // stroke(scene.palette[1], 10);
+            noStroke();
             noFill();
 
             // create the fadeout trails
-            for (int j = 0; j < 16; j++) {
-              if (i == pointTracer - j) {stroke(#0000FF, 128 - 8 * j);};
+            for (int j = 0; j < 64; j++) {
+              if (i == pointTracer - j) {stroke(#0000FF, 128 - 2 * j);};
             }
             // more strongly define the current point
             if (i == pointTracer) {stroke(#0000FF, 255);};
