@@ -1,7 +1,5 @@
 // a container object to hold the various scene properties
 class Scene {
-  // redraw flag
-  Boolean refresh;
   
   // basic environment variables
   int canvasWidth, canvasHeight;
@@ -22,6 +20,8 @@ class Scene {
   // control the way tracks are rendered
   String viewDimension = "3D";
   int viewMode = 0;
+  Boolean viewConnectors = false;
+  Boolean viewRedraw = true;
 
   // ui adjustment increment value
   int increment = 1;
@@ -115,8 +115,8 @@ class uiButton extends uiElement {
 
       
       if(mousePressed) {
-        // fair point to toggle the screen refresh back on
-        scene.refresh = true;
+        // fair point to toggle the screen viewRedraw back on
+        scene.viewRedraw = true;
 
         state = 2;
         // Couldn't figure out a more elegant way of passing these instructions.
@@ -135,14 +135,14 @@ class uiButton extends uiElement {
       } else {
         // no need to redraw every loop, just the initial hover event
         if (state != 1) {
-          scene.refresh = true;
+          scene.viewRedraw = true;
         }
         state = 1;
       }
      } else {
       // if we still have a lingering state, lets redraw and clear the hover / selected image
       if (state > 0) {
-        scene.refresh = true;
+        scene.viewRedraw = true;
       };
       state = 0;
     }
@@ -181,8 +181,8 @@ class uiCheckbox extends uiElement {
         };
         // Couldn't figure out a more elegant way of passing these instructions.
         // Soooo... string it is.
-        if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle(); scene.refresh = true;}
-        if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette(); scene.refresh = true;}
+        if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle(); scene.viewRedraw = true;}
+        if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette(); scene.viewRedraw = true;}
      }
   };
 };
@@ -217,14 +217,14 @@ class uiSwitch extends uiElement {
         if(mousePressed) {
           toggle(this);
 
-          // fair point to toggle the screen refresh back on
-          scene.refresh = true;
+          // fair point to toggle the screen viewRedraw back on
+          scene.viewRedraw = true;
         }
         // if this one isn't selected, apply a hover state        
         if (state != 3) {
           // no need to redraw every loop, just the initial hover event
           if (state != 1) {
-            scene.refresh = true;
+            scene.viewRedraw = true;
           }
           state = 1;
         }
@@ -233,7 +233,7 @@ class uiSwitch extends uiElement {
       if (state != 3) {
         // if we still have a lingering state, lets redraw and clear the hover / selected image
         if (state > 0) {
-          scene.refresh = true;
+          scene.viewRedraw = true;
         };
         state = 0;
       }
@@ -325,9 +325,10 @@ void mouseReleased() {
 
 // keyboard event handler
 void keyPressed() {
-
+  // println(int(key));
+  
   // we'll likely need to redraw the scene
-  scene.refresh = true;
+  scene.viewRedraw = true;
   
   // toggle 2D / 3D modes
   if (int(key) == 50) {
@@ -337,6 +338,15 @@ void keyPressed() {
   };
   if (int(key) == 51) {scene.viewDimension = "3D";};
   
+  // add or remove connecting lines
+  if (int(key) == 120) {
+    if (scene.viewConnectors) {
+      scene.viewConnectors = false;
+    } else {
+      scene.viewConnectors = true;
+    };
+  };
+
   // if '+ / =' is pressed, zoom in
   // if '-' is pressed, zoom out
   // use shift modifier to move more
@@ -372,7 +382,7 @@ void keyPressed() {
   // if 't' pressed, toggle render mode
    if (int(key) == 116) {
      scene.viewMode++;
-     if (scene.viewMode > 5) {
+     if (scene.viewMode > 4) {
        scene.viewMode = 0;
      }
    };

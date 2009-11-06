@@ -34,46 +34,27 @@ class Tracks {
 
         switch(scene.viewMode) {
   
-          // line between points
+          // plain white
           case 0:
-            stroke(scene.palette[1], 50);
+            if (scene.viewConnectors) {
+              stroke(scene.palette[1], 50);
+            } else {
+              stroke(scene.palette[1], 80);
+            }
             noFill();
             // hacky way to make sure that X has a value
             // (has the unfortunate side effect of breaking routes taking place at 0,0, but 
             // considering that's a few hundred km off the coast of Gabon, I'm okay with that)
             if (X[i - 1] != 0) {
-              // only render the Y axis if we're in 3D mode
-              if (scene.viewDimension == "3D") {
-                line(
-                  X[i - 1], Y[i - 1], Z[i - 1],
-                  X[i], Y[i], Z[i]
-                );
-              } else {
-                line(
-                  X[i - 1], 0, Z[i - 1],
-                  X[i], 0, Z[i]
-                );
-              };
+              drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             }
             break;
   
-  
-          // raw points
-          case 1:
-            stroke(scene.palette[1], 80);
-            noFill();
-            // only render the Y axis if we're in 3D mode
-            if (scene.viewDimension == "3D") {
-              point(X[i], Y[i], Z[i]);
-            } else {
-              point(X[i], 0, Z[i]);
-            };
-            break;
-  
-  
-          // elevation points:
+
+    
+          // elevation indicators:
           // red for the high elevations, blue for the low
-          case 2:
+          case 1:
             float heightLimit = findDifference(scene.maxY, scene.minY) / 11;
             for (int j = 0; j < 10; j++) {
               if (Y[i] > (j * 0.9 * heightLimit)) {
@@ -81,18 +62,17 @@ class Tracks {
               } 
             }
             noFill();
-            // only render the Y axis if we're in 3D mode
-            if (scene.viewDimension == "3D") {
-              point(X[i], Y[i], Z[i]);
-            } else {
-              point(X[i], 0, Z[i]);
-            };
+            // see the note above re:Gabon for the reason why this check is necessary
+            if (X[i - 1] != 0) {
+              drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
+            }
             break;
   
   
-          // speed lines: a manual spectrum from dark blue to red
+  
+          // speed indicators: a manual spectrum from dark blue to red
           // lots of stops on the low end, because that's where speed data seems to be weakest
-          case 3:
+          case 2:
             float speedLimit = findDifference(scene.maxSpeed, scene.minSpeed) / 5;
             // there's a lot
             if (speed[i] > (0 * speedLimit)) {stroke(0, 0, 255, 64);} // even more faded blue
@@ -106,26 +86,16 @@ class Tracks {
             if (speed[i] > (2.8 * speedLimit)) {stroke(255, 64, 0, 255);} // orange red
             if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);} // red
             noFill();
-  
             // see the note above re:Gabon for the reason why this check is necessary
             if (X[i - 1] != 0) {
-              // only render the Y axis if we're in 3D mode
-              if (scene.viewDimension == "3D") {
-                line(
-                  X[i - 1], Y[i - 1], Z[i - 1],
-                  X[i], Y[i], Z[i]
-                );
-              } else {
-                line(
-                  X[i - 1], 0, Z[i - 1],
-                  X[i], 0, Z[i]
-                );
-              };
+              drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             };
             break;
   
+  
+  
           // elevation spikes
-          case 4:
+          case 3:
             noFill();
             stroke(scene.palette[1], 32);
             // only render the Y axis if we're in 3D mode
@@ -142,8 +112,10 @@ class Tracks {
             };
             break;  
 
+
+
           // animated tracers
-          case 5:
+          case 4:
             stroke(scene.palette[1], 10);
             noFill();
 
@@ -153,14 +125,13 @@ class Tracks {
             }
             // more strongly define the current point
             if (i == pointTracer) {stroke(#0000FF, 255);};
-            
-            // only render the Y axis if we're in 3D mode
-            if (scene.viewDimension == "3D") {
-              point(X[i], Y[i], Z[i]);
-            } else {
-              point(X[i], 0, Z[i]);
-            };
+            // see the note above re:Gabon for the reason why this check is necessary
+            if (X[i - 1] != 0) {
+              drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
+            }
             break;
+
+
 
         }; // end switch
       }; //end if
@@ -193,6 +164,24 @@ class Tracks {
         scene.drawingScale = scene.canvasHeight / (scene.maxY - scene.minY) / 2;
       }
       
+    };
+  };
+
+
+  void drawConnectors(float x1, float y1, float z1, float x2, float y2, float z2) {
+    // flatten out the Y axis if we're in 2D mode
+    if (scene.viewDimension == "2D") {
+      y1 = 0;
+      y2 = 0;
+    };
+    // check viewConnectors and draw lines or points, respectively
+    if (scene.viewConnectors) {
+      line(
+        x1, y1, z1,
+        x2, y2, z2
+      );
+    } else {
+      point(x2, y2, z2);
     };
   };
 

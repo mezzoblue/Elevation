@@ -143,8 +143,8 @@ void setup() {
   println("minSpeed: " + scene.minSpeed);
   println("maxSpeed: " + scene.maxSpeed);
 
-  // set the refresh flag coming out of setup so that we get the initial draw
-  scene.refresh = true;
+  // set the viewRedraw flag coming out of setup so that we get the initial draw
+  scene.viewRedraw = true;
 };
 
 
@@ -154,15 +154,15 @@ void setup() {
 void draw() {
   
   // if we're using an animated view, we'll need to re-draw each loop
-  if (scene.viewMode == 5) {
-    scene.refresh = true;
+  if (scene.viewMode == 4) {
+    scene.viewRedraw = true;
   }
 
   // if the canvas is being dragged, set the cursor and adjust rotation
   if(mousePressed) {
 
     // any mouse action should probably toggle a re-draw
-      scene.refresh = true;
+      scene.viewRedraw = true;
 
       if (!(
       (mouseX > UI.x && mouseX < (UI.x + UI.wide)) &&
@@ -192,7 +192,7 @@ void draw() {
 
 
   // if we're going to redraw, let's go for it
-  if (scene.refresh == true) {
+  if (scene.viewRedraw == true) {
   
     background(scene.palette[0]);
     stroke(scene.palette[1]);
@@ -249,7 +249,7 @@ void draw() {
     compass.translateThenRender();
   };
 
-  // reset the refresh switch for each loop so we don't peg the CPU
-  scene.refresh = false;
+  // reset the viewRedraw switch for each loop so we don't peg the CPU
+  scene.viewRedraw = false;
 };
 
