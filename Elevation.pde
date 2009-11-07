@@ -5,8 +5,7 @@
 
  http://exnihilo.mezzoblue.com/elevation/
  http://github.com/mezzoblue/Elevation/
- dave@mezzoblue.com
- October 2009 
+ November 2009 
 
 */
 
@@ -61,16 +60,16 @@ void setup() {
 
   // arrow buttons
   buttons[0] = new uiButton(
-    44, scene.canvasHeight - 89, 35, 40, 
+    44, scene.canvasHeight - 90, 35, 40, 
     "UI-DPad-up", "offsetX++");
   buttons[1] = new uiButton(
-    44, scene.canvasHeight - 50, 35, 40,
+    44, scene.canvasHeight - 49, 35, 40,
     "UI-DPad-down", "offsetX--");
   buttons[2] = new uiButton(
-    23, scene.canvasHeight - 67, 45, 30,
+    22, scene.canvasHeight - 67, 45, 30,
     "UI-DPad-left", "offsetZ++");
   buttons[3] = new uiButton(
-    60, scene.canvasHeight - 67, 45, 30,
+    61, scene.canvasHeight - 67, 45, 30,
     "UI-DPad-right", "offsetZ--");
 
   // ^ / v buttons
@@ -90,27 +89,33 @@ void setup() {
     "UI-Button-minus", "drawingScale--");
 
   // checkboxes
-  checkboxes = new uiCheckbox[2];
+  checkboxes = new uiCheckbox[4];
   checkboxes[0] = new uiCheckbox(
-    951, scene.canvasHeight - 76, 24, 22,
-    "UI-Checkbox", "crosshairs.toggle", "checked");
+    867, scene.canvasHeight - 74, 19, 18,
+    "UI-Checkbox", "scene.toggleConnectors", "unchecked");
   checkboxes[1] = new uiCheckbox(
-    951, scene.canvasHeight - 48, 24, 22,
+    867, scene.canvasHeight - 46, 19, 18,
+    "UI-Checkbox", "crosshairs.toggle", "checked");
+  checkboxes[2] = new uiCheckbox(
+    951, scene.canvasHeight - 74, 19, 18,
     "UI-Checkbox", "scene.togglePalette", "unchecked");
+  checkboxes[3] = new uiCheckbox(
+    951, scene.canvasHeight - 46, 19, 18,
+    "UI-Checkbox", "scene.toggleDimension", "checked");
 
   // switches
   switches = new uiSwitch[4];
   switches[0] = new uiSwitch(
-    646, scene.canvasHeight - 65, 50, 30,
+    576, scene.canvasHeight - 82, 50, 30,
     "UI-Switch-1", "whatever", "selected");
   switches[1] = new uiSwitch(
-    696, scene.canvasHeight - 65, 45, 30,
+    626, scene.canvasHeight - 82, 45, 30,
     "UI-Switch-2", "whatever", "");
   switches[2] = new uiSwitch(
-    741, scene.canvasHeight - 65, 45, 30,
+    671, scene.canvasHeight - 82, 45, 30,
     "UI-Switch-3", "whatever", "");
   switches[3] = new uiSwitch(
-    786, scene.canvasHeight - 65, 50, 30,
+    716, scene.canvasHeight - 82, 50, 30,
     "UI-Switch-4", "whatever", "");
 
   compass = new uiCompass(
@@ -154,7 +159,7 @@ void setup() {
 void draw() {
   
   // if we're using an animated view, we'll need to re-draw each loop
-  if (scene.viewMode == 4) {
+  if (scene.viewMode == 3) {
     scene.viewRedraw = true;
   }
 
@@ -182,9 +187,6 @@ void draw() {
   // check the UI components; iz render needed nao?
   for (int i = 0; i < buttons.length; i++) {
     buttons[i].check();
-  }
-  for (int i = 0; i < checkboxes.length; i++) {
-    checkboxes[i].render();
   }
   for (int i = 0; i < switches.length; i++) {
     switches[i].check();

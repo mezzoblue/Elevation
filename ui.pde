@@ -40,7 +40,25 @@ class Scene {
   void togglePalette() {
     palette = reverse(palette);
   };
-  
+  void toggleConnectors() {
+    if (scene.viewConnectors) {
+      scene.viewConnectors = false;
+    } else {
+      scene.viewConnectors = true;
+    };
+  };
+  void toggleDimension() {
+    if (scene.viewDimension == "2D") {
+      scene.viewDimension = "3D";
+    } else {
+      scene.viewDimension = "2D";
+      // adjust for top-down view
+      scene.rotationX = radians(-90);
+      scene.rotationY = radians(-90);
+    };
+  };
+
+
 };
 
 
@@ -174,6 +192,7 @@ class uiCheckbox extends uiElement {
     if (
       mouseX >= x && mouseX <= (x + wide) &&
       mouseY >= y && mouseY <= (y + high)) {
+        scene.viewRedraw = true;
         if (state == 3) {
           state = 0;
         } else {
@@ -181,8 +200,10 @@ class uiCheckbox extends uiElement {
         };
         // Couldn't figure out a more elegant way of passing these instructions.
         // Soooo... string it is.
-        if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle(); scene.viewRedraw = true;}
-        if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette(); scene.viewRedraw = true;}
+        if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle();}
+        if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette();}
+        if (checkboxAction.equals("scene.toggleConnectors")) {scene.toggleConnectors();}
+        if (checkboxAction.equals("scene.toggleDimension")) {scene.toggleDimension();}
      }
   };
 };
@@ -338,13 +359,9 @@ void keyPressed() {
   };
   if (int(key) == 51) {scene.viewDimension = "3D";};
   
-  // add or remove connecting lines
+  // x = add or remove connecting lines
   if (int(key) == 120) {
-    if (scene.viewConnectors) {
-      scene.viewConnectors = false;
-    } else {
-      scene.viewConnectors = true;
-    };
+    scene.toggleConnectors();
   };
 
   // if '+ / =' is pressed, zoom in
@@ -385,6 +402,9 @@ void keyPressed() {
      if (scene.viewMode > 4) {
        scene.viewMode = 0;
      }
+      for (int i = 0; i < buttons.length; i++) {
+        buttons[i].check();
+      }
    };
 
   // multiply the amount the track moves if shift is held

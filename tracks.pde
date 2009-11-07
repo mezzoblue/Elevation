@@ -30,6 +30,8 @@ class Tracks {
     for (int i = 1; i < pointCount; i++) {
 
       // make sure this wasn't a skipped point in the data
+      // (has the unfortunate side effect of breaking routes taking place at 0,0, but 
+      // considering that's a few hundred km off the coast of Gabon, I'm okay with that)
       if (X[i] != 0) {
 
         switch(scene.viewMode) {
@@ -38,9 +40,6 @@ class Tracks {
           case 0:
             stroke(scene.palette[1], 60);
             noFill();
-            // hacky way to make sure that X has a value
-            // (has the unfortunate side effect of breaking routes taking place at 0,0, but 
-            // considering that's a few hundred km off the coast of Gabon, I'm okay with that)
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             }
@@ -58,7 +57,6 @@ class Tracks {
               } 
             }
             noFill();
-            // see the note above re:Gabon for the reason why this check is necessary
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             }
@@ -82,7 +80,6 @@ class Tracks {
             if (speed[i] > (2.8 * speedLimit)) {stroke(255, 64, 0, 255);} // orange red
             if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);} // red
             noFill();
-            // see the note above re:Gabon for the reason why this check is necessary
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             };
@@ -90,8 +87,28 @@ class Tracks {
   
   
   
-          // elevation spikes
+          // animated tracers
           case 3:
+            // stroke(scene.palette[1], 10);
+            noStroke();
+            noFill();
+
+            // create the fadeout trails
+            for (int j = 0; j < 64; j++) {
+              if (i == pointTracer - j) {stroke(#0000FF, 128 - 2 * j);};
+            }
+            // more strongly define the current point
+            if (i == pointTracer) {stroke(#0000FF, 255);};
+            if (X[i - 1] != 0) {
+              drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
+            }
+            break;
+
+
+
+
+          // elevation spikes
+          case 4:
             noFill();
             stroke(scene.palette[1], 32);
             // only render the Y axis if we're in 3D mode
@@ -107,26 +124,6 @@ class Tracks {
               );
             };
             break;  
-
-
-
-          // animated tracers
-          case 4:
-            // stroke(scene.palette[1], 10);
-            noStroke();
-            noFill();
-
-            // create the fadeout trails
-            for (int j = 0; j < 64; j++) {
-              if (i == pointTracer - j) {stroke(#0000FF, 128 - 2 * j);};
-            }
-            // more strongly define the current point
-            if (i == pointTracer) {stroke(#0000FF, 255);};
-            // see the note above re:Gabon for the reason why this check is necessary
-            if (X[i - 1] != 0) {
-              drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
-            }
-            break;
 
 
 
