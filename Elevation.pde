@@ -106,17 +106,17 @@ void setup() {
   // switches
   switches = new uiSwitch[4];
   switches[0] = new uiSwitch(
-    576, scene.canvasHeight - 82, 50, 30,
-    "UI-Switch-1", "whatever", "selected");
+    582, scene.canvasHeight - 82, 39, 28,
+    "UI-Switch-1", "nada", "selected");
   switches[1] = new uiSwitch(
-    626, scene.canvasHeight - 82, 45, 30,
-    "UI-Switch-2", "whatever", "");
+    621, scene.canvasHeight - 82, 35, 28,
+    "UI-Switch-2", "nada", "");
   switches[2] = new uiSwitch(
-    671, scene.canvasHeight - 82, 45, 30,
-    "UI-Switch-3", "whatever", "");
+    656, scene.canvasHeight - 82, 35, 28,
+    "UI-Switch-3", "nada", "");
   switches[3] = new uiSwitch(
-    716, scene.canvasHeight - 82, 50, 30,
-    "UI-Switch-4", "whatever", "");
+    691, scene.canvasHeight - 82, 40, 28,
+    "UI-Switch-4", "nada", "");
 
   compass = new uiCompass(
     scene.canvasWidth / 2, scene.canvasHeight - 50, 31, 31);
