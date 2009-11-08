@@ -11,6 +11,7 @@ class Scene {
   // adjustable offset values
   float offsetX = 0, offsetY = 0, offsetZ = 0;
   float drawingScale = 1;
+  int elevationExaggeration = 6;
 
   // scene min and max limits
   float minX = 0, minY = 0, minZ = 0;
@@ -18,13 +19,13 @@ class Scene {
   float minSpeed = 0, maxSpeed = 0;
 
   // control the way tracks are rendered
-  String viewDimension = "3D";
   int viewMode = 0;
+  String viewDimension = "3D";
   Boolean viewConnectors = false;
   Boolean viewRedraw = true;
 
   // ui adjustment increment value
-  int increment = 1;
+  int increment = 100;
 
   color[] palette;
 
@@ -139,17 +140,17 @@ class uiButton extends uiElement {
         state = 2;
         // Couldn't figure out a more elegant way of passing these instructions.
         // Soooo... string it is.
-        if (buttonAction.equals("offsetX--")) {scene.offsetX -= scene.increment;}
-        if (buttonAction.equals("offsetX++")) {scene.offsetX += scene.increment;}
+        if (buttonAction.equals("offsetX--")) {scene.offsetX -= determineOffset();}
+        if (buttonAction.equals("offsetX++")) {scene.offsetX += determineOffset();;}
         // only modify the Y axis if we're in 3D mode
         if (scene.viewDimension == "3D") {
-          if (buttonAction.equals("offsetY--")) {scene.offsetY -= scene.increment;}
-          if (buttonAction.equals("offsetY++")) {scene.offsetY += scene.increment;}
+          if (buttonAction.equals("offsetY--")) {scene.offsetY -= determineOffset();;}
+          if (buttonAction.equals("offsetY++")) {scene.offsetY += determineOffset();;}
         }
-        if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= scene.increment;}
-        if (buttonAction.equals("offsetZ++")) {scene.offsetZ += scene.increment;}
-        if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= scene.increment * 0.1; checkBoundaries();}
-        if (buttonAction.equals("drawingScale++")) {scene.drawingScale += scene.increment * 0.1;}
+        if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= determineOffset();;}
+        if (buttonAction.equals("offsetZ++")) {scene.offsetZ += determineOffset();;}
+        if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= determineOffset() * 0.00001; checkBoundaries();}
+        if (buttonAction.equals("drawingScale++")) {scene.drawingScale += determineOffset() * 0.00001;}
       } else {
         // no need to redraw every loop, just the initial hover event
         if (state != 1) {
@@ -367,10 +368,10 @@ void keyPressed() {
   // if '+ / =' is pressed, zoom in
   // if '-' is pressed, zoom out
   // use shift modifier to move more
-  if (int(key) == 61) {scene.drawingScale += 0.1;};
-    if (int(key) == 43) {scene.drawingScale += 1;};
-  if (int(key) == 45) {scene.drawingScale -= 0.1;};
-    if (int(key) == 95) {scene.drawingScale -= 1;};
+  if (int(key) == 61) {scene.drawingScale += 0.001;};
+    if (int(key) == 43) {scene.drawingScale += 0.01;};
+  if (int(key) == 45) {scene.drawingScale -= 0.001;};
+    if (int(key) == 95) {scene.drawingScale -= 0.01;};
 
   // use arrow keys to move around
   // use shift modifier to move more
@@ -386,6 +387,16 @@ void keyPressed() {
       }
   }
 
+
+  // if '^' pressed, toggle elevation exaggeration
+  if (int(key) == 94) {
+    if (scene.elevationExaggeration < 6) {
+      scene.elevationExaggeration = 6;
+    } else {
+      scene.elevationExaggeration = 1;
+    };
+  }
+ 
   // if 'c' pressed, toggle crosshairs
    if (int(key) == 99) {
      crosshair.toggle();
@@ -407,35 +418,32 @@ void keyPressed() {
       }
    };
 
-  // multiply the amount the track moves if shift is held
-  if (keyCode == SHIFT) {
-    scene.increment = 10;
-  }
-
   checkBoundaries();
 
 };
 
 int determineOffset() {
-    if (keyEvent.isControlDown()) {
-      return(100);
+  try {
+   if (keyEvent.isControlDown()) {
+      return(scene.increment * 100);
     } else if (keyEvent.isShiftDown()) {
-      return(10);
+      return(scene.increment * 10);
     } else {
-      return(1);
+      return(scene.increment);
     }
-}
-
-void keyReleased() {
-  // clean up once shift is released
-  if (keyCode == SHIFT) {
-    scene.increment = 1;
+  } 
+  catch (NullPointerException e) {
+    // this is really dumb:
+    // if a keypress event doesn't happen before the above code fires, Processing throws a NullPointer
+    // but if it does, no problem. So... catch the error, duplicate my code. Whatever.
+    return(scene.increment);
   }
 }
 
+
 void checkBoundaries() {
   // set a lower boundary
-  if (scene.drawingScale < 0.001) {
-     scene.drawingScale = 0.001;
+  if (scene.drawingScale < 0.0001) {
+     scene.drawingScale = 0.0001;
   };  
 }

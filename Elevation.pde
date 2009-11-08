@@ -126,7 +126,12 @@ void setup() {
 
   // get the map data XML files
   filenames = listFileNames(dataPath("") + "/xml/");
-  numTracks = filenames.size();
+  try {
+    numTracks = filenames.size();
+  }
+  catch (NullPointerException e) {
+    // likely suspect: no /xml/ directory
+  }
 
   // turn the XML into something a little more usable
   tracklist = new Tracks[numTracks];

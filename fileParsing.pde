@@ -42,24 +42,48 @@ Tracks parseXML(String file) {
   if (numPoints > 1) {
     // now let's go through and build a track from coordinates
     for (int i = 0; i < numPoints; i++) {
-  
-      // there are around 5 orders of magnitude difference between the
-      // useful part of the lat/long data and the elevation value.
-      // lets multiply the former by a thousand (and drop any negative values while we're at it)
+
+/*
+   Some notes about latitude / longitude values. Wikipedia tells us (http://en.wikipedia.org/wiki/Decimal_degrees)
+   that each degree is 111km at the equator. While it would be great to map this thing out on a sphere, there's no 
+   need to make it that complicated. Distances of under a few hundred km oughtta be just fine as flat maps for now.
+
+   +-- decimal places
+   |
+   |    +-- degrees
+   |    |               +-- distance
+   |    |               |
+
+   0	1.0	        111 km
+   1	0.1	        11.1 km
+   2	0.01	        1.11 km
+   3	0.001  	        111 m
+   4	0.0001   	11.1 m
+   5	0.00001  	1.11 m
+   6	0.000001	0.111 m
+   7	0.0000001	1.11 cm
+   8	0.00000001	1.11 mm
+
+
+   So, to convert from lat/lon to kilometers, we multiply by 111. Meters, 111,000.
+   
+   Yep, that easy.
+
+*/
 
       if (coordinates[i][0] != null) {
-        obj.X[i] = abs(Float.parseFloat(coordinates[i][0]) * 1000);
+        obj.X[i] = abs(Float.parseFloat(coordinates[i][0]) * 111000);
       }
       if (coordinates[i][1] != null) {
-        obj.Z[i] = abs(Float.parseFloat(coordinates[i][1]) * 1000);
+        obj.Z[i] = abs(Float.parseFloat(coordinates[i][1]) * 111000);
       }
   
       if (coordinates[i][2] != null) {
         // average out each point's elevation with the two preceding it to minimize spikes
         if (i > 1) {
-          obj.Y[i] = ((Float.parseFloat(coordinates[i][2]) * 0.05) + obj.Y[i - 1] + obj.Y[i - 2]) / 3;
+          obj.Y[i] = (Float.parseFloat(coordinates[i][2]) + obj.Y[i - 1] + obj.Y[i - 2]) / 3;
         } else {
-          obj.Y[i] = Float.parseFloat(coordinates[i][2]) * 0.05;
+          obj.Y[i] = Float.parseFloat(coordinates[i][2]);
         };
       }
 
@@ -93,7 +117,6 @@ Tracks parseXML(String file) {
           };
         };
       }; // end if
-
 
     }; // end for loop
   }; // end if numPoints > 1

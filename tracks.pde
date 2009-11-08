@@ -111,18 +111,19 @@ class Tracks {
           case 4:
             noFill();
             stroke(scene.palette[1], 32);
-            // only render the Y axis if we're in 3D mode
-            if (scene.viewDimension == "3D") {
-              line(
-                X[i], scene.minY, Z[i],
-                X[i], Y[i], Z[i]
-              );
-            } else {
-              line(
-                X[i], scene.minY, Z[i],
-                X[i], 0, Z[i]
-              );
-            };
+            drawConnectors(X[i], scene.minY, Z[i], X[i], Y[i], Z[i]);
+//            // only render the Y axis if we're in 3D mode
+//            if (scene.viewDimension == "3D") {
+//              line(
+//                X[i], scene.minY, Z[i],
+//                X[i], Y[i] * scene.elevationExaggeration, Z[i]
+//              );
+//            } else {
+//              line(
+//                X[i], 0, Z[i],
+//                X[i], 0, Z[i]
+//              );
+//            };
             break;  
 
 
@@ -171,11 +172,11 @@ class Tracks {
     // check viewConnectors and draw lines or points, respectively
     if (scene.viewConnectors) {
       line(
-        x1, y1, z1,
-        x2, y2, z2
+        x1, y1 * scene.elevationExaggeration, z1,
+        x2, y2 * scene.elevationExaggeration, z2
       );
     } else {
-      point(x2, y2, z2);
+      point(x2, y2 * scene.elevationExaggeration, z2);
     };
   };
 
