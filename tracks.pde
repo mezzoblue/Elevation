@@ -112,18 +112,6 @@ class Tracks {
             noFill();
             stroke(scene.palette[1], 32);
             drawConnectors(X[i], scene.minY, Z[i], X[i], Y[i], Z[i]);
-//            // only render the Y axis if we're in 3D mode
-//            if (scene.viewDimension == "3D") {
-//              line(
-//                X[i], scene.minY, Z[i],
-//                X[i], Y[i] * scene.elevationExaggeration, Z[i]
-//              );
-//            } else {
-//              line(
-//                X[i], 0, Z[i],
-//                X[i], 0, Z[i]
-//              );
-//            };
             break;  
 
 
