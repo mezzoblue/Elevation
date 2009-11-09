@@ -141,15 +141,15 @@ class uiButton extends uiElement {
         // Couldn't figure out a more elegant way of passing these instructions.
         // Soooo... string it is.
         if (buttonAction.equals("offsetX--")) {scene.offsetX -= determineOffset();}
-        if (buttonAction.equals("offsetX++")) {scene.offsetX += determineOffset();;}
+        if (buttonAction.equals("offsetX++")) {scene.offsetX += determineOffset();}
         // only modify the Y axis if we're in 3D mode
         if (scene.viewDimension == "3D") {
-          if (buttonAction.equals("offsetY--")) {scene.offsetY -= determineOffset();;}
-          if (buttonAction.equals("offsetY++")) {scene.offsetY += determineOffset();;}
+          if (buttonAction.equals("offsetY--")) {scene.offsetY -= determineOffset();}
+          if (buttonAction.equals("offsetY++")) {scene.offsetY += determineOffset();}
         }
-        if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= determineOffset();;}
-        if (buttonAction.equals("offsetZ++")) {scene.offsetZ += determineOffset();;}
-        if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= determineOffset() * 0.00001; checkBoundaries();}
+        if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= determineOffset();}
+        if (buttonAction.equals("offsetZ++")) {scene.offsetZ += determineOffset();}
+        if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= determineOffset() * 0.00001; println(scene.drawingScale); checkBoundaries();}
         if (buttonAction.equals("drawingScale++")) {scene.drawingScale += determineOffset() * 0.00001;}
       } else {
         // no need to redraw every loop, just the initial hover event
@@ -335,14 +335,9 @@ class uiScale {
       // how many kilometers wide the base scale is, based on scene width
       kmScale = round((scene.maxX - scene.minX));
 
+      // find how many kilometers should be shown at the current zoom level
       float kmCurrent = kmScale / kmInterval;
 
-      // 13.682
-      println(kmCurrent);
-      // 1000
-      println(kmInterval);
-      
-      println(scene.maxX - scene.minX);  
       
       pushMatrix();
         strokeWeight(1);
