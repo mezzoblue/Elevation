@@ -169,6 +169,7 @@ class uiButton extends uiElement {
   
 };
 
+
 // basic checkbox
 class uiCheckbox extends uiElement {
 
@@ -291,6 +292,7 @@ class uiCompass extends uiElement {
     rotateX(scene.rotationX + PI / 2);
     rotateZ(-scene.rotationY - PI / 2);
     // north is light blue
+    noStroke();
     fill(#616c7c);
     quad(0,-16,4,-5,0,0,-4,-5);
     // all other arms are darker blue
@@ -304,12 +306,112 @@ class uiCompass extends uiElement {
 
 
 
+// map scale indicator
+class uiScale {
+
+  Boolean toggle;
+
+  // position
+  int x, y;
+  // dimensions
+  int wide, high;
+  // kilometer markers
+  float kmInterval, kmScale;
+
+  uiScale(int newX, int newY, int newWide, int newHigh) {
+    toggle = true; 
+    x = newX;
+    y = newY;
+    wide = newWide;
+    high = newHigh;
+  };  
+
+  void render(color col) {
+    if (toggle) {
+
+      // distance between kilometers, based on variable drawingScale value
+      kmInterval = scene.drawingScale * (scene.maxX - scene.minX);
+
+      // how many kilometers wide the base scale is, based on scene width
+      kmScale = round((scene.maxX - scene.minX));
+
+      float kmCurrent = kmScale / kmInterval;
+
+      // 13.682
+      println(kmCurrent);
+      // 1000
+      println(kmInterval);
+      
+      println(scene.maxX - scene.minX);  
+      
+      pushMatrix();
+        strokeWeight(1);
+        translate(x, y);
+
+        // draw the 100k markers
+       if (kmInterval < 75) {
+          for (int i = 0; i <= round(kmCurrent) / 100; i++) {
+            stroke(col, 160);
+            strokeWeight(3);
+            float thisKm = (i * kmInterval * 10) - wide / 2;
+            line(thisKm, -24, thisKm, 0);
+          };
+        };
+          
+
+        // draw the 10k markers
+       if (kmInterval < 3000) {
+          for (int i = 0; i <= round(kmCurrent) / 10; i++) {
+            stroke(col, 120);
+            strokeWeight(2);
+            float thisKm = (i * kmInterval) - wide / 2;
+            line(thisKm, -16, thisKm, 0);
+          };
+        };
+ 
+ 
+        // draw the kilometer markers
+       if (kmInterval > 40) {
+          for (int i = 0; i <= round(kmCurrent); i++) {
+            stroke(col, 80);
+            float thisKm = (i * kmInterval / 10) - wide / 2;
+            line(thisKm, -8, thisKm, 0);
+          };
+        };
+
+        // draw the hundred meter markers
+       if (kmInterval > 400) {
+          for (int i = 0; i <= round(kmCurrent) * 10; i++) {
+            stroke(col, 40);
+            float thisM = (kmInterval / 100) * i  - wide / 2;
+            line(thisM, -4, thisM, 0);
+          };
+       };
+
+        if (kmInterval > 3000) {
+          // draw the ten meter markers
+          for (int i = 0; i <= round(kmCurrent) * 100; i++) {
+            stroke(col, 40);
+            float thisM = (kmInterval / 1000) * i  - wide / 2;
+            line(thisM, -2, thisM, 0);
+          };
+        };
+
+      popMatrix();
+
+    };
+  };
+
+};
+
+
+
 // main crosshairs
-class Crosshairs {
+class uiCrosshairs {
 
   Boolean toggle;
   
-  Crosshairs() {
+  uiCrosshairs() {
     toggle = true; 
   }
 
@@ -421,6 +523,7 @@ void keyPressed() {
   checkBoundaries();
 
 };
+
 
 int determineOffset() {
   try {

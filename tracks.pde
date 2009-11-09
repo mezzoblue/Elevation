@@ -17,7 +17,7 @@ class Tracks {
   // constructor
   Tracks(int num) {
     pointCount = num;
-    X = new float[pointCount];
+    X = new float[point];
     Y = new float[pointCount];
     Z = new float[pointCount];
     speed = new float[pointCount];

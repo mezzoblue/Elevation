@@ -25,7 +25,8 @@ int numTracks;
 // scene-related objects
 uiPanel UI;
 Scene scene;
-Crosshairs crosshair;
+uiCrosshairs crosshair;
+uiScale mapScale;
 uiButton[] buttons;
 uiCheckbox[] checkboxes;
 uiSwitch[] switches;
@@ -118,11 +119,12 @@ void setup() {
     691, scene.canvasHeight - 82, 40, 28,
     "UI-Switch-4", "nada", "");
 
+  // drop in the compass
   compass = new uiCompass(
     scene.canvasWidth / 2, scene.canvasHeight - 50, 31, 31);
 
   // create the crosshairs object
-  crosshair = new Crosshairs();
+  crosshair = new uiCrosshairs();
 
   // get the map data XML files
   filenames = listFileNames(dataPath("") + "/xml/");
@@ -142,6 +144,9 @@ void setup() {
     tracklist[i].createLimits();
   };
 
+  // create the map scale object once the map data is loaded
+  mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 101, scene.canvasWidth, 5);
+
   // diagnostics
   println("Number of Tracks: " + numTracks);
   println("minX: " + scene.minX);
@@ -153,7 +158,7 @@ void setup() {
   println("minSpeed: " + scene.minSpeed);
   println("maxSpeed: " + scene.maxSpeed);
 
-  // set the viewRedraw flag coming out of setup so that we get the initial draw
+  // set the viewRedraw flag coming out of setup() so that we get the initial draw
   scene.viewRedraw = true;
 };
 
@@ -252,8 +257,12 @@ void draw() {
       switches[i].render();
     }
     
+    // draw the map scale
+    mapScale.render(scene.palette[1]);
+
     // draw mini-compass
     compass.translateThenRender();
+
   };
 
   // reset the viewRedraw switch for each loop so we don't peg the CPU
