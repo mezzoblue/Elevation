@@ -316,7 +316,7 @@ class uiScale {
   // dimensions
   int wide, high;
   // kilometer markers
-  float kmInterval, kmScale;
+  float kmInterval, kmScale, kmCurrent;
 
   uiScale(int newX, int newY, int newWide, int newHigh) {
     toggle = true; 
@@ -329,14 +329,17 @@ class uiScale {
   void render(color col) {
     if (toggle) {
 
+      println(scene.maxZ - scene.minZ);
+      println(scene.maxX - scene.minX);
+      
       // distance between kilometers, based on variable drawingScale value
-      kmInterval = scene.drawingScale * (scene.maxX - scene.minX);
+      kmInterval = scene.drawingScale * (scene.maxZ - scene.minZ);
 
       // how many kilometers wide the base scale is, based on scene width
-      kmScale = round((scene.maxX - scene.minX));
+      kmScale = round(scene.maxZ - scene.minZ);
 
       // find how many kilometers should be shown at the current zoom level
-      float kmCurrent = kmScale / kmInterval;
+      kmCurrent = kmScale / kmInterval;
 
       
       pushMatrix();
@@ -355,7 +358,7 @@ class uiScale {
           
 
         // draw the 10k markers
-       if (kmInterval < 3000) {
+       if ((kmInterval < 3000) && (kmInterval > 5)) {
           for (int i = 0; i <= round(kmCurrent) / 10; i++) {
             stroke(col, 120);
             strokeWeight(2);

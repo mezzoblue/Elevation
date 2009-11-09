@@ -65,17 +65,25 @@ Tracks parseXML(String file) {
    8	0.00000001	1.11 mm
 
 
-   So, to convert from lat/lon to kilometers, we multiply by 111. Meters, 111,000.
+   That means to convert from lat/lon to kilometers, we multiply by 111. Meters, 111,111.
    
-   Yep, that easy.
+   Wouldn't it be nice if it were that easy though? It might be if I were willing to live with distorted
+   maps, but if I want to introduce a scale with any reasonable degree of accuracy, I need to compensate
+   for spherical distortion.
+   
+   Vancouver, the latitude values in particular are suspect. This math results in a test map aroung 26km
+   wide, when the distance in reality it's only about 17km. Longitude is pretty close for one reason or
+   another, but latitude needs adjustment.
+ 
+   I have no idea how to go about doing this yet.   
 
 */
 
       if (coordinates[i][0] != null) {
-        obj.X[i] = abs(Float.parseFloat(coordinates[i][0]) * 111000);
+        obj.X[i] = abs(Float.parseFloat(coordinates[i][0]) * 111111);
       }
       if (coordinates[i][1] != null) {
-        obj.Z[i] = abs(Float.parseFloat(coordinates[i][1]) * 111000);
+        obj.Z[i] = abs(Float.parseFloat(coordinates[i][1]) * 111111);
       }
   
       if (coordinates[i][2] != null) {
