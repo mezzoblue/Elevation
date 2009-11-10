@@ -316,7 +316,7 @@ class uiScale {
   // dimensions
   int wide, high;
   // kilometer markers
-  float kmInterval, kmScale, kmCurrent;
+  float kmInterval, kmScale, kmCount;
 
   uiScale(int newX, int newY, int newWide, int newHigh) {
     toggle = true; 
@@ -331,66 +331,90 @@ class uiScale {
 
       println(scene.maxZ - scene.minZ);
       println(scene.maxX - scene.minX);
+
+
+/*
+thinking out loud:
+
+
+  wide = 1000
+  scene.maxZ - scene.minZ = 26660
+  scene.drawingScale = 0.03650834
+
+
+  ideally we want 26.6 kilometer markers drawn on initialization
+  
+  so the loop iteration = 26660 / 1000
+    but that doesn't factor in scene.drawingScale
+    if we multiply 26660 * 0.03650834 that's 973, which is close, so we can divide 26660 by that
+    and get our value for kmScale
+    
+  now to find the loop multiplier, we just need to divide 1000 by kmScale
+    kmInterval = 1000 / kmScale
+  
+
+
+*/
+      // find out current width of scene
+      kmCount = scene.maxZ - scene.minZ;
+
+      // how many kilometers wide the base scale is, based on scene width and variable drawingScale value
+      kmScale = kmCount / (kmCount * scene.drawingScale);
       
-      // distance between kilometers, based on variable drawingScale value
-      kmInterval = scene.drawingScale * (scene.maxZ - scene.minZ);
+      // how many pixels between each km marker
+      kmInterval = 1000 / kmScale;
 
-      // how many kilometers wide the base scale is, based on scene width
-      kmScale = round(scene.maxZ - scene.minZ);
 
-      // find how many kilometers should be shown at the current zoom level
-      kmCurrent = kmScale / kmInterval;
-
+      println(kmInterval);
       
       pushMatrix();
-        strokeWeight(1);
+        strokeWeight(2);
         translate(x, y);
 
         // draw the 100k markers
-       if (kmInterval < 75) {
-          for (int i = 0; i <= round(kmCurrent) / 100; i++) {
+       if (kmInterval < 25) {
+          for (int i = 0; i <= round(kmScale) / 100; i++) {
             stroke(col, 160);
-            strokeWeight(3);
-            float thisKm = (i * kmInterval * 10) - wide / 2;
+            float thisKm = (i * kmInterval * 100) - wide / 2;
             line(thisKm, -24, thisKm, 0);
           };
         };
-          
-
+         
         // draw the 10k markers
-       if ((kmInterval < 3000) && (kmInterval > 5)) {
-          for (int i = 0; i <= round(kmCurrent) / 10; i++) {
+       if ((kmInterval < 200) && (kmInterval > 5)) {
+          for (int i = 0; i <= round(kmScale) / 10; i++) {
             stroke(col, 120);
-            strokeWeight(2);
-            float thisKm = (i * kmInterval) - wide / 2;
+            float thisKm = (i * kmInterval * 10) - wide / 2;
             line(thisKm, -16, thisKm, 0);
           };
         };
- 
- 
+
+
+       strokeWeight(1);
+  
         // draw the kilometer markers
-       if (kmInterval > 40) {
-          for (int i = 0; i <= round(kmCurrent); i++) {
+       if (kmInterval > 15) {
+          for (int i = 0; i <= round(kmScale); i++) {
             stroke(col, 80);
-            float thisKm = (i * kmInterval / 10) - wide / 2;
+            float thisKm = (i * kmInterval) - wide / 2;
             line(thisKm, -8, thisKm, 0);
           };
         };
 
         // draw the hundred meter markers
-       if (kmInterval > 400) {
-          for (int i = 0; i <= round(kmCurrent) * 10; i++) {
+       if (kmInterval > 100) {
+          for (int i = 0; i <= round(kmScale) * 10; i++) {
             stroke(col, 40);
-            float thisM = (kmInterval / 100) * i  - wide / 2;
+            float thisM = (kmInterval / 10) * i  - wide / 2;
             line(thisM, -4, thisM, 0);
           };
        };
 
-        if (kmInterval > 3000) {
+        if (kmInterval > 200) {
           // draw the ten meter markers
-          for (int i = 0; i <= round(kmCurrent) * 100; i++) {
+          for (int i = 0; i <= round(kmScale) * 100; i++) {
             stroke(col, 40);
-            float thisM = (kmInterval / 1000) * i  - wide / 2;
+            float thisM = (kmInterval / 100) * i  - wide / 2;
             line(thisM, -2, thisM, 0);
           };
         };
