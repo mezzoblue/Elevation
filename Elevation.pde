@@ -157,6 +157,8 @@ void setup() {
   println("maxZ: " + scene.maxZ);
   println("minSpeed: " + scene.minSpeed);
   println("maxSpeed: " + scene.maxSpeed);
+  println("scene width (in meters): " + (scene.maxZ - scene.minZ));
+  println("scene height (in meters): " + (scene.maxX - scene.minX));
 
   // set the viewRedraw flag coming out of setup() so that we get the initial draw
   scene.viewRedraw = true;
