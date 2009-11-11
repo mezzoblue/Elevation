@@ -68,22 +68,27 @@ Tracks parseXML(String file) {
    That means to convert from lat/lon to kilometers, we multiply by 111. Meters, 111,111.
    
    Wouldn't it be nice if it were that easy though? It might be if I were willing to live with distorted
-   maps, but if I want to introduce a scale with any reasonable degree of accuracy, I need to compensate
-   for spherical distortion.
+   maps, but if I want to introduce a scale with any reasonable degree of accuracy, this alone ain't 
+   gonna cut it. 
    
-   Vancouver, the latitude values in particular are suspect. This math results in a test map aroung 26km
-   wide, when the distance in reality it's only about 17km. Longitude is pretty close for one reason or
-   another, but latitude needs adjustment.
- 
-   I have no idea how to go about doing this yet.   
+   First I'll need to convert the GPS points to a map projection, Mercator in this case since that's what 
+   Google, Microsoft, Yahoo all use and one day I may just get Elevation talking to them. Best to be on  
+   the same system.
 
 */
+      // pull out the raw lat / long coordinates
+      float phi = radians(Float.parseFloat(coordinates[i][0]));
+      float lambda = Float.parseFloat(coordinates[i][1]);
+      
+      // longitude is fine as-is, but latitude needs to be converted to Mercator     
+      // formula adapted from the maths on http://en.wikipedia.org/wiki/Mercator_projection
+      float adjustedPhi = degrees(0.5 * log((1 + sin(phi)) / (1 - sin(phi))));
 
       if (coordinates[i][0] != null) {
-        obj.X[i] = abs(Float.parseFloat(coordinates[i][0]) * 111111);
+        obj.X[i] = abs(adjustedPhi * 111111);
       }
       if (coordinates[i][1] != null) {
-        obj.Z[i] = abs(Float.parseFloat(coordinates[i][1]) * 111111);
+        obj.Z[i] = abs(lambda * 111111);
       }
   
       if (coordinates[i][2] != null) {
@@ -179,6 +184,7 @@ float findDifference(float n1, float n2) {
     return abs(n1 - n2);
   }
 }
+
 
 
 

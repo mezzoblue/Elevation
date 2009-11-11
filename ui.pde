@@ -329,32 +329,6 @@ class uiScale {
   void render(color col) {
     if (toggle) {
 
-      println(scene.maxZ - scene.minZ);
-      println(scene.maxX - scene.minX);
-
-
-/*
-thinking out loud:
-
-
-  wide = 1000
-  scene.maxZ - scene.minZ = 26660
-  scene.drawingScale = 0.03650834
-
-
-  ideally we want 26.6 kilometer markers drawn on initialization
-  
-  so the loop iteration = 26660 / 1000
-    but that doesn't factor in scene.drawingScale
-    if we multiply 26660 * 0.03650834 that's 973, which is close, so we can divide 26660 by that
-    and get our value for kmScale
-    
-  now to find the loop multiplier, we just need to divide 1000 by kmScale
-    kmInterval = 1000 / kmScale
-  
-
-
-*/
       // find out current width of scene
       kmCount = scene.maxZ - scene.minZ;
 
@@ -363,9 +337,6 @@ thinking out loud:
       
       // how many pixels between each km marker
       kmInterval = 1000 / kmScale;
-
-
-      println(kmInterval);
       
       pushMatrix();
         strokeWeight(2);
