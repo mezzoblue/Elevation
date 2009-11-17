@@ -65,7 +65,7 @@ Tracks parseXML(String file) {
    8	0.00000001	1.11 mm
 
 
-   That means to convert from lat/lon to kilometers, we multiply by 111. Meters, 111,111.
+   To convert from lat/lon to kilometers, we multiply by 111.3. Meters, 111,319.9.
    
    Wouldn't it be nice if it were that easy though? It might be if I were willing to live with distorted
    maps, but if I want to introduce a scale with any reasonable degree of accuracy, this alone ain't 
@@ -73,22 +73,30 @@ Tracks parseXML(String file) {
    
    First I'll need to convert the GPS points to a map projection, Mercator in this case since that's what 
    Google, Microsoft, Yahoo all use and one day I may just get Elevation talking to them. Best to be on  
-   the same system.
+   the same system. Longitude is fine as-is, but latitude needs to be run through a formula adapted from 
+   the maths on http://en.wikipedia.org/wiki/Mercator_projection
+   
+   Also, something weird is going on with the output. The maps end up being almost exactly 1.6 times the 
+   expected difference. 1.6 is the factor between miles and kilometers. The fact that it's so suspiciously
+   consistent between a few orders of magnitude makes me think that at some point along the chain I'm 
+   treating one unit as the other; all the references I've seen indicate that GPS is fully metric, but 
+   I'm willing to bet that there's a unit conversion somewhere in the chain that's being flubbed.
+   
+   So for now, I'm simply dividing the final number on each coordinate by 1.6. The resulting scale seems 
+   very accurate, so I'm willing to live with this flub until I find a better reason for the difference.
 
 */
-      // pull out the raw lat / long coordinates
-      float phi = radians(Float.parseFloat(coordinates[i][0]));
-      float lambda = Float.parseFloat(coordinates[i][1]);
       
-      // longitude is fine as-is, but latitude needs to be converted to Mercator     
-      // formula adapted from the maths on http://en.wikipedia.org/wiki/Mercator_projection
-      float adjustedPhi = degrees(0.5 * log((1 + sin(phi)) / (1 - sin(phi))));
 
       if (coordinates[i][0] != null) {
-        obj.X[i] = abs(adjustedPhi * 111111);
+        // pull out the raw latitude coordinates
+        float phi = radians(Float.parseFloat(coordinates[i][0]));
+        float adjustedPhi = degrees(0.5 * log((1 + sin(phi)) / (1 - sin(phi))));
+        obj.X[i] = abs(adjustedPhi * 111319.9) / 1.6;
       }
       if (coordinates[i][1] != null) {
-        obj.Z[i] = abs(lambda * 111111);
+        float lambda = Float.parseFloat(coordinates[i][1]);
+        obj.Z[i] = abs(lambda * 111319.9) / 1.6;
       }
   
       if (coordinates[i][2] != null) {
