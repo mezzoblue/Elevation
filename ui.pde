@@ -11,12 +11,17 @@ class Scene {
   // adjustable offset values
   float offsetX = 0, offsetY = 0, offsetZ = 0;
   float drawingScale = 1;
-  int elevationExaggeration = 6;
+  int elevationExaggeration = 8;
 
   // scene min and max limits
   float minX = 0, minY = 0, minZ = 0;
   float maxX = 0, maxY = 0, maxZ = 0;
   float minSpeed = 0, maxSpeed = 0;
+  float currentWidth = 0, currentHeight = 0;
+  
+  // map projection compensation
+  float averageLat = 0;
+  int averageLatCount = 0;
 
   // control the way tracks are rendered
   int viewMode = 0;
@@ -25,7 +30,7 @@ class Scene {
   Boolean viewRedraw = true;
 
   // ui adjustment increment value
-  int increment = 100;
+  int uiIncrement = 100;
 
   color[] palette;
 
@@ -36,7 +41,7 @@ class Scene {
     palette = new color[2];
     palette[0] = #000000;
     palette[1] = #FFFFFF;
-  }
+  };
 
   void togglePalette() {
     palette = reverse(palette);
@@ -57,6 +62,14 @@ class Scene {
       scene.rotationX = radians(-90);
       scene.rotationY = radians(-90);
     };
+  };
+  // kind of goofy that I need this, but I've committed to converting my internal coordinates to meters
+  // so now I need this function to keep track of the average latitude of the scene. The value it produces
+  // is used in a calculation that compensates for Mercator distortion. See Tracks.getDimensions
+  void averageParallel(float av) {
+    averageLatCount++;
+    // find average of preceding values + new one
+    averageLat = ((av * (averageLatCount - 1)) + av) / averageLatCount;
   };
 
 
@@ -92,7 +105,7 @@ class uiElement {
       image(imgHover, x, y);
     } else {
       image(img, x, y);
-    }
+    };
   };
   
 };
@@ -149,22 +162,22 @@ class uiButton extends uiElement {
         }
         if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= determineOffset();}
         if (buttonAction.equals("offsetZ++")) {scene.offsetZ += determineOffset();}
-        if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= determineOffset() * 0.00001; println(scene.drawingScale); checkBoundaries();}
-        if (buttonAction.equals("drawingScale++")) {scene.drawingScale += determineOffset() * 0.00001;}
+        if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= (determineOffset() * scene.drawingScale * 0.0001); checkBoundaries();}
+        if (buttonAction.equals("drawingScale++")) {scene.drawingScale += (determineOffset() * scene.drawingScale * 0.0001);}
       } else {
         // no need to redraw every loop, just the initial hover event
         if (state != 1) {
           scene.viewRedraw = true;
         }
         state = 1;
-      }
+      };
      } else {
       // if we still have a lingering state, lets redraw and clear the hover / selected image
       if (state > 0) {
         scene.viewRedraw = true;
       };
       state = 0;
-    }
+    };
   };
   
 };
@@ -187,7 +200,7 @@ class uiCheckbox extends uiElement {
       state = 3; // check the checkbox by default
     } else {
       state = 0;
-    }
+    };
   };
 
   void check() {
@@ -206,7 +219,7 @@ class uiCheckbox extends uiElement {
         if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette();}
         if (checkboxAction.equals("scene.toggleConnectors")) {scene.toggleConnectors();}
         if (checkboxAction.equals("scene.toggleDimension")) {scene.toggleDimension();}
-     }
+     };
   };
 };
 
@@ -229,7 +242,7 @@ class uiSwitch extends uiElement {
       state = 3; // select this switch by default
     } else {
       state = 0;
-    }
+    };
   };
 
   void check() {
@@ -250,7 +263,7 @@ class uiSwitch extends uiElement {
             scene.viewRedraw = true;
           }
           state = 1;
-        }
+        };
      } else {
       // if this one isn't selected, remove the hover state        
       if (state != 3) {
@@ -259,7 +272,7 @@ class uiSwitch extends uiElement {
           scene.viewRedraw = true;
         };
         state = 0;
-      }
+      };
      };
   };
   
@@ -270,9 +283,9 @@ class uiSwitch extends uiElement {
         scene.viewMode = i;
       } else {
         switches[i].state = 0; 
-      }
+      };
     };
-  }
+  };
 
 };
 
@@ -330,7 +343,7 @@ class uiScale {
     if (toggle) {
 
       // find out current width of scene
-      kmCount = scene.maxZ - scene.minZ;
+      kmCount = scene.currentWidth;
 
       // how many kilometers wide the base scale is, based on scene width and variable drawingScale value
       kmScale = kmCount / (kmCount * scene.drawingScale);
@@ -339,8 +352,9 @@ class uiScale {
       kmInterval = 1000 / kmScale;
       
       pushMatrix();
-        strokeWeight(2);
         translate(x, y);
+
+        strokeWeight(2);
 
         // draw the 100k markers
        if (kmInterval < 25) {
@@ -406,7 +420,7 @@ class uiCrosshairs {
   
   uiCrosshairs() {
     toggle = true; 
-  }
+  };
 
   void render(color col) {
     if (toggle) {
@@ -415,8 +429,8 @@ class uiCrosshairs {
       line(-999999, 0, 0, 999999, 0, 0);
       line(0, -999999, 0, 0, 999999, 0);
       line(0, 0, -999999, 0, 0, 999999);
-    }
-  }
+    };
+  };
   
   void toggle() {
     if (toggle) {
@@ -463,10 +477,10 @@ void keyPressed() {
   // if '+ / =' is pressed, zoom in
   // if '-' is pressed, zoom out
   // use shift modifier to move more
-  if (int(key) == 61) {scene.drawingScale += 0.001;};
-    if (int(key) == 43) {scene.drawingScale += 0.01;};
-  if (int(key) == 45) {scene.drawingScale -= 0.001;};
-    if (int(key) == 95) {scene.drawingScale -= 0.01;};
+  if (int(key) == 61) {scene.drawingScale += scene.drawingScale * 0.01;};
+    if (int(key) == 43) {scene.drawingScale += scene.drawingScale * 0.1;};
+  if (int(key) == 45) {scene.drawingScale -= scene.drawingScale * 0.01;};
+    if (int(key) == 95) {scene.drawingScale -= scene.drawingScale * 0.1;};
 
   // use arrow keys to move around
   // use shift modifier to move more
@@ -479,8 +493,8 @@ void keyPressed() {
         scene.offsetZ += determineOffset();
       } else if (keyCode == RIGHT) {
         scene.offsetZ -= determineOffset();
-      }
-  }
+      };
+  };
 
 
   // if '^' pressed, toggle elevation exaggeration
@@ -490,7 +504,7 @@ void keyPressed() {
     } else {
       scene.elevationExaggeration = 1;
     };
-  }
+  };
  
   // if 'c' pressed, toggle crosshairs
    if (int(key) == 99) {
@@ -507,10 +521,10 @@ void keyPressed() {
      scene.viewMode++;
      if (scene.viewMode > 4) {
        scene.viewMode = 0;
-     }
-      for (int i = 0; i < buttons.length; i++) {
-        buttons[i].check();
-      }
+     };
+     for (int i = 0; i < buttons.length; i++) {
+       buttons[i].check();
+     };
    };
 
   checkBoundaries();
@@ -521,25 +535,29 @@ void keyPressed() {
 int determineOffset() {
   try {
    if (keyEvent.isControlDown()) {
-      return(scene.increment * 100);
+      if (keyEvent.isShiftDown()) {
+        return(scene.uiIncrement * 1000);
+      } else {
+        return(scene.uiIncrement * 100);
+      }
     } else if (keyEvent.isShiftDown()) {
-      return(scene.increment * 10);
+      return(scene.uiIncrement * 10);
     } else {
-      return(scene.increment);
+      return(scene.uiIncrement);
     }
-  } 
+  }
   catch (NullPointerException e) {
     // this is really dumb:
     // if a keypress event doesn't happen before the above code fires, Processing throws a NullPointer
     // but if it does, no problem. So... catch the error, duplicate my code. Whatever.
-    return(scene.increment);
+    return(scene.uiIncrement);
   }
-}
+};
 
 
 void checkBoundaries() {
   // set a lower boundary
-  if (scene.drawingScale < 0.0001) {
-     scene.drawingScale = 0.0001;
+  if (scene.drawingScale < 0.00002) {
+     scene.drawingScale = 0.00002;
   };  
-}
+};

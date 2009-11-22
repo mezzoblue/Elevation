@@ -65,39 +65,33 @@ Tracks parseXML(String file) {
    8	0.00000001	1.11 mm
 
 
-   To convert from lat/lon to kilometers, we multiply by 111.3. Meters, 111,319.9.
+   To convert from lat/lon to kilometers, we multiply by 111. Meters, 111,000. That's not a constant though;
+   given degree length changes at different latitudes, it could be as low as 110.5km at the equator, or as
+   high as 111.5km at 70 degrees. Not a huge margin of error, but something I might want to correct one day.
    
-   Wouldn't it be nice if it were that easy though? It might be if I were willing to live with distorted
-   maps, but if I want to introduce a scale with any reasonable degree of accuracy, this alone ain't 
-   gonna cut it. 
-   
-   First I'll need to convert the GPS points to a map projection, Mercator in this case since that's what 
+   I will need to convert the GPS points to a map projection though, Mercator in this case since that's what 
    Google, Microsoft, Yahoo all use and one day I may just get Elevation talking to them. Best to be on  
    the same system. Longitude is fine as-is, but latitude needs to be run through a formula adapted from 
    the maths on http://en.wikipedia.org/wiki/Mercator_projection
    
-   Also, something weird is going on with the output. The maps end up being almost exactly 1.6 times the 
-   expected difference. 1.6 is the factor between miles and kilometers. The fact that it's so suspiciously
-   consistent between a few orders of magnitude makes me think that at some point along the chain I'm 
-   treating one unit as the other; all the references I've seen indicate that GPS is fully metric, but 
-   I'm willing to bet that there's a unit conversion somewhere in the chain that's being flubbed.
-   
-   So for now, I'm simply dividing the final number on each coordinate by 1.6. The resulting scale seems 
-   very accurate, so I'm willing to live with this flub until I find a better reason for the difference.
+
+
 
 */
-      
+      int degreeLength = 111000;
+      scene.averageParallel(Float.parseFloat(coordinates[i][0]));
 
       if (coordinates[i][0] != null) {
         // pull out the raw latitude coordinates
         float phi = radians(Float.parseFloat(coordinates[i][0]));
         float adjustedPhi = degrees(0.5 * log((1 + sin(phi)) / (1 - sin(phi))));
-        obj.X[i] = abs(adjustedPhi * 111319.9) / 1.6;
+        obj.X[i] = (adjustedPhi * degreeLength);
       }
       if (coordinates[i][1] != null) {
         float lambda = Float.parseFloat(coordinates[i][1]);
-        obj.Z[i] = abs(lambda * 111319.9) / 1.6;
+        obj.Z[i] = 0 - (lambda * degreeLength);
       }
+  
   
       if (coordinates[i][2] != null) {
         // average out each point's elevation with the two preceding it to minimize spikes
@@ -107,6 +101,7 @@ Tracks parseXML(String file) {
           obj.Y[i] = Float.parseFloat(coordinates[i][2]);
         };
       }
+      
 
       // get the time and speed if they exist
       if (coordinates[i][3] != null) {

@@ -2,7 +2,7 @@
 
  Elevation
  A route visualizer that renders GPS data in 3D space
-
+lim
  http://exnihilo.mezzoblue.com/elevation/
  http://github.com/mezzoblue/Elevation/
  November 2009 
@@ -41,7 +41,9 @@ void setup() {
   // create the scene object and assign a size to the sketch window
   scene = new Scene(1000, 700);
   size(scene.canvasWidth, scene.canvasHeight, OPENGL);
+  
   // for some reason it seems as if both of these hints are necessary for true 4x sampling
+  // would love to know why
   hint(DISABLE_OPENGL_2X_SMOOTH);
   hint(ENABLE_OPENGL_4X_SMOOTH);
 
@@ -140,8 +142,8 @@ void setup() {
   for (int i = 0; i < numTracks; i++) {
     tracklist[i] = parseXML((String) filenames.get(i));
 
-    // pull out the track min and max values
-    tracklist[i].createLimits();
+    // pull out the track dimensions
+    tracklist[i].getDimensions();
   };
 
   // create the map scale object once the map data is loaded
@@ -151,14 +153,18 @@ void setup() {
   println("Number of Tracks: " + numTracks);
   println("minX: " + scene.minX);
   println("maxX: " + scene.maxX);
+  println("offsetX: " + scene.offsetX);
   println("minY: " + scene.minY);
   println("maxY: " + scene.maxY);
+  println("offsetY: " + scene.offsetY);
   println("minZ: " + scene.minZ);
   println("maxZ: " + scene.maxZ);
+  println("offsetZ: " + scene.offsetZ);
   println("minSpeed: " + scene.minSpeed);
   println("maxSpeed: " + scene.maxSpeed);
-  println("scene width (in meters): " + (scene.maxZ - scene.minZ));
-  println("scene height (in meters): " + (scene.maxX - scene.minX));
+  
+  println("scene width (in meters): " + scene.currentWidth);
+  println("scene height (in meters): " + scene.currentHeight);
 
   // set the viewRedraw flag coming out of setup() so that we get the initial draw
   scene.viewRedraw = true;
@@ -186,8 +192,8 @@ void draw() {
       (mouseY > UI.y && mouseY < (UI.y + UI.high))
       )) {
         // use a cursor image while rotating the scene
-        // (I suspect this is causing crashes in OS X, removed for now)
         // cursor(scene.cursorHand, scene.cursorHand.width / 2, scene.cursorHand.height / 2);
+          // (I suspect this was causing crashes in OS X, removed for now)
         scene.rotationY += ((float) (mouseX - pmouseX) / 180);
         if (scene.viewDimension == "3D") {
           scene.rotationX += ((float) (mouseY - pmouseY) / 180);
@@ -196,7 +202,7 @@ void draw() {
   }
 
 
-  // check the UI components; iz render needed nao?
+  // check the UI components; render needed?
   for (int i = 0; i < buttons.length; i++) {
     buttons[i].check();
   }
