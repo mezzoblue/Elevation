@@ -145,7 +145,7 @@ class Tracks {
       scene.minSpeed = checkMe(scene.minSpeed, speed[i], "min");
       scene.maxSpeed = checkMe(scene.maxSpeed, speed[i], "max");
 
-      // math to compensate for projection
+      // math to compensate for latitude distortion
       // adapted from http://msdn.microsoft.com/en-us/library/bb259689.aspx
       scene.currentWidth = (scene.maxZ - scene.minZ) * cos(scene.averageLat * PI/180);
       scene.currentHeight = (scene.maxX - scene.minX) * cos(scene.averageLat * PI/180);

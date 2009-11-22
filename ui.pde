@@ -346,10 +346,10 @@ class uiScale {
       kmCount = scene.currentWidth;
 
       // how many kilometers wide the base scale is, based on scene width and variable drawingScale value
-      kmScale = kmCount / (kmCount * scene.drawingScale);
+      kmScale = (kmCount / (kmCount * scene.drawingScale) * cos(scene.averageLat * PI/180));
       
       // how many pixels between each km marker
-      kmInterval = 1000 / kmScale;
+      kmInterval = wide / kmScale;
       
       pushMatrix();
         translate(x, y);
