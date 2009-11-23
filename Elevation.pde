@@ -2,7 +2,6 @@
 
  Elevation
  A route visualizer that renders GPS data in 3D space
-lim
  http://exnihilo.mezzoblue.com/elevation/
  http://github.com/mezzoblue/Elevation/
  November 2009 
