@@ -235,13 +235,6 @@ void draw() {
     // move the tracks around based on user input
     translate(scene.offsetX, scene.offsetY, scene.offsetZ);
   
-    // translate the tracks to the center of the canvas
-//    translate(
-//      0 - (findDifference(scene.minX, scene.maxX) / 2),
-//      0 - (findDifference(scene.minY, scene.maxY) / 2),
-//      0 - (findDifference(scene.minZ, scene.maxZ) / 2)
-//    );
-  
     // draw each track
     for (int i = 0; i < numTracks; i++) {
       tracklist[i].render();

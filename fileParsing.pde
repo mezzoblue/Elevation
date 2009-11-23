@@ -73,9 +73,6 @@ Tracks parseXML(String file) {
    Google, Microsoft, Yahoo all use and one day I may just get Elevation talking to them. Best to be on  
    the same system. Longitude is fine as-is, but latitude needs to be run through a formula adapted from 
    the maths on http://en.wikipedia.org/wiki/Mercator_projection
-   
-
-
 
 */
       int degreeLength = 111000;
@@ -180,12 +177,6 @@ ArrayList listFileNames(String dir) {
 
 // find the absolute difference between two numbers, 
 float findDifference(float n1, float n2) {
-//  if (n1 - n2 < 0) {
-//    return abs(n1) + abs(n2);
-//  }
-//  else {
-//    return abs(n1 - n2);
-//  }
   return abs(n1 - n2) / 2;
 }
 

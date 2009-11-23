@@ -64,8 +64,8 @@ class Scene {
     };
   };
   // kind of goofy that I need this, but I've committed to converting my internal coordinates to meters
-  // so now I need this function to keep track of the average latitude of the scene. The value it produces
-  // is used in a calculation that compensates for Mercator distortion. See Tracks.getDimensions
+  // so now I need this function to keep track of the average raw latitude of the scene. The value it 
+  // produces is used in a calculation that compensates for Mercator distortion. See Tracks.getDimensions
   void averageParallel(float av) {
     averageLatCount++;
     // find average of preceding values + new one
