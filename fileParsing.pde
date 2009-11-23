@@ -180,12 +180,13 @@ ArrayList listFileNames(String dir) {
 
 // find the absolute difference between two numbers, 
 float findDifference(float n1, float n2) {
-  if (n1 - n2 < 0) {
-    return abs(n1) + abs(n2);
-  } 
-  else {
-    return abs(n1 - n2);
-  }
+//  if (n1 - n2 < 0) {
+//    return abs(n1) + abs(n2);
+//  }
+//  else {
+//    return abs(n1 - n2);
+//  }
+  return abs(n1 - n2) / 2;
 }
 
 

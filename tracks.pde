@@ -132,23 +132,23 @@ class Tracks {
     for (int i = 1; i < pointCount; i++) {
       scene.minX = checkMe(scene.minX, X[i], "min");
       scene.maxX = checkMe(scene.maxX, X[i], "max");
-//      scene.offsetX = (findDifference(scene.maxX, scene.minX) / 2);
+      scene.offsetX = 0 - (scene.minX + findDifference(scene.minX, scene.maxX));
 
       scene.minY = checkMe(scene.minY, Y[i], "min");
       scene.maxY = checkMe(scene.maxY, Y[i], "max");
-//      scene.offsetY = (findDifference(scene.maxY, scene.minY) / 2);
+      scene.offsetY = 0 - (scene.minY + findDifference(scene.minY, scene.maxY));
 
       scene.minZ = checkMe(scene.minZ, Z[i], "min");
       scene.maxZ = checkMe(scene.maxZ, Z[i], "max");
-//      scene.offsetZ = (findDifference(scene.maxZ, scene.minZ) / 2);
+      scene.offsetZ = 0 - (scene.minZ + findDifference(scene.minZ, scene.maxZ));
 
       scene.minSpeed = checkMe(scene.minSpeed, speed[i], "min");
       scene.maxSpeed = checkMe(scene.maxSpeed, speed[i], "max");
 
       // math to compensate for latitude distortion
       // adapted from http://msdn.microsoft.com/en-us/library/bb259689.aspx
-      scene.currentWidth = (scene.maxZ - scene.minZ) * cos(scene.averageLat * PI/180);
-      scene.currentHeight = (scene.maxX - scene.minX) * cos(scene.averageLat * PI/180);
+      scene.currentWidth = findDifference(scene.maxZ, scene.minZ) * cos(scene.averageLat * PI/180);
+      scene.currentHeight = findDifference(scene.maxX, scene.minX) * cos(scene.averageLat * PI/180);
       
       // find out which direction is the largest, then adjust drawingScale to fit the scene
       if ((scene.maxX - scene.minX) > (scene.maxY - scene.minY)) {
