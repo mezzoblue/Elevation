@@ -4,6 +4,7 @@ class Scene {
   // basic environment variables
   int canvasWidth, canvasHeight;
   float rotationX = radians(-90), rotationY = radians(-90), rotationZ = radians(180);
+  PFont scaleText;
 
   // define the movement cursor
   // PImage cursorHand = loadImage(dataPath("") + "interface/Cursor-Hand.png");
@@ -41,6 +42,11 @@ class Scene {
     palette = new color[2];
     palette[0] = #000000;
     palette[1] = #FFFFFF;
+
+    // create pfont object for scale labels
+    scaleText = loadFont("Helvetica-10.vlw");
+    textFont(scaleText, 10);
+    textAlign(CENTER, CENTER);
   };
 
   void togglePalette() {
@@ -339,6 +345,7 @@ class uiScale {
     high = newHigh;
   };  
 
+
   void render(color col) {
     if (toggle) {
 
@@ -354,60 +361,46 @@ class uiScale {
       pushMatrix();
         translate(x, y);
 
-        strokeWeight(2);
+        // draw the 1000k markers
+        drawLine(kmInterval, kmScale, 1000, 0, 2, 2, 4, col);
 
         // draw the 100k markers
-       if (kmInterval < 25) {
-          for (int i = 0; i <= round(kmScale) / 100; i++) {
-            stroke(col, 160);
-            float thisKm = (i * kmInterval * 100) - wide / 2;
-            line(thisKm, -24, thisKm, 0);
-          };
-        };
-         
+        drawLine(kmInterval, kmScale, 100, 0.5, 20, 2, 4, col);
+
         // draw the 10k markers
-       if ((kmInterval < 200) && (kmInterval > 5)) {
-          for (int i = 0; i <= round(kmScale) / 10; i++) {
-            stroke(col, 120);
-            float thisKm = (i * kmInterval * 10) - wide / 2;
-            line(thisKm, -16, thisKm, 0);
-          };
-        };
+        drawLine(kmInterval, kmScale, 10, 5, 200, 2, 4, col);
 
-
-       strokeWeight(1);
-  
         // draw the kilometer markers
-       if (kmInterval > 15) {
-          for (int i = 0; i <= round(kmScale); i++) {
-            stroke(col, 80);
-            float thisKm = (i * kmInterval) - wide / 2;
-            line(thisKm, -8, thisKm, 0);
-          };
-        };
+        drawLine(kmInterval, kmScale, 1, 50, 20000, 1, 3, col);
 
-        // draw the hundred meter markers
-       if (kmInterval > 100) {
-          for (int i = 0; i <= round(kmScale) * 10; i++) {
-            stroke(col, 40);
-            float thisM = (kmInterval / 10) * i  - wide / 2;
-            line(thisM, -4, thisM, 0);
-          };
-       };
 
-        if (kmInterval > 200) {
-          // draw the ten meter markers
-          for (int i = 0; i <= round(kmScale) * 100; i++) {
-            stroke(col, 40);
-            float thisM = (kmInterval / 100) * i  - wide / 2;
-            line(thisM, -2, thisM, 0);
-          };
-        };
 
       popMatrix();
 
     };
   };
+
+
+  void drawLine(float currentVal, float currentScale, float currentMultiplier, float minVal, float maxVal, int strokeVal, int thisLength, color col) {
+    if ((currentVal > minVal) && (currentVal < maxVal)) {
+        stroke(col, 128);
+        strokeWeight(strokeVal);
+
+        for (int i = 0; i <= round(currentScale) / currentMultiplier; i++) {
+          float thisVal = (i * currentVal * currentMultiplier) - wide / 2;
+          line(thisVal, 0 - thisLength, thisVal, thisLength);
+
+          fill(scene.palette[1], 128);
+          text(createLabel(i, currentMultiplier), thisVal, -10);
+        };
+    };
+  };
+
+
+  String createLabel(int value, float currentMultiplier) {
+    return Integer.toString(int(value * currentMultiplier)) + "km";
+  };
+
 
 };
 
@@ -557,7 +550,7 @@ int determineOffset() {
 
 void checkBoundaries() {
   // set a lower boundary
-  if (scene.drawingScale < 0.00002) {
-     scene.drawingScale = 0.00002;
+  if (scene.drawingScale < 0.00004) {
+     scene.drawingScale = 0.00004;
   };  
 };

@@ -146,7 +146,7 @@ void setup() {
   };
 
   // create the map scale object once the map data is loaded
-  mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 101, scene.canvasWidth, 5);
+  mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 106, scene.canvasWidth, 5);
 
   // diagnostics
   println("Number of Tracks: " + numTracks);
