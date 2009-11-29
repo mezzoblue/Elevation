@@ -62,62 +62,62 @@ void setup() {
 
   // arrow buttons
   buttons[0] = new uiButton(
-    44, scene.canvasHeight - 90, 35, 40, 
+    44, scene.canvasHeight - 90, 35, 40, 1,
     "UI-DPad-up", "offsetX++");
   buttons[1] = new uiButton(
-    44, scene.canvasHeight - 49, 35, 40,
+    44, scene.canvasHeight - 49, 35, 40, 1,
     "UI-DPad-down", "offsetX--");
   buttons[2] = new uiButton(
-    22, scene.canvasHeight - 67, 45, 30,
+    22, scene.canvasHeight - 67, 45, 30, 1,
     "UI-DPad-left", "offsetZ++");
   buttons[3] = new uiButton(
-    61, scene.canvasHeight - 67, 45, 30,
+    61, scene.canvasHeight - 67, 45, 30, 1,
     "UI-DPad-right", "offsetZ--");
 
   // ^ / v buttons
   buttons[4] = new uiButton(
-    216, scene.canvasHeight - 82, 52, 30,
+    216, scene.canvasHeight - 82, 52, 30, 91,
     "UI-Button-up", "offsetY++");
   buttons[5] = new uiButton(
-    266, scene.canvasHeight - 82, 52, 30,
+    266, scene.canvasHeight - 82, 52, 30, 93,
     "UI-Button-down", "offsetY--");
 
   // + / - buttons
   buttons[6] = new uiButton(
-    331, scene.canvasHeight - 82, 52, 30,
+    331, scene.canvasHeight - 82, 52, 30, 61,
     "UI-Button-plus", "drawingScale++");
   buttons[7] = new uiButton(
-    381, scene.canvasHeight - 82, 52, 30,
+    381, scene.canvasHeight - 82, 52, 30, 45,
     "UI-Button-minus", "drawingScale--");
 
   // checkboxes
   checkboxes = new uiCheckbox[4];
   checkboxes[0] = new uiCheckbox(
-    867, scene.canvasHeight - 74, 19, 18,
+    867, scene.canvasHeight - 74, 19, 18, 120,
     "UI-Checkbox", "scene.toggleConnectors", "unchecked");
   checkboxes[1] = new uiCheckbox(
-    867, scene.canvasHeight - 46, 19, 18,
+    867, scene.canvasHeight - 46, 19, 18, 99,
     "UI-Checkbox", "crosshairs.toggle", "checked");
   checkboxes[2] = new uiCheckbox(
-    951, scene.canvasHeight - 74, 19, 18,
+    951, scene.canvasHeight - 74, 19, 18, 105,
     "UI-Checkbox", "scene.togglePalette", "unchecked");
   checkboxes[3] = new uiCheckbox(
-    951, scene.canvasHeight - 46, 19, 18,
+    951, scene.canvasHeight - 46, 19, 18, 100,
     "UI-Checkbox", "scene.toggleDimension", "checked");
 
   // switches
   switches = new uiSwitch[4];
   switches[0] = new uiSwitch(
-    582, scene.canvasHeight - 82, 39, 28,
+    582, scene.canvasHeight - 82, 39, 28, 49,
     "UI-Switch-1", "nada", "selected");
   switches[1] = new uiSwitch(
-    621, scene.canvasHeight - 82, 35, 28,
+    621, scene.canvasHeight - 82, 35, 28, 50,
     "UI-Switch-2", "nada", "");
   switches[2] = new uiSwitch(
-    656, scene.canvasHeight - 82, 35, 28,
+    656, scene.canvasHeight - 82, 35, 28, 51,
     "UI-Switch-3", "nada", "");
   switches[3] = new uiSwitch(
-    691, scene.canvasHeight - 82, 40, 28,
+    691, scene.canvasHeight - 82, 40, 28, 52,
     "UI-Switch-4", "nada", "");
 
   // drop in the compass
@@ -207,6 +207,9 @@ void draw() {
   }
   for (int i = 0; i < switches.length; i++) {
     switches[i].check();
+  }
+  for (int i = 0; i < checkboxes.length; i++) {
+    checkboxes[i].check();
   }
 
 

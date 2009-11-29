@@ -2,9 +2,9 @@
 class Scene {
   
   // basic environment variables
+  PFont scaleText;
   int canvasWidth, canvasHeight;
   float rotationX = radians(-90), rotationY = radians(-90), rotationZ = radians(180);
-  PFont scaleText;
 
   // define the movement cursor
   // PImage cursorHand = loadImage(dataPath("") + "interface/Cursor-Hand.png");
@@ -30,8 +30,10 @@ class Scene {
   Boolean viewConnectors = false;
   Boolean viewRedraw = true;
 
-  // ui adjustment increment value
+  // ui adjustments
   int uiIncrement = 100;
+  int uiKeyPress = 0;
+  Boolean uiMouseReleased = false;
 
   color[] palette;
 
@@ -93,6 +95,9 @@ class uiElement {
 
   // state
   int state = 0;
+  
+  // key code for this element
+  int hotKey = 1;
 
   // UI Element images
   PImage img;
@@ -134,12 +139,13 @@ class uiButton extends uiElement {
 
   String buttonAction;
   
-  uiButton(int newX, int newY, int newWide, int newHigh, String filename, String action) {
+  uiButton(int newX, int newY, int newWide, int newHigh, int keyPress, String filename, String action) {
     x = newX;
     y = newY;
     wide = newWide;
     high = newHigh;
     buttonAction = action;
+    hotKey = keyPress;
     img = loadImage(dataPath("") + "interface/" + filename + ".png");
     imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
     imgPressed = loadImage(dataPath("") + "interface/" + filename + "-pressed.png");
@@ -148,11 +154,10 @@ class uiButton extends uiElement {
   void check() {
     // is the mouse over this control?
     if (
-    mouseX >= x && mouseX <= (x + wide) &&
-    mouseY >= y && mouseY <= (y + high)) {
-
+      mouseX >= x && mouseX <= (x + wide) &&
+      mouseY >= y && mouseY <= (y + high)) {
       
-      if(mousePressed) {
+      if(mousePressed || (hotKey == scene.uiKeyPress)) {
         // fair point to toggle the screen viewRedraw back on
         scene.viewRedraw = true;
 
@@ -177,6 +182,7 @@ class uiButton extends uiElement {
         }
         state = 1;
       };
+      scene.uiKeyPress = 0;
      } else {
       // if we still have a lingering state, lets redraw and clear the hover / selected image
       if (state > 0) {
@@ -184,6 +190,7 @@ class uiButton extends uiElement {
       };
       state = 0;
     };
+    scene.uiMouseReleased = false;  
   };
   
 };
@@ -194,12 +201,13 @@ class uiCheckbox extends uiElement {
 
   String checkboxAction;
 
-  uiCheckbox(int newX, int newY, int newWide, int newHigh, String filename, String action, String defaultState) {
+  uiCheckbox(int newX, int newY, int newWide, int newHigh, int keyPress, String filename, String action, String defaultState) {
     x = newX;
     y = newY;
     wide = newWide;
     high = newHigh;
     checkboxAction = action;
+    hotKey = keyPress;
     img = loadImage(dataPath("") + "interface/" + filename + ".png");
     imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
     if (defaultState.equals("checked")) {
@@ -210,22 +218,29 @@ class uiCheckbox extends uiElement {
   };
 
   void check() {
-    if (
+    if ((
       mouseX >= x && mouseX <= (x + wide) &&
-      mouseY >= y && mouseY <= (y + high)) {
-        scene.viewRedraw = true;
-        if (state == 3) {
-          state = 0;
-        } else {
-          state = 3;
+      mouseY >= y && mouseY <= (y + high)
+    ) || (hotKey == scene.uiKeyPress)) {
+
+        if(scene.uiMouseReleased || (hotKey == scene.uiKeyPress)) {
+          scene.viewRedraw = true;
+          if (state == 3) {
+            state = 0;
+          } else {
+            state = 3;
+          };
+          // Couldn't figure out a more elegant way of passing these instructions.
+          // Soooo... string it is.
+          if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle();}
+          if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette();}
+          if (checkboxAction.equals("scene.toggleConnectors")) {scene.toggleConnectors();}
+          if (checkboxAction.equals("scene.toggleDimension")) {scene.toggleDimension();}
+          
+          scene.uiKeyPress = 0;
         };
-        // Couldn't figure out a more elegant way of passing these instructions.
-        // Soooo... string it is.
-        if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle();}
-        if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette();}
-        if (checkboxAction.equals("scene.toggleConnectors")) {scene.toggleConnectors();}
-        if (checkboxAction.equals("scene.toggleDimension")) {scene.toggleDimension();}
      };
+    scene.uiMouseReleased = false;  
   };
 };
 
@@ -235,12 +250,13 @@ class uiSwitch extends uiElement {
 
   String switchAction;
   
-  uiSwitch(int newX, int newY, int newWide, int newHigh, String filename, String action, String defaultState) {
+  uiSwitch(int newX, int newY, int newWide, int newHigh, int keyPress, String filename, String action, String defaultState) {
     x = newX;
     y = newY;
     wide = newWide;
     high = newHigh;
     switchAction = action;
+    hotKey = keyPress;
     img = loadImage(dataPath("") + "interface/" + filename + ".png");
     imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
     imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
@@ -252,11 +268,13 @@ class uiSwitch extends uiElement {
   };
 
   void check() {
-    if (
+    if ((
       mouseX >= x && mouseX <= (x + wide) &&
-      mouseY >= y && mouseY <= (y + high)) {
+      mouseY >= y && mouseY <= (y + high)
+    ) || (hotKey == scene.uiKeyPress)) {
         // if it was clicked, toggle it
-        if(mousePressed) {
+
+        if(scene.uiMouseReleased || (hotKey == scene.uiKeyPress)) {
           toggle(this);
 
           // fair point to toggle the screen viewRedraw back on
@@ -270,6 +288,8 @@ class uiSwitch extends uiElement {
           }
           state = 1;
         };
+
+        scene.uiMouseReleased = false;  
      } else {
       // if this one isn't selected, remove the hover state        
       if (state != 3) {
@@ -345,7 +365,6 @@ class uiScale {
     high = newHigh;
   };  
 
-
   void render(color col) {
     if (toggle) {
 
@@ -362,24 +381,25 @@ class uiScale {
         translate(x, y);
 
         // draw the 1000k markers
-        drawLine(kmInterval, kmScale, 1000, 0, 2, 2, 4, col);
+        drawLine(kmInterval, kmScale, 1000, 0, 0.5, 2, 4, col);
 
         // draw the 100k markers
-        drawLine(kmInterval, kmScale, 100, 0.5, 20, 2, 4, col);
+        drawLine(kmInterval, kmScale, 100, 0.5, 5, 2, 4, col);
 
         // draw the 10k markers
-        drawLine(kmInterval, kmScale, 10, 5, 200, 2, 4, col);
+        drawLine(kmInterval, kmScale, 10, 5, 50, 2, 4, col);
 
         // draw the kilometer markers
-        drawLine(kmInterval, kmScale, 1, 50, 20000, 1, 3, col);
+        drawLine(kmInterval, kmScale, 1, 50, 500, 1, 3, col);
 
+        // draw the 100m markers
+        drawLine(kmInterval, kmScale, 0.1, 500, 200000, 1, 3, col);
 
 
       popMatrix();
 
     };
   };
-
 
   void drawLine(float currentVal, float currentScale, float currentMultiplier, float minVal, float maxVal, int strokeVal, int thisLength, color col) {
     if ((currentVal > minVal) && (currentVal < maxVal)) {
@@ -396,11 +416,13 @@ class uiScale {
     };
   };
 
-
   String createLabel(int value, float currentMultiplier) {
-    return Integer.toString(int(value * currentMultiplier)) + "km";
+    if (currentMultiplier >= 1) {
+      return Integer.toString(int(value * currentMultiplier)) + "km";
+    } else {
+      return Integer.toString(int(value * currentMultiplier * 1000)) + "m";
+    }
   };
-
 
 };
 
@@ -437,92 +459,18 @@ class uiCrosshairs {
 
 
 
-
-// mouse released event handler
-void mouseReleased() {
-  // see if anything happened with the checkboxes
-  for (int i = 0; i < checkboxes.length; i++) {
-    checkboxes[i].check();
-  }
-}
-
-
-// keyboard event handler
-void keyPressed() {
-  // println(int(key));
-  
-  // we'll likely need to redraw the scene
-  scene.viewRedraw = true;
-  
-  // toggle 2D / 3D modes
-  if (int(key) == 50) {
-    scene.viewDimension = "2D";
-    scene.rotationX = radians(-90);
-    scene.rotationY = radians(-90);
-  };
-  if (int(key) == 51) {scene.viewDimension = "3D";};
-  
-  // x = add or remove connecting lines
-  if (int(key) == 120) {
-    scene.toggleConnectors();
-  };
-
-  // if '+ / =' is pressed, zoom in
-  // if '-' is pressed, zoom out
-  // use shift modifier to move more
-  if (int(key) == 61) {scene.drawingScale += scene.drawingScale * 0.01;};
-    if (int(key) == 43) {scene.drawingScale += scene.drawingScale * 0.1;};
-  if (int(key) == 45) {scene.drawingScale -= scene.drawingScale * 0.01;};
-    if (int(key) == 95) {scene.drawingScale -= scene.drawingScale * 0.1;};
-
-  // use arrow keys to move around
-  // use shift modifier to move more
-  if (key == CODED) {
-      if (keyCode == UP) {
-        scene.offsetX += determineOffset();
-      } else if (keyCode == DOWN) {
-        scene.offsetX -= determineOffset();
-      } else if (keyCode == LEFT) {
-        scene.offsetZ += determineOffset();
-      } else if (keyCode == RIGHT) {
-        scene.offsetZ -= determineOffset();
-      };
-  };
-
-
-  // if '^' pressed, toggle elevation exaggeration
-  if (int(key) == 94) {
-    if (scene.elevationExaggeration < 6) {
-      scene.elevationExaggeration = 6;
-    } else {
-      scene.elevationExaggeration = 1;
-    };
-  };
- 
-  // if 'c' pressed, toggle crosshairs
-   if (int(key) == 99) {
-     crosshair.toggle();
-   };
-
-  // if 'i' pressed, invert display
-   if (int(key) == 105) {
-     scene.togglePalette();
-   };
-
-  // if 't' pressed, toggle render mode
-   if (int(key) == 116) {
-     scene.viewMode++;
-     if (scene.viewMode > 4) {
-       scene.viewMode = 0;
-     };
-     for (int i = 0; i < buttons.length; i++) {
-       buttons[i].check();
-     };
-   };
-
-  checkBoundaries();
-
+void keyReleased() {
+  println(int(key));
+  scene.uiKeyPress = int(key);
 };
+
+
+void mouseReleased() {
+  // it'd be nice if mouseReleased was a native variable the same way 
+  // mousePressed is, but no matter. 
+  scene.uiMouseReleased = true;
+};
+
 
 
 int determineOffset() {
