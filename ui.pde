@@ -484,9 +484,12 @@ void keyReleased() {
 
 
 void mouseReleased() {
-  // it'd be nice if mouseReleased was a native variable the same way 
-  // mousePressed is, but no matter. 
-  scene.uiMouseReleased = true;
+  // it'd be nice if mouseReleased was a native variable the 
+  // same way mousePressed is, but no matter. 
+  for (int i = 0; i < checkboxes.length; i++) {
+    scene.uiMouseReleased = true;
+    checkboxes[i].check();
+  }
 };
 
 
