@@ -98,6 +98,7 @@ class uiElement {
   
   // key code for this element
   int hotKey = 1;
+  int hotKeyAlt = 1;
 
   // UI Element images
   PImage img;
@@ -139,13 +140,14 @@ class uiButton extends uiElement {
 
   String buttonAction;
   
-  uiButton(int newX, int newY, int newWide, int newHigh, int keyPress, String filename, String action) {
+  uiButton(int newX, int newY, int newWide, int newHigh, int keyPress1, int keyPress2, String filename, String action) {
     x = newX;
     y = newY;
     wide = newWide;
     high = newHigh;
     buttonAction = action;
-    hotKey = keyPress;
+    hotKey = keyPress1;
+    hotKeyAlt = keyPress2;
     img = loadImage(dataPath("") + "interface/" + filename + ".png");
     imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
     imgPressed = loadImage(dataPath("") + "interface/" + filename + "-pressed.png");
@@ -153,11 +155,12 @@ class uiButton extends uiElement {
   
   void check() {
     // is the mouse over this control?
-    if (
-      mouseX >= x && mouseX <= (x + wide) &&
-      mouseY >= y && mouseY <= (y + high)) {
+    if ((
+       mouseX >= x && mouseX <= (x + wide) &&
+       mouseY >= y && mouseY <= (y + high)
+      ) || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
       
-      if(mousePressed || (hotKey == scene.uiKeyPress)) {
+      if(mousePressed || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
         // fair point to toggle the screen viewRedraw back on
         scene.viewRedraw = true;
 
@@ -201,13 +204,14 @@ class uiCheckbox extends uiElement {
 
   String checkboxAction;
 
-  uiCheckbox(int newX, int newY, int newWide, int newHigh, int keyPress, String filename, String action, String defaultState) {
+  uiCheckbox(int newX, int newY, int newWide, int newHigh, int keyPress1, int keyPress2, String filename, String action, String defaultState) {
     x = newX;
     y = newY;
     wide = newWide;
     high = newHigh;
     checkboxAction = action;
-    hotKey = keyPress;
+    hotKey = keyPress1;
+    hotKeyAlt = keyPress2;
     img = loadImage(dataPath("") + "interface/" + filename + ".png");
     imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
     if (defaultState.equals("checked")) {
@@ -221,9 +225,9 @@ class uiCheckbox extends uiElement {
     if ((
       mouseX >= x && mouseX <= (x + wide) &&
       mouseY >= y && mouseY <= (y + high)
-    ) || (hotKey == scene.uiKeyPress)) {
+    ) || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
 
-        if(scene.uiMouseReleased || (hotKey == scene.uiKeyPress)) {
+        if(scene.uiMouseReleased || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
           scene.viewRedraw = true;
           if (state == 3) {
             state = 0;
@@ -250,13 +254,14 @@ class uiSwitch extends uiElement {
 
   String switchAction;
   
-  uiSwitch(int newX, int newY, int newWide, int newHigh, int keyPress, String filename, String action, String defaultState) {
+  uiSwitch(int newX, int newY, int newWide, int newHigh, int keyPress1, int keyPress2, String filename, String action, String defaultState) {
     x = newX;
     y = newY;
     wide = newWide;
     high = newHigh;
     switchAction = action;
-    hotKey = keyPress;
+    hotKey = keyPress1;
+    hotKeyAlt = keyPress2;
     img = loadImage(dataPath("") + "interface/" + filename + ".png");
     imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
     imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
@@ -271,10 +276,10 @@ class uiSwitch extends uiElement {
     if ((
       mouseX >= x && mouseX <= (x + wide) &&
       mouseY >= y && mouseY <= (y + high)
-    ) || (hotKey == scene.uiKeyPress)) {
+    ) || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
         // if it was clicked, toggle it
 
-        if(scene.uiMouseReleased || (hotKey == scene.uiKeyPress)) {
+        if(mousePressed || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
           toggle(this);
 
           // fair point to toggle the screen viewRedraw back on
@@ -462,6 +467,19 @@ class uiCrosshairs {
 void keyReleased() {
   println(int(key));
   scene.uiKeyPress = int(key);
+  // need to translate coded keys to something else
+  // arrows = awsd
+  if (key == CODED) {
+    if (keyCode == UP) {
+      scene.uiKeyPress = 119;
+    } else if (keyCode == DOWN) {
+      scene.uiKeyPress = 115; 
+    } else if (keyCode == LEFT) {
+      scene.uiKeyPress = 97; 
+    } else if (keyCode == RIGHT) {
+      scene.uiKeyPress = 100; 
+    };
+  };
 };
 
 
