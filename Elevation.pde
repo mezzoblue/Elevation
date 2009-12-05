@@ -3,8 +3,8 @@
  Elevation
  A route visualizer that renders GPS data in 3D space
  http://exnihilo.mezzoblue.com/elevation/
- http://github.com/mezzoblue/Elevatchion/
- November 2009 
+ http://github.com/mezzoblue/Elevation/
+ Started September 2009
 
 */
 
@@ -76,22 +76,24 @@ void setup() {
 
   // ^ / v buttons
   buttons[4] = new uiButton(
-    216, scene.canvasHeight - 82, 52, 30, 91, 123,
+    216, scene.canvasHeight - 82, 52, 30, 93, 125,
     "UI-Button-up", "offsetY++");
   buttons[5] = new uiButton(
-    266, scene.canvasHeight - 82, 52, 30, 93, 125,
+    266, scene.canvasHeight - 82, 52, 30, 91, 123,
     "UI-Button-down", "offsetY--");
 
   // + / - buttons
   buttons[6] = new uiButton(
-    331, scene.canvasHeight - 82, 52, 30, 61, 43,
+    331, scene.canvasHeight - 82, 52, 30, 43, 61,
     "UI-Button-plus", "drawingScale++");
   buttons[7] = new uiButton(
     381, scene.canvasHeight - 82, 52, 30, 45, 95,
     "UI-Button-minus", "drawingScale--");
 
+
+
   // checkboxes
-  checkboxes = new uiCheckbox[4];
+  checkboxes = new uiCheckbox[5];
   checkboxes[0] = new uiCheckbox(
     867, scene.canvasHeight - 74, 19, 18, 120, 88,
     "UI-Checkbox", "scene.toggleConnectors", "unchecked");
@@ -105,8 +107,15 @@ void setup() {
     951, scene.canvasHeight - 46, 19, 18, 122, 90,
     "UI-Checkbox", "scene.toggleDimension", "checked");
 
+  // hidden checkboxes
+  // toggle true elevation
+  checkboxes[4] = new uiCheckbox(
+    1500, 1, 1, 1, 54, 94,
+    "", "scene.toggleElevation", "unchecked");
+
+
   // switches
-  switches = new uiSwitch[4];
+  switches = new uiSwitch[5];
   switches[0] = new uiSwitch(
     582, scene.canvasHeight - 82, 39, 28, 49, 1,
     "UI-Switch-1", "nada", "selected");
@@ -119,6 +128,13 @@ void setup() {
   switches[3] = new uiSwitch(
     691, scene.canvasHeight - 82, 40, 28, 52, 1,
     "UI-Switch-4", "nada", "");
+
+  // hidden switches
+  // toggle mode 5
+  switches[4] = new uiSwitch(
+    1500, 1, 1, 1, 53, 1,
+    "", "nada", "");
+
 
   // drop in the compass
   compass = new uiCompass(

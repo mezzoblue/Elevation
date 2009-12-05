@@ -71,6 +71,14 @@ class Scene {
       scene.rotationY = radians(-90);
     };
   };
+  void toggleElevation() {
+    if (scene.elevationExaggeration == 8) {
+      scene.elevationExaggeration = 1;
+    } else {
+      scene.elevationExaggeration = 8;
+    };
+  };
+  
   // kind of goofy that I need this, but I've committed to converting my internal coordinates to meters
   // so now I need this function to keep track of the average raw latitude of the scene. The value it 
   // produces is used in a calculation that compensates for Mercator distortion. See Tracks.getDimensions
@@ -107,16 +115,18 @@ class uiElement {
   PImage imgSelected;
 
   void render() {
-    noStroke();
-    noFill();
-    if (state == 3) {
-      image(imgSelected, x, y);
-    } else if (state == 2) {
-      image(imgPressed, x, y);
-    } else if (state == 1) {
-      image(imgHover, x, y);
-    } else {
-      image(img, x, y);
+    if (img != null) {
+      noStroke();
+      noFill();
+      if (state == 3) {
+        image(imgSelected, x, y);
+      } else if (state == 2) {
+        image(imgPressed, x, y);
+      } else if (state == 1) {
+        image(imgHover, x, y);
+      } else {
+        image(img, x, y);
+      };
     };
   };
   
@@ -148,9 +158,11 @@ class uiButton extends uiElement {
     buttonAction = action;
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
-    img = loadImage(dataPath("") + "interface/" + filename + ".png");
-    imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
-    imgPressed = loadImage(dataPath("") + "interface/" + filename + "-pressed.png");
+    if (!filename.equals("")) {
+      img = loadImage(dataPath("") + "interface/" + filename + ".png");
+      imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
+      imgPressed = loadImage(dataPath("") + "interface/" + filename + "-pressed.png");
+    };
   };
   
   void check() {
@@ -177,7 +189,7 @@ class uiButton extends uiElement {
         if (buttonAction.equals("offsetZ--")) {scene.offsetZ -= determineOffset();}
         if (buttonAction.equals("offsetZ++")) {scene.offsetZ += determineOffset();}
         if (buttonAction.equals("drawingScale--")) {scene.drawingScale -= (determineOffset() * scene.drawingScale * 0.0001); checkBoundaries();}
-        if (buttonAction.equals("drawingScale++")) {scene.drawingScale += (determineOffset() * scene.drawingScale * 0.0001);}
+        if (buttonAction.equals("drawingScale++")) {scene.drawingScale += (determineOffset() * scene.drawingScale * 0.0001); checkBoundaries();}
       } else {
         // no need to redraw every loop, just the initial hover event
         if (state != 1) {
@@ -212,8 +224,10 @@ class uiCheckbox extends uiElement {
     checkboxAction = action;
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
-    img = loadImage(dataPath("") + "interface/" + filename + ".png");
-    imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
+    if (!filename.equals("")) {
+      img = loadImage(dataPath("") + "interface/" + filename + ".png");
+      imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
+    };
     if (defaultState.equals("checked")) {
       state = 3; // check the checkbox by default
     } else {
@@ -240,6 +254,7 @@ class uiCheckbox extends uiElement {
           if (checkboxAction.equals("scene.togglePalette")) {scene.togglePalette();}
           if (checkboxAction.equals("scene.toggleConnectors")) {scene.toggleConnectors();}
           if (checkboxAction.equals("scene.toggleDimension")) {scene.toggleDimension();}
+          if (checkboxAction.equals("scene.toggleElevation")) {scene.toggleElevation();}
           
           scene.uiKeyPress = 0;
         };
@@ -262,9 +277,11 @@ class uiSwitch extends uiElement {
     switchAction = action;
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
-    img = loadImage(dataPath("") + "interface/" + filename + ".png");
-    imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
-    imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
+    if (!filename.equals("")) {
+      img = loadImage(dataPath("") + "interface/" + filename + ".png");
+      imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
+      imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
+    };
     if (defaultState.equals("selected")) {
       state = 3; // select this switch by default
     } else {
@@ -464,11 +481,11 @@ class uiCrosshairs {
 
 
 
-void keyReleased() {
-  println(int(key));
+void keyPressed() {
   scene.uiKeyPress = int(key);
+  println(int(key));
   // need to translate coded keys to something else
-  // arrows = awsd
+  // arrows = a/w/s/d
   if (key == CODED) {
     if (keyCode == UP) {
       scene.uiKeyPress = 119;
@@ -519,7 +536,11 @@ int determineOffset() {
 
 void checkBoundaries() {
   // set a lower boundary
+  if (scene.drawingScale > 0.65) {
+     scene.drawingScale = 0.65;
+  };  
+  // set an upper boundary
   if (scene.drawingScale < 0.00004) {
      scene.drawingScale = 0.00004;
-  };  
+  };
 };

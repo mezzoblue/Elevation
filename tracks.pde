@@ -119,6 +119,8 @@ class Tracks {
             noFill();
             stroke(scene.palette[1], 32);
             drawConnectors(X[i], scene.minY, Z[i], X[i], Y[i], Z[i]);
+            drawConnectors(X[i - 1], scene.minY, Z[i - 1], X[i], scene.minY, Z[i]);
+            drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             break;  
 
 
