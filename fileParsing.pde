@@ -111,28 +111,31 @@ Tracks parseXML(String file) {
           // only do it if we have more than one point to compare
           if (i > 0) {
 
-            // result will be in milliseconds, ie. 5 seconds = 1000
-            long timeDifference = getTimeDifference(obj.time[i], obj.time[i - 1]);
+            // result will be in milliseconds, ie. 5 second difference = 5000.0 as a result
+            long timeDelta = getTimeDifference(obj.time[i], obj.time[i - 1]);
             // so let's step it down to seconds
-            timeDifference *= 0.001;
+            timeDelta *= 0.001;
     
-            if (timeDifference > 0) {
-              // speed = distance / time
-              obj.speed[i] = 
-              sqrt(
+            if (timeDelta > 0) {
+              // result will be in meters, ie. 44.721455
+              float distanceDelta = sqrt(
                 pow(findDifference(obj.X[i], obj.X[i - 1]), 2) + 
                 pow(findDifference(obj.Y[i], obj.Y[i - 1]), 2) + 
                 pow(findDifference(obj.Z[i], obj.Z[i - 1]), 2)
-              ) / timeDifference;
+              );
+
+              // speed = distance / time
+              // we're starting with m/s, but I'd like km/h, so let's convert
+              obj.speed[i] = ((distanceDelta / timeDelta) / 1000) * 3600;
     
+            } else {
+              // catch the division by zero error before it happens
+              obj.speed[i] = 0; 
+            };
           } else {
-            // catch the division by zero error before it happens
             obj.speed[i] = 0; 
-          };
-        } else {
-            obj.speed[i] = 0; 
-          };
-        };
+          }; // end if
+        }; // end if
       }; // end if
 
     }; // end for loop
