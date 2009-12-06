@@ -91,14 +91,14 @@ class Tracks {
             noStroke();
             noFill();
   
-            color strokeColor = color(0, 0, 0, 0);
-            if (speed[i] > (0.4 * speedLimit)) {strokeColor = color(0, 0, 255);} // blue
-            if (speed[i] > (0.8 * speedLimit)) {strokeColor = color(0, 255, 0);} // green
-            if (speed[i] > (1.6 * speedLimit)) {strokeColor = color(255, 255, 0);}  // yellow
-            if (speed[i] > (2.0 * speedLimit)) {strokeColor = color(255, 192, 0);} // yellow orange
-            if (speed[i] > (2.4 * speedLimit)) {strokeColor = color(255, 128, 0);} // orange
-            if (speed[i] > (2.8 * speedLimit)) {strokeColor = color(255, 64, 0);} // orange red
-            if (speed[i] > (3.2 * speedLimit)) {strokeColor = color(255, 0, 0);} // red
+            color strokeColor = color(0, 0, 255);
+//            if (speed[i] > (0.4 * speedLimit)) {strokeColor = color(0, 0, 255);} // blue
+//            if (speed[i] > (0.8 * speedLimit)) {strokeColor = color(0, 255, 0);} // green
+//            if (speed[i] > (1.6 * speedLimit)) {strokeColor = color(255, 255, 0);}  // yellow
+//            if (speed[i] > (2.0 * speedLimit)) {strokeColor = color(255, 192, 0);} // yellow orange
+//            if (speed[i] > (2.4 * speedLimit)) {strokeColor = color(255, 128, 0);} // orange
+//            if (speed[i] > (2.8 * speedLimit)) {strokeColor = color(255, 64, 0);} // orange red
+//            if (speed[i] > (3.2 * speedLimit)) {strokeColor = color(255, 0, 0);} // red
 
             // create the fadeout trails
             for (int j = 0; j < 64; j++) {
@@ -122,29 +122,6 @@ class Tracks {
             drawConnectors(X[i - 1], scene.minY, Z[i - 1], X[i], scene.minY, Z[i]);
             drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             break;  
-
-
-
-
-          // quad fills
-          // don't work at the moment because something strange is happening with the rotation.
-          // only works for X, need to rotate on Y. strange.
-          case 5:
-            noStroke();
-            fill(scene.palette[1], 64);
-            if (X[i - 1] != 0) {
-              pushMatrix();
-                translate(0, 0, Z[i]);
-//                rotateY(-PI * 0.25);
-                quad(
-                  X[i], scene.minY,
-                  X[i], Y[i] * scene.elevationExaggeration,
-                  X[i - 1], Y[i - 1] * scene.elevationExaggeration,
-                  X[i - 1], scene.minY
-                );
-              popMatrix();
-            }
-            break;
 
 
 

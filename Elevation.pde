@@ -13,24 +13,22 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import processing.opengl.*;
 
-
 // for file data
 ArrayList filenames;
 
 // for track data
+Scene scene;
 Tracks[] tracklist;
 int numTracks;
 
-// scene-related objects
+// GUI objects
 uiPanel UI;
-Scene scene;
 uiCrosshairs crosshair;
 uiScale mapScale;
 uiButton[] buttons;
 uiCheckbox[] checkboxes;
 uiSwitch[] switches;
 uiCompass compass;
-
 
 
 
@@ -59,7 +57,6 @@ void setup() {
     "Panel");
 
   buttons = new uiButton[8];
-
   // arrow buttons
   buttons[0] = new uiButton(
     44, scene.canvasHeight - 90, 35, 40, 119, 87,
@@ -73,7 +70,6 @@ void setup() {
   buttons[3] = new uiButton(
     61, scene.canvasHeight - 67, 45, 30, 100, 68,
     "UI-DPad-right", "offsetZ--");
-
   // ^ / v buttons
   buttons[4] = new uiButton(
     216, scene.canvasHeight - 82, 52, 30, 93, 125,
@@ -81,7 +77,6 @@ void setup() {
   buttons[5] = new uiButton(
     266, scene.canvasHeight - 82, 52, 30, 91, 123,
     "UI-Button-down", "offsetY--");
-
   // + / - buttons
   buttons[6] = new uiButton(
     331, scene.canvasHeight - 82, 52, 30, 43, 61,
@@ -89,8 +84,6 @@ void setup() {
   buttons[7] = new uiButton(
     381, scene.canvasHeight - 82, 52, 30, 45, 95,
     "UI-Button-minus", "drawingScale--");
-
-
 
   // checkboxes
   checkboxes = new uiCheckbox[5];
@@ -106,13 +99,9 @@ void setup() {
   checkboxes[3] = new uiCheckbox(
     951, scene.canvasHeight - 46, 19, 18, 122, 90,
     "UI-Checkbox", "scene.toggleDimension", "checked");
-
   // hidden checkboxes
-  // toggle true elevation
-  checkboxes[4] = new uiCheckbox(
-    1500, 1, 1, 1, 54, 94,
-    "", "scene.toggleElevation", "unchecked");
-
+  checkboxes[4] = new uiCheckbox(1500, 1, 1, 1, 54, 94,
+    "", "scene.toggleElevation", "unchecked"); // toggle true elevation
 
   // switches
   switches = new uiSwitch[5];
@@ -128,13 +117,9 @@ void setup() {
   switches[3] = new uiSwitch(
     691, scene.canvasHeight - 82, 40, 28, 52, 1,
     "UI-Switch-4", "nada", "");
-
   // hidden switches
-  // toggle mode 5
-  switches[4] = new uiSwitch(
-    1500, 1, 1, 1, 53, 1,
-    "", "nada", "");
-
+  switches[4] = new uiSwitch(1500, 1, 1, 1, 53, 1,
+    "", "nada", ""); // toggle mode 5
 
   // drop in the compass
   compass = new uiCompass(
@@ -156,7 +141,6 @@ void setup() {
   tracklist = new Tracks[numTracks];
   for (int i = 0; i < numTracks; i++) {
     tracklist[i] = parseXML((String) filenames.get(i));
-
     // pull out the track dimensions
     tracklist[i].getDimensions();
   };
@@ -200,22 +184,20 @@ void draw() {
   if(mousePressed) {
 
     // any mouse action should probably toggle a re-draw
-      scene.viewRedraw = true;
+    scene.viewRedraw = true;
 
-      if (!(
+    if (!(
       (mouseX > UI.x && mouseX < (UI.x + UI.wide)) &&
       (mouseY > UI.y && mouseY < (UI.y + UI.high))
       )) {
-        // use a cursor image while rotating the scene
+        // use a cursor image while rotating the scene (I suspect this was causing crashes in OS X, removed for now)
         // cursor(scene.cursorHand, scene.cursorHand.width / 2, scene.cursorHand.height / 2);
-          // (I suspect this was causing crashes in OS X, removed for now)
         scene.rotationY += ((float) (mouseX - pmouseX) / 180);
         if (scene.viewDimension == "3D") {
           scene.rotationX += ((float) (mouseY - pmouseY) / 180);
         }
-      }
+    }
   }
-
 
   // check the UI components; render needed?
   for (int i = 0; i < buttons.length; i++) {
@@ -228,10 +210,8 @@ void draw() {
     checkboxes[i].check();
   }
 
-
   // if we're going to redraw, let's go for it
-  if (scene.viewRedraw == true) {
-  
+  if (scene.viewRedraw == true) {  
     background(scene.palette[0]);
     stroke(scene.palette[1]);
     noFill();
@@ -257,9 +237,8 @@ void draw() {
     for (int i = 0; i < numTracks; i++) {
       tracklist[i].render();
     }
-    
-    
-    // disable deth ordering for the sake of drawing 2D controls over top of the 3D scene
+
+    // disable depth ordering for the sake of drawing 2D controls over top of the 3D scene
     hint(DISABLE_DEPTH_TEST);
     // reset the camera view for 2D drawing
     camera();
@@ -281,7 +260,6 @@ void draw() {
 
     // draw mini-compass
     compass.translateThenRender();
-
   };
 
   // reset the viewRedraw switch for each loop so we don't peg the CPU

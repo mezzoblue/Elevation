@@ -76,9 +76,9 @@ Tracks parseXML(String file) {
 
 */
       int degreeLength = 111000;
-      scene.averageParallel(Float.parseFloat(coordinates[i][0]));
 
       if (coordinates[i][0] != null) {
+        scene.averageParallel(Float.parseFloat(coordinates[i][0]));
         // pull out the raw latitude coordinates
         float phi = radians(Float.parseFloat(coordinates[i][0]));
         float adjustedPhi = degrees(0.5 * log((1 + sin(phi)) / (1 - sin(phi))));
@@ -110,7 +110,11 @@ Tracks parseXML(String file) {
         } else {
           // only do it if we have more than one point to compare
           if (i > 0) {
+
+            // result will be in milliseconds, ie. 5 seconds = 1000
             long timeDifference = getTimeDifference(obj.time[i], obj.time[i - 1]);
+            // so let's step it down to seconds
+            timeDifference *= 0.001;
     
             if (timeDifference > 0) {
               // speed = distance / time
