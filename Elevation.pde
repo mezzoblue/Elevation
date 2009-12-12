@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import processing.opengl.*;
 
 // for file data
-ArrayList filenames;
+ArrayList trackFilenames;
 
 // for track data
 Scene scene;
@@ -128,22 +128,15 @@ void setup() {
   // create the crosshairs object
   crosshair = new uiCrosshairs();
 
-  // get the map data XML files
-  filenames = listFileNames(dataPath("") + "/xml/");
-  try {
-    numTracks = filenames.size();
-  }
-  catch (NullPointerException e) {
-    // likely suspect: no /xml/ directory
-  }
-
-  // turn the XML into something a little more usable
-  tracklist = new Tracks[numTracks];
-  for (int i = 0; i < numTracks; i++) {
-    tracklist[i] = parseXML((String) filenames.get(i));
-    // pull out the track dimensions
-    tracklist[i].getDimensions();
+  // get the track data
+  String[] fileExtensions = {
+    "gpx",
+    "kml",
+    "tcx"
   };
+  trackFilenames = fileCount(dataPath("") + "/xml/", fileExtensions);
+  numTracks = trackFilenames.size();
+  getTrackXML(numTracks);
 
   // create the map scale object once the map data is loaded
   mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 106, scene.canvasWidth, 5);

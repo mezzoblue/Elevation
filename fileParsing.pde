@@ -1,35 +1,43 @@
-/*
-   For reference:
-
-   Path to coordinates in a GPX file from RunKeeper:
-   gpx > trk > trkseg > trkpt (multiple)
-
-   Path to coordinates in a GPX file from GPSBabel:
-   gpx > trk > trkseg > trkpt (multiple)
-
-   Path to coordinates in a KML file from RunKeeper:
-   kml > Document > Placemark > MultiGeometry > LineString > coordinates
-
-   Path to coordinates in a KML file from SportsTracker:
-   kml > Document > Placemark > LineString > coordinates
-   
-   Path to coordinates in a TCX file from Garmin:
-   TrainingCenterDatabase > Activities > Activity > Lap > Track
-     Trackpoint
-       Time
-       Position > LatitudeDegrees, LongitudeDegrees
-       AltitudeMeters
-       DistanceMeters
-
-*/
+//
+// return the number of files at this path
+//
+ArrayList fileCount(String dir, String[] extensions) {
+  int num = 0;
+  ArrayList files = listFileNames(dir, extensions);
+  try {
+    num = files.size();
+  }
+  catch (NullPointerException e) {
+    // likely suspect: no matching directory
+  }
+  return files;
+};
 
 
-Tracks parseXML(String file) {
+// 
+// load the track XML files and create each individual track
+//
+void getTrackXML(int num) {
+  // turn the XML into something a little more usable
+  tracklist = new Tracks[num];
+  for (int i = 0; i < num; i++) {
+    tracklist[i] = createTrack((String) trackFilenames.get(i));
+    // pull out the track dimensions
+    tracklist[i].getDimensions();
+  };
+};
+
+
+//
+// create a single track
+//
+Tracks createTrack(String file) {
+
+  file = dataPath("") + "/xml/" + file;
 
   float ele = 0;
   float revisedEle = 0;
   int numPoints = 0;
-  file = dataPath("") + "/xml/" + file;
 
   String[][] coordinates = getCoordinates(getRoot(file), getExtension(file));
   for (int i = 0; i < coordinates.length; i++) {
@@ -43,40 +51,9 @@ Tracks parseXML(String file) {
     // now let's go through and build a track from coordinates
     for (int i = 0; i < numPoints; i++) {
 
-/*
-   Some notes about latitude / longitude values. Wikipedia tells us (http://en.wikipedia.org/wiki/Decimal_degrees)
-   that each degree is 111km at the equator. While it would be great to map this thing out on a sphere, there's no 
-   need to make it that complicated. Distances of under a few hundred km oughtta be just fine as flat maps for now.
-
-   +-- decimal places
-   |
-   |    +-- degrees
-   |    |               +-- distance
-   |    |               |
-
-   0	1.0	        111 km
-   1	0.1	        11.1 km
-   2	0.01	        1.11 km
-   3	0.001  	        111 m
-   4	0.0001   	11.1 m
-   5	0.00001  	1.11 m
-   6	0.000001	0.111 m
-   7	0.0000001	1.11 cm
-   8	0.00000001	1.11 mm
-
-
-   To convert from lat/lon to kilometers, we multiply by 111. Meters, 111,000. That's not a constant though;
-   given degree length changes at different latitudes, it could be as low as 110.5km at the equator, or as
-   high as 111.5km at 70 degrees. Not a huge margin of error, but something I might want to correct one day.
-   
-   I will need to convert the GPS points to a map projection though, Mercator in this case since that's what 
-   Google, Microsoft, Yahoo all use and one day I may just get Elevation talking to them. Best to be on  
-   the same system. Longitude is fine as-is, but latitude needs to be run through a formula adapted from 
-   the maths on http://en.wikipedia.org/wiki/Mercator_projection
-
-*/
       int degreeLength = 111000;
 
+      // assign the latitude
       if (coordinates[i][0] != null) {
         scene.averageParallel(Float.parseFloat(coordinates[i][0]));
         // pull out the raw latitude coordinates
@@ -84,12 +61,14 @@ Tracks parseXML(String file) {
         float adjustedPhi = degrees(0.5 * log((1 + sin(phi)) / (1 - sin(phi))));
         obj.X[i] = (adjustedPhi * degreeLength);
       }
+
+      // assign the longitude
       if (coordinates[i][1] != null) {
         float lambda = Float.parseFloat(coordinates[i][1]);
         obj.Z[i] = 0 - (lambda * degreeLength);
       }
-  
-  
+
+      // assign the elevation
       if (coordinates[i][2] != null) {
         // average out each point's elevation with the two preceding it to minimize spikes
         if (i > 1) {
@@ -99,8 +78,7 @@ Tracks parseXML(String file) {
         };
       }
       
-
-      // get the time and speed if they exist
+      // assign the time and speed, if they exist
       if (coordinates[i][3] != null) {
         obj.time[i] = coordinates[i][3];
     
@@ -148,28 +126,26 @@ Tracks parseXML(String file) {
 
 
 
-
-// This function returns all the files in a directory as an array of Strings  
-// modified from: http://processing.org/learning/topics/directorylist.html
-ArrayList listFileNames(String dir) {
+//
+// Return all the files in a directory as an array of Strings  
+// (adapted from: http://processing.org/learning/topics/directorylist.html)
+//
+ArrayList listFileNames(String dir, String[] extensions) {
   File file = new File(dir);
   if (file.isDirectory()) {
     // dump the files into a string array
-    String names[] = file.list();
+    String[] names = file.list();
     // create an ArrayList for the final file list
     ArrayList names2 = new ArrayList();
 
     // run through and remove files that don't match the extension
     for (int i = 0; i < names.length; i++) {
       String fileExt = getExtension(names[i]);
-      if (
-        (fileExt.toLowerCase().equals("gpx")) ||
-        (fileExt.toLowerCase().equals("kml")) || 
-        (fileExt.toLowerCase().equals("tcx")) 
-      ) {
-        names2.add(names[i]);
+      for(int j = 0; j < extensions.length; j++) {
+        if (fileExt.toLowerCase().equals(extensions[j])) {
+          names2.add(names[i]);
+        };
       };
-
     };
     return names2;
   } 
@@ -181,16 +157,18 @@ ArrayList listFileNames(String dir) {
 
 
 
-
+//
 // find the absolute difference between two numbers, 
+//
 float findDifference(float n1, float n2) {
   return abs(n1 - n2) / 2;
 }
 
 
 
-
+//
 // find the time difference between two strings formatted in iso8601 format (yyyy-MM-ddTHH:mm:ssZ)
+//
 long getTimeDifference(String date1, String date2) {
   // code I found useful for Java's date functions:
   // http://www.coderanch.com/t/378541/Java-General/java/Convert-date-difference-format 
@@ -233,28 +211,33 @@ long getTimeDifference(String date1, String date2) {
 }
 
 
+//
 // get the root element of the document
+//
 XMLElement getRoot(String file) {
   XMLElement data = new XMLElement(this, file);
   return(data);
 }
+
+//
 // get the file extension of the document
+//
 String getExtension(String file) {
   return file.substring(file.length() - 3).toLowerCase();
 };
 
 
-
+//
 // find the element in the DOM that holds coordinate data
 // then, thanks in large part to KML's ugliness, rebuild the thing as a 2D String array
 // 0 = lat, 1 = lon, 2 = ele, 3 = time (if available)
+//
 String[][] getCoordinates(XMLElement root, String fileType) {  
 
   // create the return array, initialize it with a dummy value
   String[][] coordinates = {{" "}};
 
-
-  // Google .kml files, probably fairly generic
+  // Google .kml files
   if (fileType.equals("kml")) {
     String coordinateList = "";
     // try a couple ways of navigating to the big list of coordinates in the KML file,
@@ -290,8 +273,6 @@ String[][] getCoordinates(XMLElement root, String fileType) {
       coordinates[i][3] = null;
     }
     
-    
-    
   // GPS Exchange Format .gpx files
   // used by RunKeeper Pro and GPSBabel
   } else if (fileType.equals("gpx")) {
@@ -323,8 +304,6 @@ String[][] getCoordinates(XMLElement root, String fileType) {
           }
       };
     }
-
-
 
   // Garmin Training Center .tcx files
   } else if (fileType.equals("tcx")) {
@@ -379,3 +358,69 @@ String[][] getCoordinates(XMLElement root, String fileType) {
   return(coordinates);
   
 };
+
+
+
+
+
+
+/*
+   DOM paths to coordinates for reference:
+
+   Path to coordinates in a GPX file from RunKeeper:
+   gpx > trk > trkseg > trkpt (multiple)
+
+   Path to coordinates in a GPX file from GPSBabel:
+   gpx > trk > trkseg > trkpt (multiple)
+
+   Path to coordinates in a KML file from RunKeeper:
+   kml > Document > Placemark > MultiGeometry > LineString > coordinates
+
+   Path to coordinates in a KML file from SportsTracker:
+   kml > Document > Placemark > LineString > coordinates
+   
+   Path to coordinates in a TCX file from Garmin:
+   TrainingCenterDatabase > Activities > Activity > Lap > Track
+     Trackpoint
+       Time
+       Position > LatitudeDegrees, LongitudeDegrees
+       AltitudeMeters
+       DistanceMeters
+
+
+
+
+   Some notes about latitude / longitude values. Wikipedia tells us (http://en.wikipedia.org/wiki/Decimal_degrees)
+   that each degree is 111km at the equator. While it would be great to map this thing out on a sphere, there's no 
+   need to make it that complicated. Distances of under a few hundred km oughtta be just fine as flat maps for now.
+
+   +-- decimal places
+   |
+   |    +-- degrees
+   |    |               +-- distance
+   |    |               |
+
+   0	1.0	        111 km
+   1	0.1	        11.1 km
+   2	0.01	        1.11 km
+   3	0.001  	        111 m
+   4	0.0001   	11.1 m
+   5	0.00001  	1.11 m
+   6	0.000001	0.111 m
+   7	0.0000001	1.11 cm
+   8	0.00000001	1.11 mm
+
+   To convert from lat/lon to kilometers, we multiply by 111. Meters, 111,000. That's not a constant though;
+   given degree length changes at different latitudes, it could be as low as 110.5km at the equator, or as
+   high as 111.5km at 70 degrees. Not a huge margin of error, but something I might want to correct one day.
+   
+   For now:
+      int degreeLength = 111000;
+   takes care of it.
+   
+   I do also need to convert the GPS points to a map projection though, Mercator in this case since that's 
+   what Google, Microsoft, Yahoo all use and one day I may just get Elevation talking to them. Best to be 
+   on the same system. Longitude is fine as-is, but latitude needs to be run through a formula adapted from 
+   the maths on http://en.wikipedia.org/wiki/Mercator_projection
+
+*/
