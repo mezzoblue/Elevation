@@ -14,14 +14,90 @@ ArrayList fileCount(String dir, String[] extensions) {
 };
 
 
+//
+// Find all files in a directory that match the specified extension
+// Return matched filenames as an ArrayList
+// (adapted from: http://processing.org/learning/topics/directorylist.html)
+//
+ArrayList listFileNames(String dir, String[] extensions) {
+  File file = new File(dir);
+  if (file.isDirectory()) {
+    // dump the files into a string array
+    String[] names = file.list();
+    // create an ArrayList for the final file list
+    ArrayList names2 = new ArrayList();
+
+    // run through and remove files that don't match the extension
+    for (int i = 0; i < names.length; i++) {
+      String fileExt = getExtension(names[i]);
+      for(int j = 0; j < extensions.length; j++) {
+        if (fileExt.toLowerCase().equals(extensions[j])) {
+          names2.add(names[i]);
+        };
+      };
+    };
+    return names2;
+  } 
+  else {
+    // it's probably not a valid directory
+    return null;
+  }
+}
+
+
+// 
+// load the config XML files and adjust settings
+//
+void getConfiguration(ArrayList files) {
+  for (int i = 0; i < files.size(); i++) {
+    if (((String) files.get(i)).equals("palette.cfg")) {
+      createPalette((String) files.get(i));
+    }
+  }
+};
+
+
+//
+// create a default palette
+//
+void createPalette(String file) {
+
+  // this all could be done a lot better code-wise, and needs a backup if the config file doesn't exist
+
+  XMLElement[] swatchList;
+    
+  file = dataPath("") + "config/" + file;
+  XMLElement root = getRoot(file);
+  try {
+    swatchList = root.getChildren();
+    scene.paletteCount = root.getChildCount();
+    scene.palette = new uiPalette[scene.paletteCount - 1];
+
+    // skip the first one
+    for (int i = 1; i < root.getChildCount(); i++) {
+      // initialize each object in the palette array
+      scene.palette[i - 1] = new uiPalette();
+      scene.palette[i - 1].setName(swatchList[i].getStringAttribute("name"));
+      scene.palette[i - 1].setValue(unhex("FF" + (swatchList[i].getChild(0).getContent()).substring(1)));
+      scene.palette[i - 1].setOpacity(unhex("FF" + (swatchList[i].getChild(1).getContent()).substring(1)));
+    };
+    // throw results into scene.palette[x]
+  }
+  catch(NullPointerException n) {
+  }
+}
+
+
+
+
 // 
 // load the track XML files and create each individual track
 //
-void getTrackXML(int num) {
+void getTrackXML(ArrayList files) {
   // turn the XML into something a little more usable
-  tracklist = new Tracks[num];
-  for (int i = 0; i < num; i++) {
-    tracklist[i] = createTrack((String) trackFilenames.get(i));
+  tracklist = new Tracks[files.size()];
+  for (int i = 0; i < files.size(); i++) {
+    tracklist[i] = createTrack((String) files.get(i));
     // pull out the track dimensions
     tracklist[i].getDimensions();
   };
@@ -33,7 +109,7 @@ void getTrackXML(int num) {
 //
 Tracks createTrack(String file) {
 
-  file = dataPath("") + "/xml/" + file;
+  file = dataPath("") + "xml/" + file;
 
   float ele = 0;
   float revisedEle = 0;
@@ -122,38 +198,6 @@ Tracks createTrack(String file) {
   return obj;
 
 };
-
-
-
-
-//
-// Return all the files in a directory as an array of Strings  
-// (adapted from: http://processing.org/learning/topics/directorylist.html)
-//
-ArrayList listFileNames(String dir, String[] extensions) {
-  File file = new File(dir);
-  if (file.isDirectory()) {
-    // dump the files into a string array
-    String[] names = file.list();
-    // create an ArrayList for the final file list
-    ArrayList names2 = new ArrayList();
-
-    // run through and remove files that don't match the extension
-    for (int i = 0; i < names.length; i++) {
-      String fileExt = getExtension(names[i]);
-      for(int j = 0; j < extensions.length; j++) {
-        if (fileExt.toLowerCase().equals(extensions[j])) {
-          names2.add(names[i]);
-        };
-      };
-    };
-    return names2;
-  } 
-  else {
-    // If it's not a directory
-    return null;
-  }
-}
 
 
 

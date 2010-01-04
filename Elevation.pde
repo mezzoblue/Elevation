@@ -13,10 +13,12 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import processing.opengl.*;
 
-// for file data
-ArrayList trackFilenames;
+// for config data
+ArrayList configFilenames;
+int numConfigFiles;
 
 // for track data
+ArrayList trackFilenames;
 Scene scene;
 Tracks[] tracklist;
 int numTracks;
@@ -128,15 +130,25 @@ void setup() {
   // create the crosshairs object
   crosshair = new uiCrosshairs();
 
-  // get the track data
-  String[] fileExtensions = {
+  // get the config data
+  String[] configFileExtensions = {
+    "cfg"
+  };
+  configFilenames = fileCount(dataPath("") + "/config/", configFileExtensions);
+  numConfigFiles = configFilenames.size();
+  getConfiguration(configFilenames);
+
+
+  // get the map data
+  String[] trackFileExtensions = {
     "gpx",
     "kml",
     "tcx"
   };
-  trackFilenames = fileCount(dataPath("") + "/xml/", fileExtensions);
+  trackFilenames = fileCount(dataPath("") + "/xml/", trackFileExtensions);
   numTracks = trackFilenames.size();
-  getTrackXML(numTracks);
+  getTrackXML(trackFilenames);
+
 
   // create the map scale object once the map data is loaded
   mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 106, scene.canvasWidth, 5);
@@ -205,8 +217,36 @@ void draw() {
 
   // if we're going to redraw, let's go for it
   if (scene.viewRedraw == true) {  
-    background(scene.palette[0]);
-    stroke(scene.palette[1]);
+
+    // set default colours
+    background(#000000);
+    stroke(#FFFFFF);
+
+    // should be putting this in tracks.render, but when I do
+    // the app crashes my entire system. hmm. infinte loop perhaps?
+    switch(scene.viewMode) {
+      case 0:
+        background(scene.getColor("Mode 1 Background"));
+        stroke(scene.getColor("Mode 1 Foreground"));
+        break;
+      case 1:
+        background(scene.getColor("Mode 2 Background"));
+        stroke(scene.getColor("Mode 2 Foreground"));
+        break;
+      case 2:
+        background(scene.getColor("Mode 3 Background"));
+        stroke(scene.getColor("Mode 3 Foreground"));
+        break;
+      case 3:
+        background(scene.getColor("Mode 4 Background"));
+        stroke(scene.getColor("Mode 4 Foreground"));
+        break;
+      case 4:
+        background(scene.getColor("Mode 5 Background"));
+        stroke(scene.getColor("Mode 5 Foreground"));
+        break;
+    }; // end switch
+
     noFill();
   
     // move the sketch to the center of the canvas, accounting for height of the UI panel
@@ -216,10 +256,7 @@ void draw() {
     rotateX(scene.rotationX);
     rotateY(scene.rotationY);
     rotateZ(scene.rotationZ);
-  
-    // draw the crosshairs
-    crosshair.render(scene.palette[1]);
-  
+    
     // adjust the scale based on user input
     scale(scene.drawingScale);
   
@@ -230,6 +267,9 @@ void draw() {
     for (int i = 0; i < numTracks; i++) {
       tracklist[i].render();
     }
+
+    // draw the crosshairs
+    crosshair.render(scene.palette[1].value);
 
     // disable depth ordering for the sake of drawing 2D controls over top of the 3D scene
     hint(DISABLE_DEPTH_TEST);
@@ -249,10 +289,11 @@ void draw() {
     }
     
     // draw the map scale
-    mapScale.render(scene.palette[1]);
+    mapScale.render(scene.palette[1].value);
 
     // draw mini-compass
     compass.translateThenRender();
+
   };
 
   // reset the viewRedraw switch for each loop so we don't peg the CPU

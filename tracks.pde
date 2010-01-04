@@ -39,7 +39,6 @@ class Tracks {
   
           // plain white
           case 0:
-            stroke(scene.palette[1], 60);
             noFill();
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
@@ -67,17 +66,27 @@ class Tracks {
   
           // speed indicators: a manual spectrum from dark blue to red
           case 2:
-            if (speed[i] > 0) {stroke(0, 0, 255, 32);} // faded blue
-            if (speed[i] > 10) {stroke(0, 0, 255, 128);} // full blue
-            if (speed[i] > 20) {stroke(0, 255, 0, 128);} // green
-            if (speed[i] > 25) {stroke(255, 255, 0, 128);}  // yellow
-            if (speed[i] > 30) {stroke(255, 192, 0, 128);} // yellow orange
-            if (speed[i] > 35) {stroke(255, 128, 0, 128);} // orange
-            if (speed[i] > 40) {stroke(255, 64, 0, 128);} // orange red
-            if (speed[i] > 50) {stroke(255, 0, 0, 128);} // dark red
-            if (speed[i] > 60) {stroke(255, 0, 0, 192);} // less dark red
-            if (speed[i] > 70) {stroke(255, 0, 0, 255);} // red
-            if (speed[i] > 80) {stroke(255, 255, 255, 255);} // white
+            if (speed[i] > 0) {stroke(scene.palette[4].value, scene.palette[4].opacity);}
+            if (speed[i] > 5) {stroke(scene.palette[5].value, scene.palette[5].opacity);}
+            if (speed[i] > 10) {stroke(scene.palette[6].value, scene.palette[6].opacity);}
+            if (speed[i] > 15) {stroke(scene.palette[7].value, scene.palette[7].opacity);}
+            if (speed[i] > 20) {stroke(scene.palette[8].value, scene.palette[8].opacity);}
+            if (speed[i] > 25) {stroke(scene.palette[9].value, scene.palette[9].opacity);}
+            if (speed[i] > 30) {stroke(scene.palette[10].value, scene.palette[10].opacity);}
+            if (speed[i] > 35) {stroke(scene.palette[11].value, scene.palette[11].opacity);}
+            if (speed[i] > 40) {stroke(scene.palette[12].value, scene.palette[12].opacity);}
+            if (speed[i] > 45) {stroke(scene.palette[13].value, scene.palette[13].opacity);}
+            if (speed[i] > 50) {stroke(scene.palette[14].value, scene.palette[14].opacity);}
+            if (speed[i] > 55) {stroke(scene.palette[15].value, scene.palette[15].opacity);}
+            if (speed[i] > 60) {stroke(scene.palette[16].value, scene.palette[16].opacity);}
+            if (speed[i] > 65) {stroke(scene.palette[17].value, scene.palette[17].opacity);}
+            if (speed[i] > 70) {stroke(scene.palette[18].value, scene.palette[18].opacity);}
+            if (speed[i] > 75) {stroke(scene.palette[19].value, scene.palette[19].opacity);}
+            if (speed[i] > 80) {stroke(scene.palette[20].value, scene.palette[20].opacity);}
+            if (speed[i] > 85) {stroke(scene.palette[21].value, scene.palette[21].opacity);}
+            if (speed[i] > 90) {stroke(scene.palette[22].value, scene.palette[22].opacity);}
+            if (speed[i] > 95) {stroke(scene.palette[23].value, scene.palette[23].opacity);}
+            if (speed[i] > 100) {stroke(scene.palette[24].value, scene.palette[24].opacity);}
             noFill();
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
@@ -110,7 +119,7 @@ class Tracks {
           // elevation spikes
           case 4:
             noFill();
-            stroke(scene.palette[1], 32);
+            stroke(scene.palette[1].value, 32);
             drawConnectors(X[i], scene.minY, Z[i], X[i], Y[i], Z[i]);
             drawConnectors(X[i - 1], scene.minY, Z[i - 1], X[i], scene.minY, Z[i]);
             drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
