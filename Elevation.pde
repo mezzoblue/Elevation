@@ -13,9 +13,14 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import processing.opengl.*;
 
+<<<<<<< HEAD
 // for config data
 ArrayList configFilenames;
 int numConfigFiles;
+=======
+// for file data
+ArrayList filenames;
+>>>>>>> parent of bbb3e10... Fixed speed data (aside from anomalies), started refactoring XML parsing to work with config files
 
 // for track data
 ArrayList trackFilenames;
@@ -130,6 +135,7 @@ void setup() {
   // create the crosshairs object
   crosshair = new uiCrosshairs();
 
+<<<<<<< HEAD
   // get the config data
   String[] configFileExtensions = {
     "cfg"
@@ -149,6 +155,24 @@ void setup() {
   numTracks = trackFilenames.size();
   getTrackXML(trackFilenames);
 
+=======
+  // get the map data XML files
+  filenames = listFileNames(dataPath("") + "/xml/");
+  try {
+    numTracks = filenames.size();
+  }
+  catch (NullPointerException e) {
+    // likely suspect: no /xml/ directory
+  }
+
+  // turn the XML into something a little more usable
+  tracklist = new Tracks[numTracks];
+  for (int i = 0; i < numTracks; i++) {
+    tracklist[i] = parseXML((String) filenames.get(i));
+    // pull out the track dimensions
+    tracklist[i].getDimensions();
+  };
+>>>>>>> parent of bbb3e10... Fixed speed data (aside from anomalies), started refactoring XML parsing to work with config files
 
   // create the map scale object once the map data is loaded
   mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 106, scene.canvasWidth, 5);

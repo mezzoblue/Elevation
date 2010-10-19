@@ -12,7 +12,6 @@ class Tracks {
   String[] time;
 
   int pointTracer = 0;
-  
 
   // constructor
   Tracks(int num) {
@@ -51,9 +50,9 @@ class Tracks {
           // red for the high elevations, blue for the low
           case 1:
             float heightLimit = findDifference(scene.maxY, scene.minY) / 11;
-            for (int j = 0; j < 20; j++) {
+            for (int j = 0; j < 10; j++) {
               if (Y[i] > (j * 0.9 * heightLimit)) {
-                stroke(j * 12, 0, 255 - j * 12, 255);
+                stroke(j * 25, 0, 255 - j * 25, 255);
               } 
             }
             noFill();
@@ -65,7 +64,9 @@ class Tracks {
   
   
           // speed indicators: a manual spectrum from dark blue to red
+          // lots of stops on the low end, because that's where speed data seems to be weakest
           case 2:
+<<<<<<< HEAD
             if (speed[i] > 0) {stroke(scene.palette[4].value, scene.palette[4].opacity);}
             if (speed[i] > 5) {stroke(scene.palette[5].value, scene.palette[5].opacity);}
             if (speed[i] > 10) {stroke(scene.palette[6].value, scene.palette[6].opacity);}
@@ -87,6 +88,19 @@ class Tracks {
             if (speed[i] > 90) {stroke(scene.palette[22].value, scene.palette[22].opacity);}
             if (speed[i] > 95) {stroke(scene.palette[23].value, scene.palette[23].opacity);}
             if (speed[i] > 100) {stroke(scene.palette[24].value, scene.palette[24].opacity);}
+=======
+            // there's a lot
+            if (speed[i] > (0 * speedLimit)) {stroke(0, 0, 255, 64);} // even more faded blue
+            if (speed[i] > (0.1 * speedLimit)) {stroke(0, 0, 255, 128);} // faded blue
+            if (speed[i] > (0.2 * speedLimit)) {stroke(0, 0, 255, 192);} // faded blue
+            if (speed[i] > (0.4 * speedLimit)) {stroke(0, 0, 255, 255);} // full blue
+            if (speed[i] > (0.8 * speedLimit)) {stroke(0, 255, 0, 255);} // green
+            if (speed[i] > (1.6 * speedLimit)) {stroke(255, 255, 0, 255);}  // yellow
+            if (speed[i] > (2.0 * speedLimit)) {stroke(255, 192, 0, 255);} // yellow orange
+            if (speed[i] > (2.4 * speedLimit)) {stroke(255, 128, 0, 255);} // orange
+            if (speed[i] > (2.8 * speedLimit)) {stroke(255, 64, 0, 255);} // orange red
+            if (speed[i] > (3.2 * speedLimit)) {stroke(255, 0, 0, 255);} // red
+>>>>>>> parent of bbb3e10... Fixed speed data (aside from anomalies), started refactoring XML parsing to work with config files
             noFill();
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
@@ -101,7 +115,14 @@ class Tracks {
             noFill();
   
             color strokeColor = color(0, 0, 255);
-            stroke(strokeColor, 48);
+//            if (speed[i] > (0.4 * speedLimit)) {strokeColor = color(0, 0, 255);} // blue
+//            if (speed[i] > (0.8 * speedLimit)) {strokeColor = color(0, 255, 0);} // green
+//            if (speed[i] > (1.6 * speedLimit)) {strokeColor = color(255, 255, 0);}  // yellow
+//            if (speed[i] > (2.0 * speedLimit)) {strokeColor = color(255, 192, 0);} // yellow orange
+//            if (speed[i] > (2.4 * speedLimit)) {strokeColor = color(255, 128, 0);} // orange
+//            if (speed[i] > (2.8 * speedLimit)) {strokeColor = color(255, 64, 0);} // orange red
+//            if (speed[i] > (3.2 * speedLimit)) {strokeColor = color(255, 0, 0);} // red
+
             // create the fadeout trails
             for (int j = 0; j < 64; j++) {
               if (i == pointTracer - j) {stroke(strokeColor, 128 - 2 * j);};
