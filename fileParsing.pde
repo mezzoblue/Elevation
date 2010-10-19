@@ -1,4 +1,14 @@
 //
+// refresh the XML data
+//
+void refreshTracks() {
+  trackFilenames = fileCount(dataPath("") + "/xml/", fileExtensions);
+  numTracks = trackFilenames.size();
+  getTrackXML(numTracks);
+}
+
+
+//
 // return the number of files at this path
 //
 ArrayList fileCount(String dir, String[] extensions) {

@@ -15,6 +15,7 @@ import processing.opengl.*;
 
 // for file data
 ArrayList trackFilenames;
+String[] fileExtensions;
 
 // for track data
 Scene scene;
@@ -46,6 +47,11 @@ void setup() {
 
   // set title bar frame
   frame.setTitle("Elevation"); 
+
+  // make the window resizable
+  // (so much to do before this will work)
+  // frame.setResizable(true);
+
 
   // stuff for the Windows EXE
   Image img = getToolkit().getImage("elevation-16px.gif");
@@ -129,14 +135,12 @@ void setup() {
   crosshair = new uiCrosshairs();
 
   // get the track data
-  String[] fileExtensions = {
+  fileExtensions = new String[] {
     "gpx",
     "kml",
     "tcx"
   };
-  trackFilenames = fileCount(dataPath("") + "/xml/", fileExtensions);
-  numTracks = trackFilenames.size();
-  getTrackXML(numTracks);
+  refreshTracks();
 
   // create the map scale object once the map data is loaded
   mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 106, scene.canvasWidth, 5);
@@ -253,6 +257,7 @@ void draw() {
 
     // draw mini-compass
     compass.translateThenRender();
+
   };
 
   // reset the viewRedraw switch for each loop so we don't peg the CPU

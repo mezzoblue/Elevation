@@ -497,6 +497,11 @@ void keyPressed() {
       scene.uiKeyPress = 100; 
     };
   };
+  // if 'r' is pressed, then reload the XML files
+  if (int(key) == 82) {
+    refreshTracks(); 
+    scene.viewRedraw = true;
+  }
 };
 
 
