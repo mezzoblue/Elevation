@@ -291,13 +291,30 @@ String[][] getCoordinates(XMLElement root, String fileType) {
           // parse out the relevant child elements
           XMLElement child = node.getChild(i);
           if (node.getChildCount() > 3) {
-            // get the lat and long coordinates from attributes on this particular child
-            coordinates[i][0] = trim(child.getStringAttribute("lat"));
-            coordinates[i][1] = trim(child.getStringAttribute("lon"));
-            // get the elevation from the first child
-            coordinates[i][2] = trim(child.getChild(0).getContent());
-            // get the time from the second child
-            coordinates[i][3] = child.getChild(1).getContent();
+            try {
+              // get the lat and long coordinates from attributes on this particular child
+              coordinates[i][0] = trim(child.getStringAttribute("lat"));
+              coordinates[i][1] = trim(child.getStringAttribute("lon"));
+            }
+            catch(NullPointerException n) {
+              // likely suspect: point without any useful data. No need to do anything, just ignore it.
+            }
+            // get the elevation from the first child, if it exists
+            try {
+              coordinates[i][2] = trim(child.getChild(0).getContent());
+            }
+            catch(ArrayIndexOutOfBoundsException n) {
+              // file doesn't have a time coordinate? Ignore
+            }
+
+            // get the time from the second child, if it exists
+            try {
+              coordinates[i][3] = child.getChild(1).getContent();
+            }
+            catch(ArrayIndexOutOfBoundsException n) {
+              // file doesn't have a time coordinate? Ignore
+            }
+
           } else {
             coordinates[i][0] = null; coordinates[i][1] = null;
             coordinates[i][2] = null; coordinates[i][3] = null;
