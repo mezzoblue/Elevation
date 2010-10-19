@@ -1,6 +1,4 @@
-//
 // a container object to hold the various scene properties
-//
 class Scene {
   
   // basic environment variables
@@ -37,12 +35,15 @@ class Scene {
   int uiKeyPress = 0;
   Boolean uiMouseReleased = false;
 
-  int paletteCount;
-  uiPalette[] palette;
+  color[] palette;
 
   Scene(int wide, int high) {
     canvasWidth = wide;
     canvasHeight = high;
+
+    palette = new color[2];
+    palette[0] = #000000;
+    palette[1] = #FFFFFF;
 
     // create pfont object for scale labels
     scaleText = loadFont("Helvetica-10.vlw");
@@ -51,10 +52,7 @@ class Scene {
   };
 
   void togglePalette() {
-//    palette = reverse(palette);
-    uiPalette temp1 = scene.palette[0];
-    scene.palette[0] = scene.palette[1];
-    scene.palette[1] = temp1;
+    palette = reverse(palette);
   };
   void toggleConnectors() {
     if (scene.viewConnectors) {
@@ -80,31 +78,6 @@ class Scene {
       scene.elevationExaggeration = 8;
     };
   };
-  color getColor(String swatch) {
-    return color(
-      scene.getSwatchValue(swatch) >> 16 & 0xFF, 
-      scene.getSwatchValue(swatch) >> 8 & 0xFF, 
-      scene.getSwatchValue(swatch) & 0xFF, 
-      scene.getSwatchOpacity(swatch)
-    );
-  }
-  color getSwatchValue(String swatch) {
-    uiPalette sw = getSwatch(swatch);
-    return color(sw.value);
-  }
-  int getSwatchOpacity(String swatch) {
-    uiPalette sw = getSwatch(swatch);
-    return int(sw.opacity);
-  }
-  uiPalette getSwatch(String swatch) {
-    uiPalette sw = null;
-    for (int i = 0; i < palette.length; i++) {
-      if (palette[i].name.equals(swatch)) {
-        sw = palette[i];
-      }
-    }
-    return sw;
-  }
   
   // kind of goofy that I need this, but I've committed to converting my internal coordinates to meters
   // so now I need this function to keep track of the average raw latitude of the scene. The value it 
@@ -115,41 +88,12 @@ class Scene {
     averageLat = ((av * (averageLatCount - 1)) + av) / averageLatCount;
   };
 
+
 };
 
 
 
-//
-// a container object to hold the scene palette
-//
-class uiPalette {
-
-  String name;
-  color value;
-  int opacity;
-  
-  uiPalette() {
-    name = "";
-    value = #000000;
-    opacity = 0;
-  }
-  
-  void setName(String tempName) {
-    name = tempName;
-  }
-  void setValue(color tempVal) {
-    value = tempVal;
-  }
-  void setOpacity(int tempOpacity) {
-    opacity = tempOpacity;
-  }
-
-}
-
-
-//
 // Core UI Element class that defines basic properties and methods
-//
 class uiElement {
 
   // position
@@ -189,9 +133,7 @@ class uiElement {
 };
 
 
-//
 // simple panel to throw our UI elements into
-//
 class uiPanel extends uiElement {
   uiPanel(int newX, int newY, int newWide, int newHigh, String filename) {
     x = newX;
@@ -203,9 +145,7 @@ class uiPanel extends uiElement {
 };
 
 
-//
 // stand-alone buttons
-//
 class uiButton extends uiElement {
 
   String buttonAction;
@@ -271,9 +211,7 @@ class uiButton extends uiElement {
 };
 
 
-//
 // basic checkbox
-//
 class uiCheckbox extends uiElement {
 
   String checkboxAction;
@@ -326,9 +264,7 @@ class uiCheckbox extends uiElement {
 };
 
 
-//
 // switches are sort of a radio button type of control, where only one of the group can be selected
-//
 class uiSwitch extends uiElement {
 
   String switchAction;
@@ -402,9 +338,7 @@ class uiSwitch extends uiElement {
 };
 
 
-//
 // the directional compass in the UI
-//
 class uiCompass extends uiElement {
   uiCompass(int newX, int newY, int newWide, int newHigh) {
     x = newX;
@@ -432,9 +366,8 @@ class uiCompass extends uiElement {
 };
 
 
-//
+
 // map scale indicator
-//
 class uiScale {
 
   Boolean toggle;
@@ -499,7 +432,7 @@ class uiScale {
           float thisVal = (i * currentVal * currentMultiplier) - wide / 2;
           line(thisVal, 0 - thisLength, thisVal, thisLength);
 
-          fill(scene.palette[1].value, 128);
+          fill(scene.palette[1], 128);
           text(createLabel(i, currentMultiplier), thisVal, -10);
         };
     };
@@ -516,9 +449,8 @@ class uiScale {
 };
 
 
-//
-// main crosshairs object
-//
+
+// main crosshairs
 class uiCrosshairs {
 
   Boolean toggle;
@@ -548,9 +480,7 @@ class uiCrosshairs {
 
 
 
-//
-// keypress handler function
-//
+
 void keyPressed() {
   scene.uiKeyPress = int(key);
   println(int(key));
@@ -570,9 +500,6 @@ void keyPressed() {
 };
 
 
-//
-// mouse released handler function
-//
 void mouseReleased() {
   // it'd be nice if mouseReleased was a native variable the 
   // same way mousePressed is, but no matter. 
@@ -583,9 +510,7 @@ void mouseReleased() {
 };
 
 
-//
-// global function to keep track of the upper dimensions
-//
+
 int determineOffset() {
   try {
    if (keyEvent.isControlDown()) {
@@ -609,9 +534,6 @@ int determineOffset() {
 };
 
 
-//
-// global function to keep upper and lower boundaries in check
-//
 void checkBoundaries() {
   // set a lower boundary
   if (scene.drawingScale > 0.65) {
