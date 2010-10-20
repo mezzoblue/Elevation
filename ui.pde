@@ -28,7 +28,13 @@ class Scene {
   int viewMode = 0;
   String viewDimension = "3D";
   Boolean viewConnectors = false;
+
+  // interaction variables
   Boolean viewRedraw = true;
+  boolean writePDF;
+
+  // prefix for saved-out files
+  String filePrefix = "sketch";
 
   // ui adjustments
   int uiIncrement = 100;
@@ -348,19 +354,21 @@ class uiCompass extends uiElement {
   };
 
   void translateThenRender() {
-    translate(x, y, 0);
-    // zero out the scene default rotation values
-    rotateX(scene.rotationX + PI / 2);
-    rotateZ(-scene.rotationY - PI / 2);
-    // north is light blue
-    noStroke();
-    fill(#616c7c);
-    quad(0,-16,4,-5,0,0,-4,-5);
-    // all other arms are darker blue
-    fill(#39414f);
-    quad(0,0,5,-4,16,0,5,4);
-    quad(0,0,4,5,0,16,-4,5);
-    quad(0,0,-5,-4,-16,0,-5,4);
+    if (!scene.writePDF) {
+      translate(x, y, 0);
+      // zero out the scene default rotation values
+      rotateX(scene.rotationX + PI / 2);
+      rotateZ(-scene.rotationY - PI / 2);
+      // north is light blue
+      noStroke();
+      fill(#616c7c);
+      quad(0,-16,4,-5,0,0,-4,-5);
+      // all other arms are darker blue
+      fill(#39414f);
+      quad(0,0,5,-4,16,0,5,4);
+      quad(0,0,4,5,0,16,-4,5);
+      quad(0,0,-5,-4,-16,0,-5,4);
+    };
   };
   
 };
@@ -399,26 +407,27 @@ class uiScale {
       // how many pixels between each km marker
       kmInterval = wide / kmScale;
       
-      pushMatrix();
-        translate(x, y);
+      if (!scene.writePDF) {
+        pushMatrix();
+          translate(x, y);
 
-        // draw the 1000k markers
-        drawLine(kmInterval, kmScale, 1000, 0, 0.5, 2, 4, col);
+          // draw the 1000k markers
+          drawLine(kmInterval, kmScale, 1000, 0, 0.5, 2, 4, col);
 
-        // draw the 100k markers
-        drawLine(kmInterval, kmScale, 100, 0.5, 5, 2, 4, col);
+          // draw the 100k markers
+          drawLine(kmInterval, kmScale, 100, 0.5, 5, 2, 4, col);
 
-        // draw the 10k markers
-        drawLine(kmInterval, kmScale, 10, 5, 50, 2, 4, col);
-
-        // draw the kilometer markers
-        drawLine(kmInterval, kmScale, 1, 50, 500, 1, 3, col);
-
-        // draw the 100m markers
-        drawLine(kmInterval, kmScale, 0.1, 500, 200000, 1, 3, col);
-
-
-      popMatrix();
+          // draw the 10k markers
+          drawLine(kmInterval, kmScale, 10, 5, 50, 2, 4, col);
+  
+          // draw the kilometer markers
+          drawLine(kmInterval, kmScale, 1, 50, 500, 1, 3, col);
+  
+          // draw the 100m markers
+          drawLine(kmInterval, kmScale, 0.1, 500, 200000, 1, 3, col);
+  
+        popMatrix();
+      };
 
     };
   };
@@ -461,11 +470,13 @@ class uiCrosshairs {
 
   void render(color col) {
     if (toggle) {
-      stroke(col, 60);
-      strokeWeight(1);
-      line(-999999, 0, 0, 999999, 0, 0);
-      line(0, -999999, 0, 0, 999999, 0);
-      line(0, 0, -999999, 0, 0, 999999);
+      if (!scene.writePDF) {
+        stroke(col, 60);
+        strokeWeight(1);
+        line(-999999, 0, 0, 999999, 0, 0);
+        line(0, -999999, 0, 0, 999999, 0);
+        line(0, 0, -999999, 0, 0, 999999);
+      };
     };
   };
   
@@ -497,6 +508,14 @@ void keyPressed() {
       scene.uiKeyPress = 100; 
     };
   };
+  // if 'p' is pressed, save out a PNG
+  // if 'P' is pressed, save out a PDF
+  if (int(key) == 112) {
+    save(scene.filePrefix + "-" + int(random(0, 9999)) + ".png");
+  }
+  if (int(key) == 80) {
+    scene.writePDF = true;
+  }
   // if 'r' is pressed, then reload the XML files
   if (int(key) == 82) {
     refreshTracks(); 
@@ -549,3 +568,22 @@ void checkBoundaries() {
      scene.drawingScale = 0.00004;
   };
 };
+
+
+
+
+// setup the PDF save
+void startPDFCheck(String fileName) {
+  if (scene.writePDF) {
+    beginRaw(PDF, fileName + ".pdf");
+    scene.viewRedraw = true;
+  }
+}
+
+// execute the PDF save
+void stopPDFCheck() {
+  if (scene.writePDF) {
+    endRaw();
+    scene.writePDF = false;
+  }
+}

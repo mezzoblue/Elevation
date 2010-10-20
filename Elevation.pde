@@ -12,6 +12,7 @@
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import processing.opengl.*;
+import processing.pdf.*;
 
 // for file data
 ArrayList trackFilenames;
@@ -171,6 +172,8 @@ void setup() {
 
 
 void draw() {
+  // set up the PDF export, if needed
+  startPDFCheck(scene.filePrefix + "-####");
   
   // if we're using an animated view, we'll need to re-draw each loop
   if (scene.viewMode == 3) {
@@ -260,6 +263,8 @@ void draw() {
 
   };
 
+  // write the PDF, if needed
+  stopPDFCheck();
   // reset the viewRedraw switch for each loop so we don't peg the CPU
   scene.viewRedraw = false;
 };
