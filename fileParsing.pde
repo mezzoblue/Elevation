@@ -21,7 +21,7 @@ ArrayList fileCount(String dir, String[] extensions) {
     // likely suspect: no matching directory
   }
   return files;
-};
+}
 
 
 // 
@@ -34,8 +34,8 @@ void getTrackXML(int num) {
     tracklist[i] = createTrack((String) trackFilenames.get(i));
     // pull out the track dimensions
     tracklist[i].getDimensions();
-  };
-};
+  }
+}
 
 
 //
@@ -52,7 +52,7 @@ Tracks createTrack(String file) {
   String[][] coordinates = getCoordinates(getRoot(file), getExtension(file));
   for (int i = 0; i < coordinates.length; i++) {
      numPoints++;
-  };
+  }
 
   // create a throwaway object
   Tracks obj = new Tracks(numPoints);
@@ -85,7 +85,7 @@ Tracks createTrack(String file) {
           obj.Y[i] = (Float.parseFloat(coordinates[i][2]) + obj.Y[i - 1] + obj.Y[i - 2]) / 3;
         } else {
           obj.Y[i] = Float.parseFloat(coordinates[i][2]);
-        };
+        }
       }
       
       // assign the time and speed, if they exist
@@ -119,19 +119,19 @@ Tracks createTrack(String file) {
             } else {
               // catch the division by zero error before it happens
               obj.speed[i] = 0; 
-            };
+            }
           } else {
             obj.speed[i] = 0; 
-          }; // end if
-        }; // end if
-      }; // end if
+          } // end if
+        } // end if
+      } // end if
 
-    }; // end for loop
-  }; // end if numPoints > 1
+    } // end for loop
+  } // end if numPoints > 1
 
   return obj;
 
-};
+}
 
 
 
@@ -154,9 +154,9 @@ ArrayList listFileNames(String dir, String[] extensions) {
       for(int j = 0; j < extensions.length; j++) {
         if (fileExt.toLowerCase().equals(extensions[j])) {
           names2.add(names[i]);
-        };
-      };
-    };
+        }
+      }
+    }
     return names2;
   } 
   else {
@@ -234,7 +234,7 @@ XMLElement getRoot(String file) {
 //
 String getExtension(String file) {
   return file.substring(file.length() - 3).toLowerCase();
-};
+}
 
 
 //
@@ -245,7 +245,9 @@ String getExtension(String file) {
 String[][] getCoordinates(XMLElement root, String fileType) {  
 
   // create the return array, initialize it with a dummy value
-  String[][] coordinates = {{" "}};
+  String[][] coordinates = {
+    {" "}
+  };
 
   // Google .kml files
   if (fileType.equals("kml")) {
@@ -329,7 +331,7 @@ String[][] getCoordinates(XMLElement root, String fileType) {
             coordinates[i][0] = null; coordinates[i][1] = null;
             coordinates[i][2] = null; coordinates[i][3] = null;
           }
-      };
+      }
     }
 
   // Garmin Training Center .tcx files
@@ -378,13 +380,13 @@ String[][] getCoordinates(XMLElement root, String fileType) {
           coordinates[i][2] = null; coordinates[i][3] = null;
         }
         
-      };
+      }
     }
   }
 
   return(coordinates);
   
-};
+}
 
 
 

@@ -22,7 +22,7 @@ class Tracks {
     Z = new float[pointCount];
     speed = new float[pointCount];
     time = new String[pointCount];
-  };
+  }
   
   void render() {
     strokeWeight(2);
@@ -81,7 +81,7 @@ class Tracks {
             noFill();
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
-            };
+            }
             break;
   
   
@@ -95,10 +95,10 @@ class Tracks {
             stroke(strokeColor, 48);
             // create the fadeout trails
             for (int j = 0; j < 64; j++) {
-              if (i == pointTracer - j) {stroke(strokeColor, 128 - 2 * j);};
+              if (i == pointTracer - j) {stroke(strokeColor, 128 - 2 * j);}
             }
             // more strongly define the current point
-            if (i == pointTracer) {stroke(strokeColor, 255);};
+            if (i == pointTracer) {stroke(strokeColor, 255);}
             if (X[i - 1] != 0) {
               drawConnectors(X[i - 1], Y[i - 1], Z[i - 1], X[i], Y[i], Z[i]);
             }
@@ -119,16 +119,16 @@ class Tracks {
 
 
 
-        }; // end switch
-      }; //end if
-    }; // end for
+        } // end switch
+      } //end if
+    } // end for
     
     pointTracer++;
     if (pointTracer > pointCount) {
       pointTracer = 0; 
     }
     
-  }; // end render()
+  } // end render()
 
 
   void getDimensions() {
@@ -145,7 +145,7 @@ class Tracks {
 
       scene.minSpeed = checkMe(scene.minSpeed, speed[i], "min");
       scene.maxSpeed = checkMe(scene.maxSpeed, speed[i], "max");
-    };
+    }
 
     // move the scene center point to 0, 0
     scene.offsetX = 0 - (scene.minX + findDifference(scene.minX, scene.maxX));
@@ -164,7 +164,7 @@ class Tracks {
       scene.drawingScale = scene.canvasHeight / (scene.maxY - scene.minY) / 2;
     }
 
-  };
+  }
 
 
   void drawConnectors(float x1, float y1, float z1, float x2, float y2, float z2) {
@@ -172,7 +172,7 @@ class Tracks {
     if (scene.viewDimension == "2D") {
       y1 = 0;
       y2 = 0;
-    };
+    }
     // check viewConnectors and draw lines or points, respectively
     if (scene.viewConnectors) {
       line(
@@ -181,8 +181,8 @@ class Tracks {
       );
     } else {
       point(x2, y2 * scene.elevationExaggeration, z2);
-    };
-  };
+    }
+  }
 
 
   float checkMe(float val, float iteration, String dir) {
@@ -196,18 +196,18 @@ class Tracks {
         if (iteration != 0) {
           if (iteration < val) {
             val = iteration;
-          };
-        };
+          }
+        }
       // otherwise see if the current value is higher than the current maximum
       } else {
         if (iteration > val) {
           val = iteration;
-        };
-      };
-    };
+        }
+      }
+    }
     return val;
   }
 
 
-};
+}
   

@@ -55,18 +55,18 @@ class Scene {
     scaleText = loadFont("Helvetica-10.vlw");
     textFont(scaleText, 10);
     textAlign(CENTER, CENTER);
-  };
+  }
 
   void togglePalette() {
     palette = reverse(palette);
-  };
+  }
   void toggleConnectors() {
     if (scene.viewConnectors) {
       scene.viewConnectors = false;
     } else {
       scene.viewConnectors = true;
-    };
-  };
+    }
+  }
   void toggleDimension() {
     if (scene.viewDimension == "2D") {
       scene.viewDimension = "3D";
@@ -75,15 +75,15 @@ class Scene {
       // adjust for top-down view
       scene.rotationX = radians(-90);
       scene.rotationY = radians(-90);
-    };
-  };
+    }
+  }
   void toggleElevation() {
     if (scene.elevationExaggeration == 8) {
       scene.elevationExaggeration = 1;
     } else {
       scene.elevationExaggeration = 8;
-    };
-  };
+    }
+  }
   
   // kind of goofy that I need this, but I've committed to converting my internal coordinates to meters
   // so now I need this function to keep track of the average raw latitude of the scene. The value it 
@@ -92,10 +92,10 @@ class Scene {
     averageLatCount++;
     // find average of preceding values + new one
     averageLat = ((av * (averageLatCount - 1)) + av) / averageLatCount;
-  };
+  }
 
 
-};
+}
 
 
 
@@ -132,23 +132,29 @@ class uiElement {
         image(imgHover, x, y);
       } else {
         image(img, x, y);
-      };
-    };
-  };
+      }
+    }
+  }
+  void setCoordinates(int newX, int newY, int newW, int newH) {
+    x = newX;
+    y = newY;
+    wide = newW;
+    high = newH;
+  }
   
-};
+}
 
 
 // simple panel to throw our UI elements into
 class uiPanel extends uiElement {
-  uiPanel(int newX, int newY, int newWide, int newHigh, String filename) {
-    x = newX;
-    y = newY;
-    wide = newWide;
-    high = newHigh;
+  uiPanel(String filename) { // int newX, int newY, int newWide, int newHigh, 
+//    x = newX;
+//    y = newY;
+//    wide = newWide;
+//    high = newHigh;
     img = loadImage(dataPath("") + "interface/" + filename + ".png");
-  };
-};
+  }
+}
 
 
 // stand-alone buttons
@@ -156,11 +162,7 @@ class uiButton extends uiElement {
 
   String buttonAction;
   
-  uiButton(int newX, int newY, int newWide, int newHigh, int keyPress1, int keyPress2, String filename, String action) {
-    x = newX;
-    y = newY;
-    wide = newWide;
-    high = newHigh;
+  uiButton(int keyPress1, int keyPress2, String filename, String action) {
     buttonAction = action;
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
@@ -168,8 +170,8 @@ class uiButton extends uiElement {
       img = loadImage(dataPath("") + "interface/" + filename + ".png");
       imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
       imgPressed = loadImage(dataPath("") + "interface/" + filename + "-pressed.png");
-    };
-  };
+    }
+  }
   
   void check() {
     // is the mouse over this control?
@@ -202,19 +204,19 @@ class uiButton extends uiElement {
           scene.viewRedraw = true;
         }
         state = 1;
-      };
+      }
       scene.uiKeyPress = 0;
      } else {
       // if we still have a lingering state, lets redraw and clear the hover / selected image
       if (state > 0) {
         scene.viewRedraw = true;
-      };
+      }
       state = 0;
-    };
+    }
     scene.uiMouseReleased = false;  
-  };
+  }
   
-};
+}
 
 
 // basic checkbox
@@ -222,24 +224,24 @@ class uiCheckbox extends uiElement {
 
   String checkboxAction;
 
-  uiCheckbox(int newX, int newY, int newWide, int newHigh, int keyPress1, int keyPress2, String filename, String action, String defaultState) {
-    x = newX;
-    y = newY;
-    wide = newWide;
-    high = newHigh;
+  uiCheckbox(int keyPress1, int keyPress2, String filename, String action, String defaultState) { //int newX, int newY, int newWide, int newHigh, 
+//    x = newX;
+//    y = newY;
+//    wide = newWide;
+//    high = newHigh;
     checkboxAction = action;
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
     if (!filename.equals("")) {
       img = loadImage(dataPath("") + "interface/" + filename + ".png");
       imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
-    };
+    }
     if (defaultState.equals("checked")) {
       state = 3; // check the checkbox by default
     } else {
       state = 0;
-    };
-  };
+    }
+  }
 
   void check() {
     if ((
@@ -253,7 +255,7 @@ class uiCheckbox extends uiElement {
             state = 0;
           } else {
             state = 3;
-          };
+          }
           // Couldn't figure out a more elegant way of passing these instructions.
           // Soooo... string it is.
           if (checkboxAction.equals("crosshairs.toggle")) {crosshair.toggle();}
@@ -263,11 +265,11 @@ class uiCheckbox extends uiElement {
           if (checkboxAction.equals("scene.toggleElevation")) {scene.toggleElevation();}
           
           scene.uiKeyPress = 0;
-        };
-     };
+        }
+     }
     scene.uiMouseReleased = false;  
-  };
-};
+  }
+}
 
 
 // switches are sort of a radio button type of control, where only one of the group can be selected
@@ -275,11 +277,7 @@ class uiSwitch extends uiElement {
 
   String switchAction;
   
-  uiSwitch(int newX, int newY, int newWide, int newHigh, int keyPress1, int keyPress2, String filename, String action, String defaultState) {
-    x = newX;
-    y = newY;
-    wide = newWide;
-    high = newHigh;
+  uiSwitch(int keyPress1, int keyPress2, String filename, String action, String defaultState) {
     switchAction = action;
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
@@ -287,13 +285,13 @@ class uiSwitch extends uiElement {
       img = loadImage(dataPath("") + "interface/" + filename + ".png");
       imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
       imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
-    };
+    }
     if (defaultState.equals("selected")) {
       state = 3; // select this switch by default
     } else {
       state = 0;
-    };
-  };
+    }
+  }
 
   void check() {
     if ((
@@ -301,7 +299,6 @@ class uiSwitch extends uiElement {
       mouseY >= y && mouseY <= (y + high)
     ) || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
         // if it was clicked, toggle it
-
         if(mousePressed || (hotKey == scene.uiKeyPress) || (hotKeyAlt == scene.uiKeyPress)) {
           toggle(this);
 
@@ -315,8 +312,7 @@ class uiSwitch extends uiElement {
             scene.viewRedraw = true;
           }
           state = 1;
-        };
-
+        }
         scene.uiMouseReleased = false;  
      } else {
       // if this one isn't selected, remove the hover state        
@@ -324,11 +320,11 @@ class uiSwitch extends uiElement {
         // if we still have a lingering state, lets redraw and clear the hover / selected image
         if (state > 0) {
           scene.viewRedraw = true;
-        };
+        }
         state = 0;
-      };
-     };
-  };
+      }
+     }
+  }
   
   void toggle(uiSwitch me) {
     for (int i = 0; i < switches.length; i++) {
@@ -337,22 +333,16 @@ class uiSwitch extends uiElement {
         scene.viewMode = i;
       } else {
         switches[i].state = 0; 
-      };
-    };
-  };
+      }
+    }
+  }
 
-};
+}
+
 
 
 // the directional compass in the UI
 class uiCompass extends uiElement {
-  uiCompass(int newX, int newY, int newWide, int newHigh) {
-    x = newX;
-    y = newY;
-    wide = newWide;
-    high = newHigh;
-  };
-
   void translateThenRender() {
     if (!scene.writePDF) {
       translate(x, y, 0);
@@ -368,10 +358,10 @@ class uiCompass extends uiElement {
       quad(0,0,5,-4,16,0,5,4);
       quad(0,0,4,5,0,16,-4,5);
       quad(0,0,-5,-4,-16,0,-5,4);
-    };
-  };
+    }
+  }
   
-};
+}
 
 
 
@@ -387,14 +377,16 @@ class uiScale {
   // kilometer markers
   float kmInterval, kmScale, kmCount;
 
-  uiScale(int newX, int newY, int newWide, int newHigh) {
+  uiScale() {
     toggle = true; 
+  }  
+
+  void setCoordinates(int newX, int newY, int newW, int newH) {
     x = newX;
     y = newY;
-    wide = newWide;
-    high = newHigh;
-  };  
-
+    wide = newW;
+    high = newH;
+  }
   void render(color col) {
     if (toggle) {
 
@@ -427,10 +419,10 @@ class uiScale {
           drawLine(kmInterval, kmScale, 0.1, 500, 200000, 1, 3, col);
   
         popMatrix();
-      };
+      }
 
-    };
-  };
+    }
+  }
 
   void drawLine(float currentVal, float currentScale, float currentMultiplier, float minVal, float maxVal, int strokeVal, int thisLength, color col) {
     if ((currentVal > minVal) && (currentVal < maxVal)) {
@@ -443,9 +435,9 @@ class uiScale {
 
           fill(scene.palette[1], 128);
           text(createLabel(i, currentMultiplier), thisVal, -10);
-        };
-    };
-  };
+        }
+    }
+  }
 
   String createLabel(int value, float currentMultiplier) {
     if (currentMultiplier >= 1) {
@@ -453,9 +445,9 @@ class uiScale {
     } else {
       return Integer.toString(int(value * currentMultiplier * 1000)) + "m";
     }
-  };
+  }
 
-};
+}
 
 
 
@@ -466,7 +458,7 @@ class uiCrosshairs {
   
   uiCrosshairs() {
     toggle = true; 
-  };
+  }
 
   void render(color col) {
     if (toggle) {
@@ -476,18 +468,18 @@ class uiCrosshairs {
         line(-999999, 0, 0, 999999, 0, 0);
         line(0, -999999, 0, 0, 999999, 0);
         line(0, 0, -999999, 0, 0, 999999);
-      };
-    };
-  };
+      }
+    }
+  }
   
   void toggle() {
     if (toggle) {
       toggle = false;
     } else {
       toggle = true;
-    };
-  };
-};
+    }
+  }
+}
 
 
 
@@ -506,8 +498,8 @@ void keyPressed() {
       scene.uiKeyPress = 97; 
     } else if (keyCode == RIGHT) {
       scene.uiKeyPress = 100; 
-    };
-  };
+    }
+  }
   // if 'p' is pressed, save out a PNG
   // if 'P' is pressed, save out a PDF
   if (int(key) == 112) {
@@ -521,7 +513,7 @@ void keyPressed() {
     refreshTracks(); 
     scene.viewRedraw = true;
   }
-};
+}
 
 
 void mouseReleased() {
@@ -531,7 +523,7 @@ void mouseReleased() {
     scene.uiMouseReleased = true;
     checkboxes[i].check();
   }
-};
+}
 
 
 
@@ -555,19 +547,19 @@ int determineOffset() {
     // but if it does, no problem. So... catch the error, duplicate my code. Whatever.
     return(scene.uiIncrement);
   }
-};
+}
 
 
 void checkBoundaries() {
   // set a lower boundary
   if (scene.drawingScale > 0.65) {
      scene.drawingScale = 0.65;
-  };  
+  }
   // set an upper boundary
   if (scene.drawingScale < 0.00004) {
      scene.drawingScale = 0.00004;
-  };
-};
+  }
+}
 
 
 
@@ -586,4 +578,56 @@ void stopPDFCheck() {
     endRaw();
     scene.writePDF = false;
   }
+}
+
+
+// handle window resize events
+void resizeHandler(ComponentEvent e) {
+  // set minimum boundaries
+  int minWidth = sceneStartingWidth;
+  int minHeight = sceneStartingHeight;
+  
+  int w = frame.getWidth();
+  int h = frame.getHeight();
+
+  if(e.getSource() == frame) { // resize event has been detected
+    // set minimum boundaries
+    if (w < minWidth) frame.setSize(minWidth, h); 
+    if (h < minHeight) frame.setSize(w, minHeight); 
+
+    // reset scene variables
+    scene.canvasWidth = w;
+    scene.canvasHeight = h;
+    positionUI(w, h);
+
+    scene.viewRedraw = true;
+  }
+}
+
+
+// place the UI elements according to current scene width and height
+void positionUI(int w, int h) {
+  h -= sceneOffset;
+  UI.setCoordinates(0, h - 100, w, 100);
+  compass.setCoordinates(499, h - 50, 31, 31); // eventually w / 2
+  mapScale.setCoordinates(w / 2, h - 106, w, 5); // very wrong when scaled up
+  
+  checkboxes[0].setCoordinates(867, h - 74, 19, 18);
+  checkboxes[1].setCoordinates(867, h - 46, 19, 18);
+  checkboxes[2].setCoordinates(951, h - 74, 19, 18);
+  checkboxes[3].setCoordinates(951, h - 46, 19, 18);
+  
+  switches[0].setCoordinates(582, h - 82, 39, 28);
+  switches[1].setCoordinates(621, h - 82, 35, 28);
+  switches[2].setCoordinates(656, h - 82, 35, 28);
+  switches[3].setCoordinates(691, h - 82, 40, 28);
+  
+  buttons[0].setCoordinates(44, h - 90, 35, 40);
+  buttons[1].setCoordinates(44, h - 49, 35, 40);
+  buttons[2].setCoordinates(22, h - 67, 45, 30);
+  buttons[3].setCoordinates(61, h - 67, 45, 30);
+  buttons[4].setCoordinates(216, h - 82, 52, 30);
+  buttons[5].setCoordinates(266, h - 82, 52, 30);
+  buttons[6].setCoordinates(331, h - 82, 52, 30);
+  buttons[7].setCoordinates(381, h - 82, 52, 30);
 }

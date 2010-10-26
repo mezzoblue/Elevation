@@ -9,6 +9,7 @@
 */
 
 // a couple of libraries to get us started
+import java.awt.event.*;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import processing.opengl.*;
@@ -32,13 +33,20 @@ uiCheckbox[] checkboxes;
 uiSwitch[] switches;
 uiCompass compass;
 
+int sceneStartingWidth = 1000;
+int sceneStartingHeight = 700;
+
+// there appears to be a window offset being added upon resize
+// I'm betting it's the height of the titlebar
+// (which makes it OS-specific; currently I'm only testing OS X)
+int sceneOffset = 22;
 
 
 void setup() {
   frameRate(30);
 
   // create the scene object and assign a size to the sketch window
-  scene = new Scene(1000, 700);
+  scene = new Scene(sceneStartingWidth, sceneStartingHeight);
   size(scene.canvasWidth, scene.canvasHeight, OPENGL);
   
   // for some reason it seems as if both of these hints are necessary for true 4x sampling
@@ -50,8 +58,14 @@ void setup() {
   frame.setTitle("Elevation"); 
 
   // make the window resizable
-  // (so much to do before this will work)
-  // frame.setResizable(true);
+  frame.setResizable(true);
+
+  // window resize event handler
+  frame.addComponentListener(new ComponentAdapter() {
+    public void componentResized(ComponentEvent e) {
+      resizeHandler(e);
+    }
+  });
 
 
   // stuff for the Windows EXE
@@ -59,78 +73,59 @@ void setup() {
   frame.setIconImage(img);
 
   // create the User Interface
-  UI = new uiPanel(
-    0, scene.canvasHeight - 100, scene.canvasWidth, 100,
-    "Panel");
+  UI = new uiPanel("Panel");
 
   buttons = new uiButton[8];
   // arrow buttons
   buttons[0] = new uiButton(
-    44, scene.canvasHeight - 90, 35, 40, 119, 87,
-    "UI-DPad-up", "offsetX++");
+    119, 87, "UI-DPad-up", "offsetX++");
   buttons[1] = new uiButton(
-    44, scene.canvasHeight - 49, 35, 40, 115, 83,
-    "UI-DPad-down", "offsetX--");
+    115, 83, "UI-DPad-down", "offsetX--");
   buttons[2] = new uiButton(
-    22, scene.canvasHeight - 67, 45, 30, 97, 65,
-    "UI-DPad-left", "offsetZ++");
+    97, 65, "UI-DPad-left", "offsetZ++");
   buttons[3] = new uiButton(
-    61, scene.canvasHeight - 67, 45, 30, 100, 68,
-    "UI-DPad-right", "offsetZ--");
+    100, 68, "UI-DPad-right", "offsetZ--");
   // ^ / v buttons
   buttons[4] = new uiButton(
-    216, scene.canvasHeight - 82, 52, 30, 93, 125,
-    "UI-Button-up", "offsetY++");
+    93, 125, "UI-Button-up", "offsetY++");
   buttons[5] = new uiButton(
-    266, scene.canvasHeight - 82, 52, 30, 91, 123,
-    "UI-Button-down", "offsetY--");
+    91, 123, "UI-Button-down", "offsetY--");
   // + / - buttons
   buttons[6] = new uiButton(
-    331, scene.canvasHeight - 82, 52, 30, 43, 61,
-    "UI-Button-plus", "drawingScale++");
+    43, 61, "UI-Button-plus", "drawingScale++");
   buttons[7] = new uiButton(
-    381, scene.canvasHeight - 82, 52, 30, 45, 95,
-    "UI-Button-minus", "drawingScale--");
+    45, 95, "UI-Button-minus", "drawingScale--");
 
   // checkboxes
   checkboxes = new uiCheckbox[5];
   checkboxes[0] = new uiCheckbox(
-    867, scene.canvasHeight - 74, 19, 18, 120, 88,
-    "UI-Checkbox", "scene.toggleConnectors", "unchecked");
+    120, 88, "UI-Checkbox", "scene.toggleConnectors", "unchecked");
   checkboxes[1] = new uiCheckbox(
-    867, scene.canvasHeight - 46, 19, 18, 99, 67,
-    "UI-Checkbox", "crosshairs.toggle", "checked");
+    99, 67, "UI-Checkbox", "crosshairs.toggle", "checked");
   checkboxes[2] = new uiCheckbox(
-    951, scene.canvasHeight - 74, 19, 18, 105, 73,
-    "UI-Checkbox", "scene.togglePalette", "unchecked");
+    105, 73, "UI-Checkbox", "scene.togglePalette", "unchecked");
   checkboxes[3] = new uiCheckbox(
-    951, scene.canvasHeight - 46, 19, 18, 122, 90,
-    "UI-Checkbox", "scene.toggleDimension", "checked");
+    122, 90, "UI-Checkbox", "scene.toggleDimension", "checked");
   // hidden checkboxes
-  checkboxes[4] = new uiCheckbox(1500, 1, 1, 1, 54, 94,
-    "", "scene.toggleElevation", "unchecked"); // toggle true elevation
+  checkboxes[4] = new uiCheckbox(
+    54, 94, "", "scene.toggleElevation", "unchecked"); // toggle true elevation
 
   // switches
   switches = new uiSwitch[5];
   switches[0] = new uiSwitch(
-    582, scene.canvasHeight - 82, 39, 28, 49, 1,
-    "UI-Switch-1", "nada", "selected");
+    49, 1, "UI-Switch-1", "nada", "selected");
   switches[1] = new uiSwitch(
-    621, scene.canvasHeight - 82, 35, 28, 50, 1,
-    "UI-Switch-2", "nada", "");
+    50, 1, "UI-Switch-2", "nada", "");
   switches[2] = new uiSwitch(
-    656, scene.canvasHeight - 82, 35, 28, 51, 1,
-    "UI-Switch-3", "nada", "");
+    51, 1, "UI-Switch-3", "nada", "");
   switches[3] = new uiSwitch(
-    691, scene.canvasHeight - 82, 40, 28, 52, 1,
-    "UI-Switch-4", "nada", "");
+    52, 1, "UI-Switch-4", "nada", "");
   // hidden switches
-  switches[4] = new uiSwitch(1500, 1, 1, 1, 53, 1,
-    "", "nada", ""); // toggle mode 5
+  switches[4] = new uiSwitch(
+    53, 1, "", "nada", ""); // toggle mode 5
 
   // drop in the compass
-  compass = new uiCompass(
-    scene.canvasWidth / 2, scene.canvasHeight - 50, 31, 31);
+  compass = new uiCompass();
 
   // create the crosshairs object
   crosshair = new uiCrosshairs();
@@ -144,7 +139,12 @@ void setup() {
   refreshTracks();
 
   // create the map scale object once the map data is loaded
-  mapScale = new uiScale(scene.canvasWidth / 2, scene.canvasHeight - 106, scene.canvasWidth, 5);
+  mapScale = new uiScale();
+
+
+
+  // perform the initial coordinate refresh
+  positionUI(sceneStartingWidth, sceneStartingHeight + sceneOffset);
 
   // diagnostics
   println("Number of Tracks: " + numTracks);
@@ -165,7 +165,7 @@ void setup() {
 
   // set the viewRedraw flag coming out of setup() so that we get the initial draw
   scene.viewRedraw = true;
-};
+}
 
 
 
@@ -212,6 +212,7 @@ void draw() {
 
   // if we're going to redraw, let's go for it
   if (scene.viewRedraw == true) {  
+    
     background(scene.palette[0]);
     stroke(scene.palette[1]);
     noFill();
@@ -261,11 +262,11 @@ void draw() {
     // draw mini-compass
     compass.translateThenRender();
 
-  };
+  }
 
   // write the PDF, if needed
   stopPDFCheck();
   // reset the viewRedraw switch for each loop so we don't peg the CPU
   scene.viewRedraw = false;
-};
+}
 
