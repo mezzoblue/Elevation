@@ -50,7 +50,9 @@ class Scene {
     palette = new color[2];
     palette[0] = #000000;
     palette[1] = #FFFFFF;
+  }
 
+  void refreshScene() {
     // create pfont object for scale labels
     scaleText = loadFont("Helvetica-10.vlw");
     textFont(scaleText, 10);
@@ -115,10 +117,8 @@ class uiElement {
   int hotKeyAlt = 1;
 
   // UI Element images
-  PImage img;
-  PImage imgHover;
-  PImage imgPressed;
-  PImage imgSelected;
+  PImage img, imgHover, imgPressed, imgSelected;
+  String imgFile;
 
   void render() {
     if (img != null) {
@@ -147,12 +147,14 @@ class uiElement {
 
 // simple panel to throw our UI elements into
 class uiPanel extends uiElement {
-  uiPanel(String filename) { // int newX, int newY, int newWide, int newHigh, 
-//    x = newX;
-//    y = newY;
-//    wide = newWide;
-//    high = newHigh;
-    img = loadImage(dataPath("") + "interface/" + filename + ".png");
+  uiPanel(String filename) {
+    imgFile = filename;
+    refreshImages();
+  }
+  void refreshImages() {
+    if (imgFile != null) {
+      img = loadImage(dataPath("") + "interface/" + imgFile + ".png");
+    }
   }
 }
 
@@ -167,9 +169,15 @@ class uiButton extends uiElement {
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
     if (!filename.equals("")) {
-      img = loadImage(dataPath("") + "interface/" + filename + ".png");
-      imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
-      imgPressed = loadImage(dataPath("") + "interface/" + filename + "-pressed.png");
+      imgFile = filename;
+      refreshImages();
+    }
+  }
+  void refreshImages() {
+    if (imgFile != null) {
+      img = loadImage(dataPath("") + "interface/" + imgFile + ".png");
+      imgHover = loadImage(dataPath("") + "interface/" + imgFile + "-hover.png");
+      imgPressed = loadImage(dataPath("") + "interface/" + imgFile + "-pressed.png");
     }
   }
   
@@ -224,22 +232,24 @@ class uiCheckbox extends uiElement {
 
   String checkboxAction;
 
-  uiCheckbox(int keyPress1, int keyPress2, String filename, String action, String defaultState) { //int newX, int newY, int newWide, int newHigh, 
-//    x = newX;
-//    y = newY;
-//    wide = newWide;
-//    high = newHigh;
+  uiCheckbox(int keyPress1, int keyPress2, String filename, String action, String defaultState) {
     checkboxAction = action;
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
     if (!filename.equals("")) {
-      img = loadImage(dataPath("") + "interface/" + filename + ".png");
-      imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
+      imgFile = filename;
+      refreshImages();
     }
     if (defaultState.equals("checked")) {
       state = 3; // check the checkbox by default
     } else {
       state = 0;
+    }
+  }
+  void refreshImages() {
+    if (imgFile != null) {
+      img = loadImage(dataPath("") + "interface/" + imgFile + ".png");
+      imgSelected = loadImage(dataPath("") + "interface/" + imgFile + "-selected.png");
     }
   }
 
@@ -282,14 +292,20 @@ class uiSwitch extends uiElement {
     hotKey = keyPress1;
     hotKeyAlt = keyPress2;
     if (!filename.equals("")) {
-      img = loadImage(dataPath("") + "interface/" + filename + ".png");
-      imgHover = loadImage(dataPath("") + "interface/" + filename + "-hover.png");
-      imgSelected = loadImage(dataPath("") + "interface/" + filename + "-selected.png");
+      imgFile = filename;
+      refreshImages();
     }
     if (defaultState.equals("selected")) {
       state = 3; // select this switch by default
     } else {
       state = 0;
+    }
+  }
+  void refreshImages() {
+    if (imgFile != null) {
+      img = loadImage(dataPath("") + "interface/" + imgFile + ".png");
+      imgHover = loadImage(dataPath("") + "interface/" + imgFile + "-hover.png");
+      imgSelected = loadImage(dataPath("") + "interface/" + imgFile + "-selected.png");
     }
   }
 
@@ -397,7 +413,7 @@ class uiScale {
       kmScale = (kmCount / (kmCount * scene.drawingScale) * cos(scene.averageLat * PI/180));
       
       // how many pixels between each km marker
-      kmInterval = wide / kmScale;
+      kmInterval = (wide / kmScale) * (1000.00 / wide);
       
       if (!scene.writePDF) {
         pushMatrix();
@@ -598,12 +614,32 @@ void resizeHandler(ComponentEvent e) {
     // reset scene variables
     scene.canvasWidth = w;
     scene.canvasHeight = h;
+
+    cacheUI();
     positionUI(w, h);
 
     scene.viewRedraw = true;
   }
 }
 
+
+// utility function to create / refresh the UI images
+// (need to re-call this on window size to kill the previous image cache)
+void cacheUI() {
+
+    scene.refreshScene();
+    UI.refreshImages();
+    for (int i = 0; i < buttons.length; i++) {
+      buttons[i].refreshImages();
+    }
+    for (int i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].refreshImages();
+    }
+    for (int i = 0; i < switches.length; i++) {
+      switches[i].refreshImages();
+    }
+
+}
 
 // place the UI elements according to current scene width and height
 void positionUI(int w, int h) {

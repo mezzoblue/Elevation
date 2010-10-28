@@ -72,10 +72,15 @@ void setup() {
   Image img = getToolkit().getImage("elevation-16px.gif");
   frame.setIconImage(img);
 
-  // create the User Interface
-  UI = new uiPanel("Panel");
 
+  // create the User Interface container objects
+  UI = new uiPanel("Panel");
   buttons = new uiButton[8];
+  checkboxes = new uiCheckbox[5];
+  switches = new uiSwitch[5];
+  compass = new uiCompass();
+  crosshair = new uiCrosshairs();
+
   // arrow buttons
   buttons[0] = new uiButton(
     119, 87, "UI-DPad-up", "offsetX++");
@@ -97,7 +102,6 @@ void setup() {
     45, 95, "UI-Button-minus", "drawingScale--");
 
   // checkboxes
-  checkboxes = new uiCheckbox[5];
   checkboxes[0] = new uiCheckbox(
     120, 88, "UI-Checkbox", "scene.toggleConnectors", "unchecked");
   checkboxes[1] = new uiCheckbox(
@@ -111,7 +115,6 @@ void setup() {
     54, 94, "", "scene.toggleElevation", "unchecked"); // toggle true elevation
 
   // switches
-  switches = new uiSwitch[5];
   switches[0] = new uiSwitch(
     49, 1, "UI-Switch-1", "nada", "selected");
   switches[1] = new uiSwitch(
@@ -124,12 +127,6 @@ void setup() {
   switches[4] = new uiSwitch(
     53, 1, "", "nada", ""); // toggle mode 5
 
-  // drop in the compass
-  compass = new uiCompass();
-
-  // create the crosshairs object
-  crosshair = new uiCrosshairs();
-
   // get the track data
   fileExtensions = new String[] {
     "gpx",
@@ -138,8 +135,10 @@ void setup() {
   };
   refreshTracks();
 
+
   // create the map scale object once the map data is loaded
   mapScale = new uiScale();
+  cacheUI();
 
 
 
