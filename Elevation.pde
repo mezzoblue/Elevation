@@ -26,6 +26,7 @@ int numTracks;
 
 // GUI objects
 uiPanel UI;
+uiPanel[] chrome;
 uiCrosshairs crosshair;
 uiScale mapScale;
 uiButton[] buttons;
@@ -74,12 +75,18 @@ void setup() {
 
 
   // create the User Interface container objects
-  UI = new uiPanel("Panel");
+  UI = new uiPanel("UI-Panel");
   buttons = new uiButton[8];
   checkboxes = new uiCheckbox[5];
   switches = new uiSwitch[5];
   compass = new uiCompass();
   crosshair = new uiCrosshairs();
+
+  chrome = new uiPanel[3];
+  // chrome: labels and UI element backing
+  chrome[0] = new uiPanel("UI-Chrome-Compass");
+  chrome[1] = new uiPanel("UI-Chrome-Checkboxes");
+  chrome[2] = new uiPanel("UI-Chrome-Switches");
 
   // arrow buttons
   buttons[0] = new uiButton(
@@ -217,7 +224,7 @@ void draw() {
     noFill();
   
     // move the sketch to the center of the canvas, accounting for height of the UI panel
-    translate(scene.canvasWidth / 2, scene.canvasHeight / 2 - 50);
+    translate(scene.canvasWidth / 2, scene.canvasHeight / 2 - UI.high / 2);
   
     // rotate the canvas
     rotateX(scene.rotationX);
@@ -250,6 +257,9 @@ void draw() {
     }
     for (int i = 0; i < checkboxes.length; i++) {
       checkboxes[i].render();
+    }
+    for (int i = 0; i < chrome.length; i++) {
+      chrome[i].render();
     }
     for (int i = 0; i < switches.length; i++) {
       switches[i].render();

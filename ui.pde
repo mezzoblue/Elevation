@@ -134,6 +134,11 @@ class uiElement {
         image(img, x, y);
       }
     }
+    
+    // for testing
+    // stroke(200, 64, 64);
+    // noFill();
+    // rect(x, y, wide, high);
   }
   void setCoordinates(int newX, int newY, int newW, int newH) {
     x = newX;
@@ -615,8 +620,8 @@ void resizeHandler(ComponentEvent e) {
     scene.canvasWidth = w;
     scene.canvasHeight = h;
 
-    cacheUI();
     positionUI(w, h);
+    cacheUI();
 
     scene.viewRedraw = true;
   }
@@ -645,18 +650,25 @@ void cacheUI() {
 void positionUI(int w, int h) {
   h -= sceneOffset;
   UI.setCoordinates(0, h - 100, w, 100);
-  compass.setCoordinates(499, h - 50, 31, 31); // eventually w / 2
+
+    println(UI.wide);
+
+  compass.setCoordinates(w / 2, h - 50, 31, 31); // eventually w / 2
   mapScale.setCoordinates(w / 2, h - 106, w, 5); // very wrong when scaled up
+
+  chrome[0].setCoordinates(w / 2 - 20, h - 70, 41, 41);
+  chrome[1].setCoordinates(w - 205, h - 70, 147, 39);
+  chrome[2].setCoordinates(w - 387, h - 43, 82, 28);
   
-  checkboxes[0].setCoordinates(867, h - 74, 19, 18);
-  checkboxes[1].setCoordinates(867, h - 46, 19, 18);
-  checkboxes[2].setCoordinates(951, h - 74, 19, 18);
-  checkboxes[3].setCoordinates(951, h - 46, 19, 18);
+  checkboxes[0].setCoordinates(w - 134, h - 74, 19, 18);
+  checkboxes[1].setCoordinates(w - 134, h - 46, 19, 18);
+  checkboxes[2].setCoordinates(w - 49, h - 74, 19, 18);
+  checkboxes[3].setCoordinates(w - 49, h - 46, 19, 18);
   
-  switches[0].setCoordinates(582, h - 82, 39, 28);
-  switches[1].setCoordinates(621, h - 82, 35, 28);
-  switches[2].setCoordinates(656, h - 82, 35, 28);
-  switches[3].setCoordinates(691, h - 82, 40, 28);
+  switches[0].setCoordinates(w - 418, h - 82, 39, 28);
+  switches[1].setCoordinates(w - 379, h - 82, 35, 28);
+  switches[2].setCoordinates(w - 344, h - 82, 35, 28);
+  switches[3].setCoordinates(w - 309, h - 82, 40, 28);
   
   buttons[0].setCoordinates(44, h - 90, 35, 40);
   buttons[1].setCoordinates(44, h - 49, 35, 40);
