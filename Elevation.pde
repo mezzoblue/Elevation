@@ -82,11 +82,14 @@ void setup() {
   compass = new uiCompass();
   crosshair = new uiCrosshairs();
 
-  chrome = new uiPanel[3];
+  chrome = new uiPanel[6];
   // chrome: labels and UI element backing
   chrome[0] = new uiPanel("UI-Chrome-Compass");
   chrome[1] = new uiPanel("UI-Chrome-Checkboxes");
   chrome[2] = new uiPanel("UI-Chrome-Switches");
+  chrome[3] = new uiPanel("UI-Chrome-Elevation");
+  chrome[4] = new uiPanel("UI-Chrome-LatLong");
+  chrome[5] = new uiPanel("UI-Chrome-Zoom");
 
   // arrow buttons
   buttons[0] = new uiButton(

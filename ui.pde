@@ -411,13 +411,12 @@ class uiScale {
   void render(color col) {
     if (toggle) {
 
-      // find out current width of scene
-      kmCount = scene.currentWidth;
-
       // how many kilometers wide the base scale is, based on scene width and variable drawingScale value
-      kmScale = (kmCount / (kmCount * scene.drawingScale) * cos(scene.averageLat * PI/180));
+      kmScale = (wide / (wide * scene.drawingScale) * cos(scene.averageLat * PI/180));
+      println(kmScale);
       
       // how many pixels between each km marker
+      // (currently the right half of this is causing the scale to clip, but some form of averaging is necessary to keep the scale accurate)
       kmInterval = (wide / kmScale) * (1000.00 / wide);
       
       if (!scene.writePDF) {
@@ -640,6 +639,9 @@ void cacheUI() {
     for (int i = 0; i < checkboxes.length; i++) {
       checkboxes[i].refreshImages();
     }
+    for (int i = 0; i < chrome.length; i++) {
+      chrome[i].refreshImages();
+    }
     for (int i = 0; i < switches.length; i++) {
       switches[i].refreshImages();
     }
@@ -651,14 +653,15 @@ void positionUI(int w, int h) {
   h -= sceneOffset;
   UI.setCoordinates(0, h - 100, w, 100);
 
-    println(UI.wide);
-
-  compass.setCoordinates(w / 2, h - 50, 31, 31); // eventually w / 2
-  mapScale.setCoordinates(w / 2, h - 106, w, 5); // very wrong when scaled up
+  compass.setCoordinates(w / 2, h - 50, 31, 31);
+  mapScale.setCoordinates(w / 2, h - 106, w, 5);
 
   chrome[0].setCoordinates(w / 2 - 20, h - 70, 41, 41);
   chrome[1].setCoordinates(w - 205, h - 70, 147, 39);
   chrome[2].setCoordinates(w - 387, h - 43, 82, 28);
+  chrome[3].setCoordinates(227, h - 43, 79, 29);
+  chrome[4].setCoordinates(107, h - 64, 83, 29);
+  chrome[5].setCoordinates(353, h - 43, 59, 29);
   
   checkboxes[0].setCoordinates(w - 134, h - 74, 19, 18);
   checkboxes[1].setCoordinates(w - 134, h - 46, 19, 18);
