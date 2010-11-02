@@ -407,19 +407,10 @@ class uiScale {
     if (toggle) {
 
       // how many kilometers wide the base scale is, based on scene width and variable drawingScale value
-      kmScale = (
-        wide / (wide * scene.drawingScale) // 1000 / (1000 * 0.02)   // 50
-        * cos(scene.averageLat * PI / 180) // adjusting for latitude   // constant, 0.6525
-      ); // 32.625
+      kmScale = (wide / (wide * scene.drawingScale) * cos(scene.averageLat * PI / 180));
       
       // how many pixels between each km marker
-      // (currently the right half of this is causing the scale to clip, but some form of averaging is necessary to keep the scale accurate)
       kmInterval = (wide / kmScale) * (1000.00 / wide); // (1000 / 32.625) = 30.65
-
-
-      kmScale = (wide / (wide * scene.drawingScale) * cos(scene.averageLat * PI/180));
-      kmInterval = (wide / kmScale) * (wide / 1000);
-
 
       if (!scene.writePDF) {
         pushMatrix();
@@ -446,13 +437,13 @@ class uiScale {
     }
   }
 
-  void drawLine(float currentVal, float currentScale, float currentMultiplier, float minVal, float maxVal, int strokeVal, int thisLength, color col) {
-    if ((currentVal > minVal) && (currentVal < maxVal)) {
+  void drawLine(float kmInterval, float kmScale, float currentMultiplier, float minVal, float maxVal, int strokeVal, int thisLength, color col) {
+    if ((kmInterval > minVal) && (kmInterval < maxVal)) {
         stroke(col, 128);
         strokeWeight(strokeVal);
 
-        for (int i = 0; i <= round(currentScale) / currentMultiplier; i++) {
-          float thisVal = (i * currentVal * currentMultiplier) - wide / 2;
+        for (int i = 0; i <= round(wide / kmScale) / currentMultiplier; i++) {
+          float thisVal = (i * kmInterval * currentMultiplier) - wide / 2;
           line(thisVal, 0 - thisLength, thisVal, thisLength);
 
           fill(scene.palette[1], 128);
@@ -620,7 +611,8 @@ void resizeHandler(ComponentEvent e) {
     // reset scene variables
     scene.canvasWidth = w;
     scene.canvasHeight = h;
-
+    setSceneScale();
+ 
     positionUI(w, h);
     cacheUI();
 
@@ -632,7 +624,6 @@ void resizeHandler(ComponentEvent e) {
 // utility function to create / refresh the UI images
 // (need to re-call this on window size to kill the previous image cache)
 void cacheUI() {
-
     scene.refreshScene();
     UI.refreshImages();
     for (int i = 0; i < buttons.length; i++) {
@@ -647,8 +638,19 @@ void cacheUI() {
     for (int i = 0; i < switches.length; i++) {
       switches[i].refreshImages();
     }
-
 }
+
+
+// utility function to establish the scene scale based on canvas dimensions
+void setSceneScale() {
+  // find out which direction is the largest, then adjust drawingScale to fit the scene
+  if ((scene.maxX - scene.minX) > (scene.maxY - scene.minY)) {
+    scene.drawingScale = scene.canvasWidth / (scene.maxX - scene.minX) / 2;
+  } else {
+    scene.drawingScale = scene.canvasHeight / (scene.maxY - scene.minY) / 2;
+  }
+}
+
 
 // place the UI elements according to current scene width and height
 void positionUI(int w, int h) {

@@ -157,16 +157,10 @@ class Tracks {
     scene.currentWidth = findDifference(scene.minZ, scene.maxZ) * 2 * cos(scene.averageLat * PI/180);
     scene.currentHeight = findDifference(scene.minX, scene.maxX) * 2 * cos(scene.averageLat * PI/180);
     
-    // find out which direction is the largest, then adjust drawingScale to fit the scene
-    if ((scene.maxX - scene.minX) > (scene.maxY - scene.minY)) {
-      scene.drawingScale = scene.canvasWidth / (scene.maxX - scene.minX) / 2;
-    } else {
-      scene.drawingScale = scene.canvasHeight / (scene.maxY - scene.minY) / 2;
-    }
-
+    setSceneScale();
   }
-
-
+  
+  
   void drawConnectors(float x1, float y1, float z1, float x2, float y2, float z2) {
     // flatten out the Y axis if we're in 2D mode
     if (scene.viewDimension == "2D") {
