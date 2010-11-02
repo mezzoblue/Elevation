@@ -412,6 +412,11 @@ class uiScale {
       // how many pixels between each km marker
       kmInterval = (wide / kmScale) * (1000.00 / wide); // (1000 / 32.625) = 30.65
 
+      // adjust for larger window sizes by re-doing the scale calculation with the remainder of the window width minus 1000
+      int w = wide - 1000;
+      if (w <= 0) w = 1; // catch the minimum window size and adjust
+      kmScale += (w / (w * scene.drawingScale) * cos(scene.averageLat * PI / 180));
+
       if (!scene.writePDF) {
         pushMatrix();
           translate(x, y);
