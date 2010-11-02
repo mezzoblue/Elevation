@@ -134,11 +134,6 @@ class uiElement {
         image(img, x, y);
       }
     }
-    
-    // for testing
-    // stroke(200, 64, 64);
-    // noFill();
-    // rect(x, y, wide, high);
   }
   void setCoordinates(int newX, int newY, int newW, int newH) {
     x = newX;
@@ -412,13 +407,20 @@ class uiScale {
     if (toggle) {
 
       // how many kilometers wide the base scale is, based on scene width and variable drawingScale value
-      kmScale = (wide / (wide * scene.drawingScale) * cos(scene.averageLat * PI/180));
-      println(kmScale);
+      kmScale = (
+        wide / (wide * scene.drawingScale) // 1000 / (1000 * 0.02)   // 50
+        * cos(scene.averageLat * PI / 180) // adjusting for latitude   // constant, 0.6525
+      ); // 32.625
       
       // how many pixels between each km marker
       // (currently the right half of this is causing the scale to clip, but some form of averaging is necessary to keep the scale accurate)
-      kmInterval = (wide / kmScale) * (1000.00 / wide);
-      
+      kmInterval = (wide / kmScale) * (1000.00 / wide); // (1000 / 32.625) = 30.65
+
+
+      kmScale = (wide / (wide * scene.drawingScale) * cos(scene.averageLat * PI/180));
+      kmInterval = (wide / kmScale) * (wide / 1000);
+
+
       if (!scene.writePDF) {
         pushMatrix();
           translate(x, y);
@@ -653,32 +655,38 @@ void positionUI(int w, int h) {
   h -= sceneOffset;
   UI.setCoordinates(0, h - 100, w, 100);
 
+  int posElevation = int(w * 0.22);
+  int posZoom = int(w * 0.35);
+  int posSwitches = int(w * 0.635);
+
   compass.setCoordinates(w / 2, h - 50, 31, 31);
   mapScale.setCoordinates(w / 2, h - 106, w, 5);
 
   chrome[0].setCoordinates(w / 2 - 20, h - 70, 41, 41);
   chrome[1].setCoordinates(w - 205, h - 70, 147, 39);
-  chrome[2].setCoordinates(w - 387, h - 43, 82, 28);
-  chrome[3].setCoordinates(227, h - 43, 79, 29);
+  chrome[2].setCoordinates(posSwitches, h - 43, 82, 28);
+  chrome[3].setCoordinates(posElevation, h - 43, 79, 29);
   chrome[4].setCoordinates(107, h - 64, 83, 29);
-  chrome[5].setCoordinates(353, h - 43, 59, 29);
+  chrome[5].setCoordinates(posZoom, h - 43, 59, 29);
   
   checkboxes[0].setCoordinates(w - 134, h - 74, 19, 18);
   checkboxes[1].setCoordinates(w - 134, h - 46, 19, 18);
   checkboxes[2].setCoordinates(w - 49, h - 74, 19, 18);
   checkboxes[3].setCoordinates(w - 49, h - 46, 19, 18);
-  
-  switches[0].setCoordinates(w - 418, h - 82, 39, 28);
-  switches[1].setCoordinates(w - 379, h - 82, 35, 28);
-  switches[2].setCoordinates(w - 344, h - 82, 35, 28);
-  switches[3].setCoordinates(w - 309, h - 82, 40, 28);
-  
+
+  switches[0].setCoordinates(posSwitches - 32, h - 82, 39, 28);
+  switches[1].setCoordinates(posSwitches + 7, h - 82, 35, 28);
+  switches[2].setCoordinates(posSwitches + 42, h - 82, 35, 28);
+  switches[3].setCoordinates(posSwitches + 77, h - 82, 40, 28);
+
   buttons[0].setCoordinates(44, h - 90, 35, 40);
   buttons[1].setCoordinates(44, h - 49, 35, 40);
   buttons[2].setCoordinates(22, h - 67, 45, 30);
   buttons[3].setCoordinates(61, h - 67, 45, 30);
-  buttons[4].setCoordinates(216, h - 82, 52, 30);
-  buttons[5].setCoordinates(266, h - 82, 52, 30);
-  buttons[6].setCoordinates(331, h - 82, 52, 30);
-  buttons[7].setCoordinates(381, h - 82, 52, 30);
+
+  buttons[4].setCoordinates(posElevation - 13, h - 82, 52, 30);
+  buttons[5].setCoordinates(posElevation + 37, h - 82, 52, 30);
+
+  buttons[6].setCoordinates(posZoom - 21, h - 82, 52, 30);
+  buttons[7].setCoordinates(posZoom + 29, h - 82, 52, 30);
 }
