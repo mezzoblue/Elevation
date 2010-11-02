@@ -442,7 +442,7 @@ class uiScale {
         stroke(col, 128);
         strokeWeight(strokeVal);
 
-        for (int i = 0; i <= round(wide / kmScale) / currentMultiplier; i++) {
+        for (int i = 0; i <= round(kmScale) / currentMultiplier; i++) {
           float thisVal = (i * kmInterval * currentMultiplier) - wide / 2;
           line(thisVal, 0 - thisLength, thisVal, thisLength);
 
