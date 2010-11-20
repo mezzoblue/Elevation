@@ -226,6 +226,7 @@ long getTimeDifference(String date1, String date2) {
 //
 XMLElement getRoot(String file) {
   XMLElement data = new XMLElement(this, file);
+  System.out.println(file);
   return(data);
 }
 
@@ -288,51 +289,75 @@ String[][] getCoordinates(XMLElement root, String fileType) {
   // GPS Exchange Format .gpx files
   // used by RunKeeper Pro and GPSBabel
   } else if (fileType.equals("gpx")) {
-    XMLElement node = null;
+    XMLElement trkSegNode = null, trkNode = null;
     // figure out how many elements there are
     try {
-      node = root.getChild("trk/trkseg");
+        trkNode = root.getChild("trk");
+                
+        // for each trkseg track segment
+        // get the absolute number of waypoints to determine the 
+        // length of the coordinates array
+        int wptCount = 0;  // number of all points
+        for(int segIndex = 0; segIndex < trkNode.getChildCount(); segIndex++) {
+          trkSegNode = trkNode.getChild(segIndex);
+          // check that this is a <trkseg> child tag
+          if(trkSegNode.getName().equalsIgnoreCase("trkseg")) {
+              wptCount += trkSegNode.getChildCount();
+          }
+        }
+
+        // re-initialize coordinates with the proper number of points
+        coordinates = new String[wptCount][4];
+        int coordinatesIndex = 0;
+        for(int segIndex = 0; segIndex < trkNode.getChildCount(); segIndex++) {
+            trkSegNode = trkNode.getChild(segIndex); // get trkseg
+            // check that this is a <trkseg> child tag
+            if(trkSegNode.getName().equalsIgnoreCase("trkseg") && (trkSegNode.getChildCount() > 0)) {
+  
+                // process this trkseg track segment
+                for (int i = 0; i < trkSegNode.getChildCount(); i++) {
+                    // parse out the relevant child elements
+                    XMLElement wpt = trkSegNode.getChild(i);
+                    if (trkSegNode.getChildCount() > 3) {
+                        try {
+                          // get the lat and long coordinates from attributes on this particular child
+                          coordinates[coordinatesIndex][0] = trim(wpt.getStringAttribute("lat"));
+                          coordinates[coordinatesIndex][1] = trim(wpt.getStringAttribute("lon"));
+                        }
+                        catch(NullPointerException n) {
+                          // likely suspect: point without any useful data. No need to do anything, just ignore it.
+                        }
+                        // get the elevation from the first child, if it exists
+                        XMLElement wpt_child;
+                        for(int c = 0; c < wpt.getChildCount();c++) {
+                            wpt_child = wpt.getChild(c);
+                            if(wpt_child.getName().equalsIgnoreCase("ele")) {
+                                //elevation definition
+                                coordinates[coordinatesIndex][2] = trim(wpt_child.getContent());                
+                            } else if (wpt_child.getName().equalsIgnoreCase("time")) {
+                                coordinates[coordinatesIndex][3] = wpt_child.getContent();
+                            }
+                        }
+                        
+                        // fill empties values with dummies
+                        if (coordinates[coordinatesIndex][2] == null)
+                            coordinates[coordinatesIndex][2] = "0"; // elevation = 0
+                        if (coordinates[coordinatesIndex][3] == null)
+                            coordinates[coordinatesIndex][3] = "0"; // time = 0
+                      
+                    }
+                    coordinatesIndex++;
+                }
+              
+              
+            }
+        }
+        
     }
     catch(NullPointerException n) {
       // likely suspect: point without any useful data. No need to do anything, just ignore it.
     }
-    // re-initialize coordinates with the proper number of points
-    if ((node != null) && (node.getChildCount() > 0)) {
-      coordinates = new String[node.getChildCount()][4];
-      for (int i = 0; i < node.getChildCount(); i++) {
-          // parse out the relevant child elements
-          XMLElement child = node.getChild(i);
-          if (node.getChildCount() > 3) {
-            try {
-              // get the lat and long coordinates from attributes on this particular child
-              coordinates[i][0] = trim(child.getStringAttribute("lat"));
-              coordinates[i][1] = trim(child.getStringAttribute("lon"));
-            }
-            catch(NullPointerException n) {
-              // likely suspect: point without any useful data. No need to do anything, just ignore it.
-            }
-            // get the elevation from the first child, if it exists
-            try {
-              coordinates[i][2] = trim(child.getChild(0).getContent());
-            }
-            catch(ArrayIndexOutOfBoundsException n) {
-              // file doesn't have a time coordinate? Ignore
-            }
-
-            // get the time from the second child, if it exists
-            try {
-              coordinates[i][3] = child.getChild(1).getContent();
-            }
-            catch(ArrayIndexOutOfBoundsException n) {
-              // file doesn't have a time coordinate? Ignore
-            }
-
-          } else {
-            coordinates[i][0] = null; coordinates[i][1] = null;
-            coordinates[i][2] = null; coordinates[i][3] = null;
-          }
-      }
-    }
+    
 
   // Garmin Training Center .tcx files
   } else if (fileType.equals("tcx")) {
@@ -397,10 +422,10 @@ String[][] getCoordinates(XMLElement root, String fileType) {
    DOM paths to coordinates for reference:
 
    Path to coordinates in a GPX file from RunKeeper:
-   gpx > trk > trkseg > trkpt (multiple)
+   gpx > trk > trkseg (multiple) > trkpt (multiple)
 
    Path to coordinates in a GPX file from GPSBabel:
-   gpx > trk > trkseg > trkpt (multiple)
+   gpx > trk > trkseg (multiple) > trkpt (multiple)
 
    Path to coordinates in a KML file from RunKeeper:
    kml > Document > Placemark > MultiGeometry > LineString > coordinates
