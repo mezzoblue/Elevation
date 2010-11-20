@@ -292,67 +292,81 @@ String[][] getCoordinates(XMLElement root, String fileType) {
     XMLElement trkSegNode = null, trkNode = null;
     // figure out how many elements there are
     try {
-        trkNode = root.getChild("trk");
-                
-        // for each trkseg track segment
-        // get the absolute number of waypoints to determine the 
+        // get the absolute number of trackpoints to determine the 
         // length of the coordinates array
-        int wptCount = 0;  // number of all points
-        for(int segIndex = 0; segIndex < trkNode.getChildCount(); segIndex++) {
-          trkSegNode = trkNode.getChild(segIndex);
-          // check that this is a <trkseg> child tag
-          if(trkSegNode.getName().equalsIgnoreCase("trkseg")) {
-              wptCount += trkSegNode.getChildCount();
-          }
+        int trkptCount = 0;  // number of all points
+        // gpx can have multiple <trk> 
+        // so check every child of root if it is a <trk>
+        for(int trkIndex = 0; trkIndex < root.getChildCount(); trkIndex++) {
+            trkNode = root.getChild(trkIndex);
+            if(trkNode.getName().equalsIgnoreCase("trk")) {
+                for(int segIndex = 0; segIndex < trkNode.getChildCount(); segIndex++) {
+                    trkSegNode = trkNode.getChild(segIndex);
+                    // check that this is a <trkseg> child tag
+                    if(trkSegNode.getName().equalsIgnoreCase("trkseg")) {
+                        // we can't take trkNode.getChildCount() straight away, because 
+                        // <trkseg> may have non-<trkpt> children, eg <name>
+                        for(int trkptIndex = 0; trkptIndex < trkSegNode.getChildCount(); trkptIndex++) {
+                            if(trkSegNode.getChild(trkptIndex).getName().equalsIgnoreCase("trkpt"))
+                                trkptCount++;
+                        }
+                    }
+                }
+            }
         }
 
         // re-initialize coordinates with the proper number of points
-        coordinates = new String[wptCount][4];
+        coordinates = new String[trkptCount][4];
         int coordinatesIndex = 0;
-        for(int segIndex = 0; segIndex < trkNode.getChildCount(); segIndex++) {
-            trkSegNode = trkNode.getChild(segIndex); // get trkseg
-            // check that this is a <trkseg> child tag
-            if(trkSegNode.getName().equalsIgnoreCase("trkseg") && (trkSegNode.getChildCount() > 0)) {
-  
-                // process this trkseg track segment
-                for (int i = 0; i < trkSegNode.getChildCount(); i++) {
-                    // parse out the relevant child elements
-                    XMLElement wpt = trkSegNode.getChild(i);
-                    if (trkSegNode.getChildCount() > 3) {
-                        try {
-                          // get the lat and long coordinates from attributes on this particular child
-                          coordinates[coordinatesIndex][0] = trim(wpt.getStringAttribute("lat"));
-                          coordinates[coordinatesIndex][1] = trim(wpt.getStringAttribute("lon"));
-                        }
-                        catch(NullPointerException n) {
-                          // likely suspect: point without any useful data. No need to do anything, just ignore it.
-                        }
-                        // get the elevation from the first child, if it exists
-                        XMLElement wpt_child;
-                        for(int c = 0; c < wpt.getChildCount();c++) {
-                            wpt_child = wpt.getChild(c);
-                            if(wpt_child.getName().equalsIgnoreCase("ele")) {
-                                //elevation definition
-                                coordinates[coordinatesIndex][2] = trim(wpt_child.getContent());                
-                            } else if (wpt_child.getName().equalsIgnoreCase("time")) {
-                                coordinates[coordinatesIndex][3] = wpt_child.getContent();
-                            }
-                        }
-                        
-                        // fill empties values with dummies
-                        if (coordinates[coordinatesIndex][2] == null)
-                            coordinates[coordinatesIndex][2] = "0"; // elevation = 0
-                        if (coordinates[coordinatesIndex][3] == null)
-                            coordinates[coordinatesIndex][3] = "0"; // time = 0
-                      
-                    }
-                    coordinatesIndex++;
-                }
-              
-              
-            }
-        }
         
+        // iterate over all <trk>
+        for(int trkIndex = 0; trkIndex < root.getChildCount(); trkIndex++) {
+            trkNode = root.getChild(trkIndex);
+            if(trkNode.getName().equalsIgnoreCase("trk")) {
+              
+                // iterate over all <trkseg>      
+                for(int segIndex = 0; segIndex < trkNode.getChildCount(); segIndex++) {
+                    trkSegNode = trkNode.getChild(segIndex); // get trkseg
+                    // check that this is a <trkseg> child tag
+                    if(trkSegNode.getName().equalsIgnoreCase("trkseg") && (trkSegNode.getChildCount() > 0)) {
+          
+                        // process this trkseg track segment
+                        for (int i = 0; i < trkSegNode.getChildCount(); i++) {
+                            // parse out the relevant child elements
+                            XMLElement wpt = trkSegNode.getChild(i);
+                            if (trkSegNode.getChildCount() > 3) {
+                                try {
+                                  // get the lat and long coordinates from attributes on this particular child
+                                  coordinates[coordinatesIndex][0] = trim(wpt.getStringAttribute("lat"));
+                                  coordinates[coordinatesIndex][1] = trim(wpt.getStringAttribute("lon"));
+                                }
+                                catch(NullPointerException n) {
+                                  // likely suspect: point without any useful data. No need to do anything, just ignore it.
+                                }
+                                // get the elevation from the first child, if it exists
+                                XMLElement wpt_child;
+                                for(int c = 0; c < wpt.getChildCount();c++) {
+                                    wpt_child = wpt.getChild(c);
+                                    if(wpt_child.getName().equalsIgnoreCase("ele")) {
+                                        //elevation definition
+                                        coordinates[coordinatesIndex][2] = trim(wpt_child.getContent());                
+                                    } else if (wpt_child.getName().equalsIgnoreCase("time")) {
+                                        coordinates[coordinatesIndex][3] = wpt_child.getContent();
+                                    }
+                                }
+                                
+                                // fill empties values with dummies
+                                if (coordinates[coordinatesIndex][2] == null)
+                                    coordinates[coordinatesIndex][2] = "0"; // elevation = 0
+                                if (coordinates[coordinatesIndex][3] == null)
+                                    coordinates[coordinatesIndex][3] = "0"; // time = 0
+                                coordinatesIndex++;
+                            } // end trkSegNode.getChildCount
+                        } // end wpt loop
+                    }
+                } // end trkseg loop
+            }
+        } // end trk loop
     }
     catch(NullPointerException n) {
       // likely suspect: point without any useful data. No need to do anything, just ignore it.
@@ -422,10 +436,10 @@ String[][] getCoordinates(XMLElement root, String fileType) {
    DOM paths to coordinates for reference:
 
    Path to coordinates in a GPX file from RunKeeper:
-   gpx > trk > trkseg (multiple) > trkpt (multiple)
+   gpx > trk (multiple) > trkseg (multiple) > trkpt (multiple)
 
    Path to coordinates in a GPX file from GPSBabel:
-   gpx > trk > trkseg (multiple) > trkpt (multiple)
+   gpx > trk (multiple) > trkseg (multiple) > trkpt (multiple)
 
    Path to coordinates in a KML file from RunKeeper:
    kml > Document > Placemark > MultiGeometry > LineString > coordinates
